@@ -1,0 +1,228 @@
+﻿<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shark Home</title>
+  <style>
+    :root{--bg:#0b0b0b;--fg:#e5e5e5;--muted:#999;--card:#121212;--line:#222;--acc:#16a34a;--blue:#2563eb;--red:#dc2626}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .container{max-width:980px;margin:24px auto;padding:0 14px}
+    header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+    h1{font-size:22px;margin:0}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .input{background:#121212;border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:10px}
+    .btn{background:#2a2a2a;border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:10px 12px;cursor:pointer}
+    .btn.primary{background:var(--acc);color:#fff;border:none}
+    .btn.blue{background:var(--blue);color:#fff;border:none}
+    .btn.red{background:var(--red);color:#fff;border:none}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:12px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;gap:10px;align-items:center}
+    .card.dragging{opacity:.6;border-color:#555}
+    .handle{cursor:grab;user-select:none}
+    .title{font-weight:700}
+    .url{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+    .tools{display:flex;gap:6px;margin-left:auto}
+    details{background:#0f0f0f;border:1px solid var(--line);border-radius:10px;padding:10px}
+    summary{cursor:pointer;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Shark Home</h1>
+      <button id="addDemo" class="btn">ใส่ตัวอย่าง</button>
+      <button id="exportBtn" class="btn">Export JSON</button>
+      <label class="btn">
+        <input id="importFile" type="file" accept="application/json" style="display:none">Import JSON
+      </label>
+    </header>
+
+    <section>
+      <div class="row">
+        <input id="nameInput" class="input" placeholder="ชื่อทางลัด เช่น Google" style="flex:1;min-width:200px" />
+        <input id="urlInput" class="input" placeholder="ลิงก์ เช่น https://www.google.com" style="flex:2;min-width:280px" />
+        <button id="addBtn" class="btn primary">เพิ่ม</button>
+      </div>
+    </section>
+
+    <section>
+      <div id="list" class="grid" aria-live="polite"></div>
+    </section>
+
+    <section style="margin-top:18px">
+      <details>
+        <summary>วิธีใช้</summary>
+        <ul>
+          <li><b>เพิ่ม</b> กรอกชื่อ/ลิงก์ แล้วกด เพิ่ม</li>
+          <li><b>แก้ไข</b> กดปุ่ม แก้ไข บนการ์ด</li>
+          <li><b>ลบ</b> กดปุ่ม ลบ</li>
+          <li><b>เรียงลำดับ</b> กดลากไอคอน ☰ เพื่อจัดลำดับ แล้วปล่อย</li>
+          <li>ข้อมูลถูกบันทึกใน <b>localStorage</b> อัตโนมัติ</li>
+          <li>สำรอง/ย้ายเครื่อง ใช้ Export/Import JSON</li>
+        </ul>
+      </details>
+    </section>
+  </div>
+  <div class=container>
+    <header class=header>
+      <h1>SharkTool Home</h1>
+      <p class=sub>เลือก/ค้นหา แล้วโหลดเครื่องมือที่ต้องการ</p>
+    </header>
+
+    <section id=sharktool-search class=block></section>
+    <section id=sharktool-shortcuts class=block></section>
+    <section id=sharktool-tools class=block></section>
+
+    <footer class=footer>
+      <small>© SharkTool</small>
+    </footer>
+  </div>
+
+  <script src=search-box.js></script>
+  <script src=shortcuts.js></script>
+  <script src=tools-list.js></script>
+  <script>
+  (function(){
+    const KEY = 'shark_home_shortcuts_v1';
+    const listEl = document.getElementById('list');
+    const nameEl = document.getElementById('nameInput');
+    const urlEl  = document.getElementById('urlInput');
+
+    function load(){
+      try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){ return []; }
+    }
+    function save(items){ localStorage.setItem(KEY, JSON.stringify(items)); }
+
+    function normalizeUrl(u){
+      const s = (u||'').trim();
+      if(!s) return '';
+      if(/^https?:\/\//i.test(s)) return s;
+      return 'https://' + s;
+    }
+
+    function render(){
+      const items = load();
+      listEl.innerHTML='';
+      items.forEach((it, idx)=>{
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.draggable = true;
+        card.dataset.index = idx;
+
+        const handle = document.createElement('div');
+        handle.className = 'handle';
+        handle.textContent = '☰';
+        handle.title = 'ลากเพื่อจัดลำดับ';
+
+        const info = document.createElement('div');
+        info.style.minWidth = '0';
+        const title = document.createElement('div'); title.className='title'; title.textContent = it.name || '(ไม่มีชื่อ)';
+        const url = document.createElement('div'); url.className='url'; url.textContent = it.url;
+        info.append(title, url);
+
+        const openBtn = document.createElement('a');
+        openBtn.className = 'btn blue'; openBtn.textContent = 'เปิด'; openBtn.href = it.url; openBtn.target = '_blank'; openBtn.rel='noopener';
+
+        const editBtn = document.createElement('button'); editBtn.className = 'btn'; editBtn.textContent='แก้ไข';
+        editBtn.onclick = ()=> editItem(idx);
+
+        const delBtn = document.createElement('button'); delBtn.className = 'btn red'; delBtn.textContent='ลบ';
+        delBtn.onclick = ()=> { const arr = load(); arr.splice(idx,1); save(arr); render(); };
+
+        const tools = document.createElement('div'); tools.className='tools'; tools.append(openBtn, editBtn, delBtn);
+        card.append(handle, info, tools);
+        listEl.append(card);
+
+        // drag events
+        card.addEventListener('dragstart', e=>{
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', String(idx));
+        });
+        card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
+      });
+    }
+
+    function getCardAt(y){
+      const cards = Array.from(listEl.querySelectorAll('.card:not(.dragging)'));
+      return cards.find(el=>{
+        const r = el.getBoundingClientRect();
+        return y < r.top + r.height/2;
+      });
+    }
+
+    listEl.addEventListener('dragover', e=>{
+      e.preventDefault();
+      const after = getCardAt(e.clientY);
+      const dragging = listEl.querySelector('.card.dragging');
+      if(!dragging) return;
+      if(after) listEl.insertBefore(dragging, after); else listEl.appendChild(dragging);
+    });
+
+    listEl.addEventListener('drop', e=>{
+      e.preventDefault();
+      const newOrder = Array.from(listEl.querySelectorAll('.card')).map(el=>parseInt(el.dataset.index,10));
+      const items = load();
+      const reordered = newOrder.map(i=>items[i]);
+      save(reordered);
+      render();
+    });
+
+    function addItem(){
+      const name = nameEl.value.trim();
+      const url  = normalizeUrl(urlEl.value);
+      if(!name || !url){ alert('กรอกชื่อและลิงก์ให้ครบ'); return; }
+      const items = load();
+      items.push({name, url});
+      save(items);
+      nameEl.value=''; urlEl.value='';
+      render();
+    }
+
+    function editItem(idx){
+      const items = load();
+      const it = items[idx];
+      const name = prompt('ชื่อใหม่', it.name || ''); if(name===null) return;
+      const url  = prompt('ลิงก์ใหม่', it.url || ''); if(url===null) return;
+      it.name = name.trim();
+      it.url  = normalizeUrl(url);
+      save(items); render();
+    }
+
+    document.getElementById('addBtn').onclick = addItem;
+    document.getElementById('addDemo').onclick = ()=>{
+      if(load().length) { if(!confirm('มีรายการอยู่แล้ว ต้องการใส่ตัวอย่างเพิ่มหรือไม่?')) return; }
+      const demo=[
+        {name:'Google', url:'https://www.google.com'},
+        {name:'GitHub', url:'https://github.com'},
+        {name:'Netlify', url:'https://app.netlify.com'}
+      ];
+      save(load().concat(demo)); render();
+    };
+
+    // Export / Import
+    document.getElementById('exportBtn').onclick = ()=>{
+      const blob = new Blob([JSON.stringify(load(), null, 2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'shark-home-shortcuts.json'; a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+    };
+    document.getElementById('importFile').addEventListener('change', async (e)=>{
+      const file = e.target.files && e.target.files[0]; if(!file) return;
+      try{
+        const txt = await file.text();
+        const arr = JSON.parse(txt);
+        if(!Array.isArray(arr)) throw new Error('รูปแบบไม่ถูกต้อง');
+        const norm = arr.map(x=>({name:String(x.name||''), url:normalizeUrl(String(x.url||''))}));
+        save(norm); render();
+      }catch(err){ alert('Import ไม่สำเร็จ: '+err); }
+      e.target.value='';
+    });
+
+    render();
+  })();
+  </script>
+</body>
+</html>

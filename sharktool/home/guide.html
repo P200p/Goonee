@@ -1,0 +1,79 @@
+﻿<!doctype html>
+<html lang= th>
+<head>
+  <meta charset=utf-8 />
+  <meta name=viewport content=width=device-width initial-scale=1 />
+  <title>คู่มือสั้น SharkTool</title>
+  <link rel=stylesheet href=home.css />
+  <style>
+    .container{max-width:900px}
+    .card{background:#101010;border:1px solid #222;border-radius:10px;padding:14px;margin:12px 0}
+    pre,code{background:#0f0f0f;border:1px solid #222;border-radius:8px;padding:10px;display:block;white-space:pre-wrap;word-break:break-word}
+    a.btn{display:inline-block;margin:6px 0;padding:10px 14px;background:#16a34a;color:#fff;border-radius:8px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class=container>
+    <h1>คู่มือสั้น: SharkTool (เข้าใจง่าย)</h1>
+    <p class=sub>ทำตามขั้นตอนนี้ ใช้เครื่องมือได้ทันที</p>
+
+    <div class=card>
+      <h2>1) วิธีเร็วสุด: ปุ่มลัด (Bookmarklet)</h2>
+      <p>คัดลอกข้อความนี้ไปสร้างเป็นปุ่มลัด แล้วกดบนหน้าเว็บที่ต้องใช้เครื่องมือ</p>
+      <pre><code>javascript:(function(){var s=document.createElement('script');s.src='https://sharkkadaw.netlify.app/sharktool/loader.js';document.body.appendChild(s)})()</code></pre>
+      <ul>
+        <li>แผง SharkTool จะขึ้นมุมขวาบน</li>
+        <li>ติ๊กเครื่องมือที่ต้องใช้ แล้วกด โหลดที่เลือก</li>
+        <li>เปลี่ยนธีมหน้าเว็บได้</li>
+      </ul>
+      <p><em>หมายเหตุ:</em> บางเว็บบล็อกสคริปต์ภายนอก (CSP) จึงอาจใช้ไม่ได้</p>
+    </div>
+
+    <div class=card>
+      <h2>2) มือถือ Android (แนะนำ Kiwi Browser)</h2>
+      <ol>
+        <li>ติดตั้ง Kiwi: <a href=https://apkpure.com/kiwi-browser-fast-quiet/com.kiwibrowser.browser target=_blank rel=noopener>ลิงก์ดาวน์โหลด</a></li>
+        <li>สร้างปุ่มลัด และวางโค้ดด้านบน ตั้งชื่อให้ง่ายต่อการกด</li>
+        <li>เปิดเว็บที่ต้องการ แล้วกดปุ่มลัด เพื่อเปิดแผง SharkTool</li>
+      </ol>
+      <p>ทิป: วางปุ่มลัดไว้ใกล้ช่อง URL จะกดได้เร็ว</p>
+    </div>
+
+    <div class=card>
+      <h2>3) ใช้งานแผง SharkTool</h2>
+      <ul>
+        <li>ค้นหาเครื่องมือ หรือกด เลือกทั้งหมด/ยกเลิกทั้งหมด</li>
+        <li>ติ๊กเครื่องมือ → กด โหลดที่เลือก</li>
+        <li>ผลลัพธ์สำเร็จ/ล้มเหลว จะขึ้นในช่อง Log</li>
+      </ul>
+      <p>ตัวอย่างเครื่องมือ: Monitor, Theme, Snipers, BurpShark, SharkScan, PostShark, Dev Panel</p>
+    </div>
+
+    <div class=card>
+      <h2>(ทางเลือก) หน้าแรกแบบฝัง</h2>
+      <p>อยากได้หน้าเริ่มต้นที่เรียบร้อย ฝังหน้า Home ของเราได้</p>
+      <pre><code>&lt;iframe src=&quot;https://sharkkadaw.netlify.app/sharktool/home/home.html&quot; style=&quot;width:100%;min-height:900px;border:0;border-radius:8px;overflow:hidden&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</code></pre>
+    </div>
+
+    <div class=card>
+      <h2>เพิ่ม/แก้เครื่องมือเอง (สำหรับแอดมิน)</h2>
+      <p>แก้ไฟล์ <code>sharktool/home/tools-list.js</code> ที่บล็อกนี้</p>
+      <pre><code>const REMOTE_BASE = 'https://sharkkadaw.netlify.app/sharktool/';
+const TOOLS = [
+  { id: 'monitor',   name: 'Monitor',    url: REMOTE_BASE + 'monitor.js' },
+  { id: 'theme',     name: 'Theme',      url: REMOTE_BASE + 'Theme.js' },
+  { id: 'snipers',   name: 'Snipers',    url: REMOTE_BASE + 'snipers.js' },
+  { id: 'burpshark', name: 'BurpShark',  url: REMOTE_BASE + 'burpshark.js' },
+  { id: 'sharkscan', name: 'SharkScan',  url: REMOTE_BASE + 'sharkscan.js' },
+  { id: 'postshark', name: 'PostShark',  url: REMOTE_BASE + 'postshark.js' },
+  // เพิ่มเครื่องมือใหม่ตรงนี้
+  // TODO: ใส่ชื่อแสดงผลแทน 'ชื่อเครื่องมือใหม่'
+  // TODO: ใส่ชื่อไฟล์สคริปต์แทน 'ไฟล์ใหม่.js'
+  { id: 'devpanel',  name: 'ชื่อเครื่องมือใหม่', url: REMOTE_BASE + 'ไฟล์ใหม่.js' }
+];</code></pre>
+    </div>
+
+    <p><a class=btn href=home.html>← กลับหน้า Home</a></p>
+  </div>
+</body>
+</html>

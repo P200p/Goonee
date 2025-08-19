@@ -15,11 +15,19 @@
 <body>
   <div class="wrap">
     <button class="btn" onclick="launchConsole()">ทดสอบ</button>
-    <p>
-  คัดลอกโค้ดนี้เพื่อนำไปใช้<br>
-  <code>javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/loader.js?t='+Date.now();s.onload=function(){toggleConsole();};document.body.appendChild(s);})();</code><br>
-  คู่มืออยู่นี่ <a href="https://sharkkadaw.netlify.app/" target="_blank">sharkkadaw.netlify.app</a>
-</p>
+<div style="background:#111;color:#0f0;padding:1em;border-radius:8px;font-family:monospace;position:relative;">
+  <div style="margin-bottom:0.5em;">🧪 ทดสอบ</div>
+  <div style="margin-bottom:0.5em;">คัดลอกโค้ดนี้เพื่อนำไปใช้:</div>
+  <textarea id="spellCode" readonly style="width:100%;height:4em;background:#000;color:#0f0;border:none;padding:0.5em;border-radius:4px;">
+javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/loader.js?t='+Date.now();s.onload=function(){toggleConsole();};document.body.appendChild(s);})();
+  </textarea>
+  <button onclick="navigator.clipboard.writeText(document.getElementById('spellCode').value)" style="margin-top:0.5em;background:#0f0;color:#000;border:none;padding:0.5em 1em;border-radius:4px;cursor:pointer;">
+    🔮 คัดลอกเวท
+  </button>
+  <div style="margin-top:1em;">
+    <a href="https://sharkkadaw.netlify.app/" target="_blank" style="color:#0f0;text-decoration:underline;">คู่มืออยู่นี่</a>
+  </div>
+</div>
 
   </div>
   <script src="loader.js"></script>

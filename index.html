@@ -14,8 +14,14 @@
 </head>
 <body>
   <div class="wrap">
-    <button class="btn" onclick="launchConsole()">Launch Hacker Console</button>
-    <p>กดปุ่มเพื่อแสดงคอนโซล</p>
+    <button class="btn" onclick="launchConsole()">ทดสอบ</button>
+    <p>คัดลอกโค้ดนี้เพื่อนำไปใช้ <br>javascript:(function(){
+  var s=document.createElement('script');
+  s.src='https://goonee.netlify.app/loader.js?t='+Date.now();
+  s.onload=function(){ toggleConsole(); };
+  document.body.appendChild(s);
+})();
+```</p>
   </div>
   <script src="loader.js"></script>
 </body>

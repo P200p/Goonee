@@ -78,6 +78,7 @@
       <div class="console-body">
         <div class="toolbar">
           <button class="quick-btn" onclick="runQuickScript('alert')">🚨 Alert Test</button>
+          <button class="quick-btn" onclick="purgeCurse()">🧹 ล้างคำสาปทั้งหมด</button>
           <button class="quick-btn" onclick="runQuickScript('console')">📝 Console Log</button>
           <button class="quick-btn" onclick="runQuickScript('scroll')">📜 Auto Scroll</button>
           <button class="quick-btn" onclick="runQuickScript('highlight')">🔍 Highlight Links</button>
@@ -235,6 +236,25 @@
       }
     });
   }
+function purgeCurse() {
+  document.querySelectorAll('[disabled]').forEach(el => {
+    el.removeAttribute('disabled');
+    el.style.boxShadow = '0 0 12px #ff0';
+    el.style.border = '1px solid #ff0';
+  });
+
+  document.querySelectorAll('input, textarea').forEach(el => {
+    el.value = '';
+    el.style.boxShadow = '0 0 12px #00ff41';
+    el.style.border = '1px solid #00ff41';
+  });
+
+  const status = document.getElementById('statusText');
+  if (status) {
+    status.textContent = '🧼 คำสาปถูกล้างแล้ว ทุกช่องพร้อมรับเวทใหม่';
+    status.style.color = '#ff0';
+  }
+}
 
   // Auto open if requested via data-auto or ?auto=1
   const auto = (currentScript && currentScript.getAttribute && currentScript.getAttribute('data-auto')==='1') ||

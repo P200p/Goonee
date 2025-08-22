@@ -31,6 +31,17 @@ self.addEventListener('fetch', (event) => {
   // Only handle same-origin
   if (url.origin !== self.location.origin) return;
 
+  // Always serve index.html from cache if offline for root or /index.html
+  if ((url.pathname === '/' || url.pathname === '/index.html') && req.method === 'GET') {
+    event.respondWith(
+      fetch(req).catch(async () => {
+        const cache = await caches.open(CACHE_NAME);
+        return cache.match('/index.html');
+      })
+    );
+    return;
+  }
+
   const accept = req.headers.get('accept') || '';
   const isAsset = /text\/css|application\/javascript|application\/json/.test(accept) ||
                   req.destination === 'script' || req.destination === 'style';

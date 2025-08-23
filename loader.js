@@ -12,12 +12,20 @@
     }
   })();
 
+  // Expose for other modules (e.g., main.js) to load sibling assets correctly
+  try { window.__HC_BASE_URL = BASE_URL; } catch(_) {}
+  // Flags derived from current script URL
+  const SCRIPT_URL = (function(){ try{ return new URL(currentScript && currentScript.src ? currentScript.src : location.href, location.href); }catch(_){ return null; } })();
+  const NOSW = !!(SCRIPT_URL && /(?:[?&])(nosw|no_sw|sw=0|noserviceworker)=1/i.test(SCRIPT_URL.search));
+  const BASE_ORIGIN = (function(){ try{ return new URL(BASE_URL, location.href).origin; }catch(_){ return ''; } })();
+  const SAME_ORIGIN = BASE_ORIGIN === location.origin;
+
   function ensureStyle(){
     const d=document;
     if (!d.querySelector('link[data-hc-style]')){
       const link=d.createElement('link');
       link.rel='stylesheet';
-      link.href= BASE_URL + 'style.css';
+      link.href= BASE_URL + 'style.css?t=' + Date.now();
       link.setAttribute('data-hc-style','1');
       link.onload = function(){ /* stylesheet loaded */ };
       link.onerror = function(){
@@ -45,6 +53,12 @@
       .code-input{background:rgba(0,0,0,.8);border:1px solid #00ff41;color:#00ff41;padding:8px;border-radius:4px;font-size:12px;min-height:80px}
       .status-bar{background:rgba(0,255,65,.1);padding:4px 8px;border-top:1px solid #00ff41;font-size:10px;color:#00ff41}
       .resize-handle{position:absolute;bottom:0;right:0;width:20px;height:20px;cursor:se-resize;background:linear-gradient(-45deg,transparent 40%,#00ff41 40%,#00ff41 60%,transparent 60%)}
+      @media (max-width:768px){
+        .console-panel{top:2vh;left:2vw;width:96vw;height:72vh}
+        .toolbar{flex-direction:column;gap:6px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+        .quick-btn{padding:10px 12px;font-size:14px}
+        .main-content{padding:8px;gap:8px}
+      }
     `;
     document.head.appendChild(s);
   }
@@ -180,6 +194,13 @@
   // Ensure service worker is registered from same-origin via hidden iframe
   function ensureServiceWorker(){
     if (window.__hcSwBootstrapped) return;
+    // Only allow when explicitly safe:
+    // 1) Same origin as page
+    // 2) Over HTTPS, or localhost/127.0.0.1
+    // 3) Not disabled by ?nosw=1
+    const isLocalhost = /^(localhost|127\.0\.0\.1|::1)$/.test(location.hostname);
+    const isSecure = location.protocol === 'https:' || isLocalhost;
+    if (NOSW || !SAME_ORIGIN || !isSecure) return;
     window.__hcSwBootstrapped = true;
     try{
       const iframe = document.createElement('iframe');
@@ -201,11 +222,35 @@
 
   function showConsole(){
     const panel=getPanel();
-    if (panel){ panel.style.display='block'; panel.focus(); return; }
+    if (panel){
+      panel.style.display='block';
+      // Force mobile-friendly sizing on small screens
+      try{
+        if (window.innerWidth <= 768){
+          panel.style.width = '96vw';
+          panel.style.height = '72vh';
+          panel.style.left = '2vw';
+          panel.style.top = '2vh';
+        }
+      }catch(_){ /* ignore */ }
+      panel.focus();
+      return;
+    }
     ensureStyle();
     injectHTML();
     ensureMain();
+    // Try SW only when allowed; guard inside will skip when cross-origin
     ensureServiceWorker();
+    // After creation, also apply mobile size if needed
+    try{
+      const p = getPanel();
+      if (p && window.innerWidth <= 768){
+        p.style.width = '96vw';
+        p.style.height = '72vh';
+        p.style.left = '2vw';
+        p.style.top = '2vh';
+      }
+    }catch(_){ /* ignore */ }
   }
 
   function hideConsole(){
@@ -237,21 +282,56 @@
     });
   }
 function purgeCurse() {
-  document.querySelectorAll('[disabled]').forEach(el => {
-    el.removeAttribute('disabled');
-    el.style.boxShadow = '0 0 12px #ff0';
-    el.style.border = '1px solid #ff0';
+  // Select wide range of potentially disabled elements
+  const targets = document.querySelectorAll('[disabled], [readonly], [aria-disabled="true"], [inert], input, textarea, select, button, fieldset');
+
+  targets.forEach(el => {
+    try {
+      // Remove disabling attributes
+      if (el.hasAttribute('disabled')) el.removeAttribute('disabled');
+      if (el.hasAttribute('readonly')) el.removeAttribute('readonly');
+      if (el.getAttribute && el.getAttribute('aria-disabled') === 'true') el.removeAttribute('aria-disabled');
+      if (el.hasAttribute('inert')) el.removeAttribute('inert');
+
+      // Reset DOM properties on form controls
+      if ('disabled' in el) el.disabled = false;
+      if ('readOnly' in el) el.readOnly = false;
+      if ('contentEditable' in el && el.contentEditable === 'false') el.contentEditable = 'true';
+
+      // Remove common disabling classes (best-effort, non-destructive)
+      if (el.classList) {
+        ['disabled', 'is-disabled', 'readonly', 'is-readonly', 'inactive'].forEach(c => {
+          if (el.classList.contains(c)) el.classList.remove(c);
+        });
+      }
+
+      // Re-enable interactions
+      el.style.pointerEvents = '';
+      el.style.opacity = '';
+      el.style.filter = '';
+
+      // Visual feedback
+      el.style.boxShadow = '0 0 12px #ff0';
+      el.style.border = '1px solid #ff0';
+    } catch(_) { /* ignore */ }
   });
 
+  // Clear inputs and textareas to ensure fresh state
   document.querySelectorAll('input, textarea').forEach(el => {
-    el.value = '';
-    el.style.boxShadow = '0 0 12px #00ff41';
-    el.style.border = '1px solid #00ff41';
+    try {
+      if (el.type === 'checkbox' || el.type === 'radio') {
+        el.checked = false;
+      } else if (el.type !== 'file') {
+        el.value = '';
+      }
+      el.style.boxShadow = '0 0 12px #00ff41';
+      el.style.border = '1px solid #00ff41';
+    } catch(_) { /* ignore */ }
   });
 
   const status = document.getElementById('statusText');
   if (status) {
-    status.textContent = '🧼 คำสาปถูกล้างแล้ว ทุกช่องพร้อมรับเวทใหม่';
+    status.textContent = '🧼 คำสาปถูกล้างแล้ว เปิดใช้งานทุกช่องสำเร็จ';
     status.style.color = '#ff0';
   }
 }
@@ -262,7 +342,7 @@ function purgeCurse() {
                (typeof window.HC_AUTO!== 'undefined' && !!window.HC_AUTO);
   if (auto){ showConsole(); }
   else {
-    // Still try to bootstrap SW early to enable caching before first open
+    // Still try to bootstrap SW early (guarded inside)
     ensureServiceWorker();
   }
 })();

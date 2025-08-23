@@ -250,24 +250,33 @@ body {
 /* Mobile optimizations */
 @media (max-width: 768px) {
     .console-panel {
-        width: calc(100vw - 20px);
-        height: calc(100vh - 100px);
-        top: 10px;
-        left: 10px;
+        width: 96vw;
+        height: 72vh;
+        top: 2vh;
+        left: 2vw;
+    }
+
+    .main-content {
+        padding: 8px;
+        gap: 8px;
     }
     
     .toolbar {
         flex-direction: column;
-        gap: 4px;
+        gap: 6px;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
     }
     
     .button-group {
         flex-direction: column;
+        gap: 6px;
     }
     
     .quick-btn {
-        padding: 8px;
-        font-size: 12px;
+        padding: 10px 12px;
+        font-size: 14px;
     }
 }
 

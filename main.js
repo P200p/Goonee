@@ -47,6 +47,22 @@
         const header = document.getElementById('consoleHeader');
         const resizeHandle = document.getElementById('resizeHandle');
 
+        // Apply mobile-friendly default size on initial load
+        (function applyInitialResponsiveSize(){
+            try{
+                const hasInlineSize = panel && (panel.style && (panel.style.width || panel.style.height));
+                const ua = (navigator && navigator.userAgent) ? navigator.userAgent : '';
+                const isTouch = (navigator && (navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0)) || ('ontouchstart' in window);
+                const isMobile = window.innerWidth <= 900 || isTouch || /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+                if (panel && !hasInlineSize && isMobile){
+                    panel.style.width = '96vw';
+                    panel.style.height = '72vh';
+                    panel.style.left = '2vw';
+                    panel.style.top = '2vh';
+                }
+            }catch(_){ /* ignore */ }
+        })();
+
         // Dragging functionality
         header.addEventListener('mousedown', startDrag);
         header.addEventListener('touchstart', startDrag);
@@ -126,35 +142,36 @@
             document.removeEventListener('touchend', stopResize);
         }
 
-        // Shark Tools Configuration
+        // Shark Tools Configuration (local directory)
+        const SHARK_BASE = (window.__HC_BASE_URL || '') + 'sharktool/';
         const sharkTools = {
             burpshark: {
-                url: 'https://sharkkadaw.netlify.app/sharktool/burpshark.js',
+                url: SHARK_BASE + 'burpshark.js',
                 name: 'BurpShark',
                 description: 'Advanced web security testing tool'
             },
             sharkscan: {
-                url: 'https://sharkkadaw.netlify.app/sharktool/sharkscan.js',
+                url: SHARK_BASE + 'sharkscan.js',
                 name: 'SharkScan',
                 description: 'Vulnerability scanner'
             },
             snipers: {
-                url: 'https://sharkkadaw.netlify.app/sharktool/snipers.js',
+                url: SHARK_BASE + 'snipers.js',
                 name: 'Snipers',
                 description: 'Precision targeting tool'
             },
             theme: {
-                url: 'https://sharkkadaw.netlify.app/sharktool/theme.js',
+                url: SHARK_BASE + 'theme.js',
                 name: 'Theme Manager',
                 description: 'UI theme customization'
             },
             monitor: {
-                url: 'https://sharkkadaw.netlify.app/sharktool/monitor.js',
+                url: SHARK_BASE + 'monitor.js',
                 name: 'Monitor',
                 description: 'System monitoring tool'
             },
             postshark: {
-                url: 'https://sharkkadaw.netlify.app/sharktool/postshark.js',
+                url: SHARK_BASE + 'postshark.js',
                 name: 'PostShark',
                 description: 'HTTP request manipulation'
             }
@@ -322,94 +339,11 @@
                 
             } catch (error) {
                 updateStatus('❌ Error loading ' + tool.name + ': ' + error.message);
-                console.error('Shark tool loading error:', error);
             }
+            return;
         }
 
-        // Load theme CSS when theme tool is loaded
-        function loadThemeCSS() {
-            const existingCSS = document.querySelector('link[data-shark-theme]');
-            if (existingCSS) return;
-            
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://sharkkadaw.netlify.app/sharktool/panel-theme.css';
-            link.setAttribute('data-shark-theme', 'true');
-            
-            link.onload = function() {
-                updateStatus('🎨 Theme CSS loaded');
-            };
-            
-            link.onerror = function() {
-                updateStatus('❌ Failed to load theme CSS');
-            };
-            
-            document.head.appendChild(link);
-        }
-
-        // Enhanced loader with retry mechanism
-        function loadSharkToolWithRetry(toolName, retries = 3) {
-            const tool = sharkTools[toolName];
-            if (!tool) return;
-            
-            function attemptLoad(attempt) {
-                loadSharkTool(toolName).catch(error => {
-                    if (attempt < retries) {
-                        updateStatus(`🔄 Retrying ${tool.name}... (${attempt + 1}/${retries})`);
-                        setTimeout(() => attemptLoad(attempt + 1), 1000);
-                    } else {
-                        updateStatus(`❌ Failed to load ${tool.name} after ${retries} attempts`);
-                    }
-                });
-            }
-            
-            attemptLoad(1);
-        }
-
-        // Execute loaded tools manually
-        function executeLoadedTools() {
-            const loadedTools = document.querySelectorAll('script[data-shark-tool]');
-            if (loadedTools.length === 0) {
-                updateStatus('❌ No Shark Tools loaded yet');
-                return;
-            }
-            
-            updateStatus('🦈 Executing loaded tools...');
-            let executed = 0;
-            
-            loadedTools.forEach(script => {
-                const toolName = script.getAttribute('data-shark-tool');
-                try {
-                    // Try different execution methods
-                    if (window[toolName]) {
-                        if (typeof window[toolName] === 'function') {
-                            window[toolName]();
-                            executed++;
-                        } else if (window[toolName].init && typeof window[toolName].init === 'function') {
-                            window[toolName].init();
-                            executed++;
-                        } else if (window[toolName].run && typeof window[toolName].run === 'function') {
-                            window[toolName].run();
-                            executed++;
-                        }
-                    }
-                    
-                    // Try common function names
-                    const commonNames = ['init', 'start', 'run', 'execute', 'main'];
-                    for (const funcName of commonNames) {
-                        if (window[toolName + funcName] && typeof window[toolName + funcName] === 'function') {
-                            window[toolName + funcName]();
-                            executed++;
-                            break;
-                        }
-                    }
-                } catch (error) {
-                    console.log(`Could not execute ${toolName}:`, error);
-                }
-            });
-            
-            updateStatus(`🦈 Executed ${executed} tools`);
-        }
+        
 
         function updateStatus(message) {
             document.getElementById('statusText').textContent = message;

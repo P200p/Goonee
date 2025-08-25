@@ -557,7 +557,7 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+        const matrix = "マアマラワソカユイワルミヤABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
         const matrixArray = matrix.split("");
         
         const fontSize = 10;
@@ -620,7 +620,7 @@
             const terminalBody = document.querySelector('.terminal-body .kiwi-section');
             if (cmd === 'clear') {
                 terminalBody.innerHTML = `
-                    <div style="margin-bottom:0.5em;">🧪โหลด kiwi แล้ว</div>
+                    <div style="margin-bottom:0.5em;">🧪โหลด Goonee แล้ว</div>
                     <div style="margin-bottom:0.5em;">คัดลอกโค้ดนี้เพื่อนำไปใช้:</div>
                     <textarea id="spellCode" class="spell-code" readonly>javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/loader.js?t='+Date.now();s.onload=function(){toggleConsole();};document.body.appendChild(s);})();</textarea>
                     <button onclick="copySpell()" class="copy-btn">🔮 คัดลอกเวท</button>
@@ -644,7 +644,7 @@
             
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 3000);
+            }, 5000);
         }
         
         // Update time and system stats
@@ -707,7 +707,9 @@
             { name: 'Twitter', url: 'https://twitter.com', icon: '🐦' },
             { name: 'Instagram', url: 'https://instagram.com', icon: '📷' },
             { name: 'Netflix', url: 'https://netflix.com', icon: '🎬' },
-            { name: 'Spotify', url: 'https://spotify.com', icon: '🎵' }
+            { name: 'Spotify', url: 'https://spotify.com', icon: '🎵' },
+            { name: 'sharkkadaw', url: 'https://sharkkadaw.netlify.app/', icon: '<img src="icon.png" style="width:24px; height:18px;" />' },
+            { name: 'AI_AUTO_SCAN', url: 'https://goonee.netlify.app/ai/scan.html', icon: '☠︎' }
         ];
         
         function renderShortcuts() {
@@ -793,7 +795,7 @@
         
         // Welcome message
         setTimeout(() => {
-            showNotification('🥝 ยินดีต้อนรับสู่ Kiwi Terminal!');
+            showNotification('🥝 ยินดีต้อนรับสู่ Goonee Terminal!');
         }, 1000);
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97343009974c45ca',t:'MTc1NTg4NDc2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>

@@ -467,6 +467,16 @@
                 text-align: center;
             }
         }
+        .clickable-icon {
+  width: 40px;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.clickable-icon:hover {
+  transform: scale(1.1);
+}
+
     </style>
 </head>
 <body>
@@ -481,10 +491,8 @@
         <div class="search-container">
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="🔍ถาม Goonee'หรือใส่ URL..." class="search-input">
-                <button onclick="performSearch()" class="search-btn">
-                    <img src="og.webp" alt="GO" style="width: 40px; height: auto;">
-                  </button>
-                </a>  </div>
+                <img src="ogg.webp" alt="GO" class="clickable-icon" onclick="performSearch()">
+            </div>
         </div>
         
         <div class="shortcuts-section">

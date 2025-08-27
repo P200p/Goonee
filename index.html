@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Favicon for browser tab -->
-<link rel="icon" href="https://goonee.netlify.app/og.webp" type="image/webp">
+<link rel="icon" href="https://goonee.netlify.app/image.png" type="image/image.png">
 
 <!-- Open Graph meta tags for social sharing -->
 <meta property="og:title" content="Goonee Terminal - Hacker Browser">
 <meta property="og:description" content="browserhacker aesthetic พร้อมฟีเจอร์สแกน เข้ารหัส และจัดการระบบ">
-<meta property="og:image" content="https://goonee.netlify.app/og.webp">
+<meta property="og:image" content="https://goonee.netlify.app/image.png">
 <meta property="og:url" content="https://goonee.netlify.app">
 <meta property="og:type" content="website">
 
@@ -17,9 +17,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Goonee Terminal - Hacker Browser">
 <meta name="twitter:description" content="browser hacker aesthetic พร้อมฟีเจอร์สแกน เข้ารหัส และจัดการระบบ">
-<meta name="twitter:image" content="https://goonee.netlify.app/og.webp">
+<meta name="twitter:image" content="https://goonee.netlify.app/image.png">
 
     <title>Goonee' Terminal - Hacker Browser</title>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap');
         
@@ -480,12 +482,19 @@
     </style>
 </head>
 <body>
-    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+        <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+        <!-- PWA Install Popup -->
+        <div id="pwaInstallPrompt" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.95);border:2px solid #00ff41;color:#00ff41;padding:24px 20px 16px 20px;border-radius:12px;z-index:2000;box-shadow:0 8px 32px #00ff4133;max-width:90vw;">
+            <div style="font-size:1.1rem;font-weight:500;margin-bottom:10px;">ติดตั้ง Goonee Terminal เป็นแอพ?</div>
+            <div style="font-size:0.95rem;opacity:0.8;margin-bottom:18px;">จะได้เปิดใช้งานรวดเร็วขึ้นบนมือถือ/PC<br>กด “ติดตั้ง” หรือ “ปิด” ได้เลย</div>
+            <button id="installBtn" style="background:linear-gradient(90deg,#00ff41,#00cc33);color:#000;border:none;padding:10px 28px;border-radius:6px;font-family:'Fira Code',monospace;font-weight:600;font-size:1rem;cursor:pointer;margin-right:10px;">ติดตั้ง</button>
+            <button id="closeInstallPrompt" style="background:none;border:1px solid #00ff41;color:#00ff41;padding:10px 18px;border-radius:6px;font-family:'Fira Code',monospace;font-size:1rem;cursor:pointer;">ปิด</button>
+        </div>
     
     <div class="container">
         <header class="header">
-            <div class="logo">🥝 Goonee' TERMINAL</div>
-            <div class="subtitle">>>> เทอมินอน แต่ฉันจะนอน v3.1.0 <<<</div>
+            <img src="image.png" alt="Goonee Terminal" class="clickable-icon" onclick="window.location.href='https://sharkkadaw.netlify.app/'"/>
+            <div class="subtitle">>>> terminal เทอมินอน แต่ฉันจะนอน v3.1.0 <<<</div>
         </header>
         
         <div class="search-container">
@@ -573,6 +582,45 @@
     <div class="notification" id="notification"></div>
     
     <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js');
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt = null;
+        const pwaPrompt = document.getElementById('pwaInstallPrompt');
+        const installBtn = document.getElementById('installBtn');
+        const closeBtn = document.getElementById('closeInstallPrompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // เฉพาะถ้าไม่ใช่ PWA mode
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
+            pwaPrompt.style.display = 'block';
+        });
+
+        installBtn && installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    pwaPrompt.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+        closeBtn && closeBtn.addEventListener('click', () => {
+            pwaPrompt.style.display = 'none';
+        });
+
+        // ถ้าเปิดผ่าน PWA แล้ว ไม่แสดงป้อปอัพ
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            pwaPrompt && (pwaPrompt.style.display = 'none');
+        }
         // Matrix background animation
         const canvas = document.getElementById('matrixCanvas');
         const ctx = canvas.getContext('2d');
@@ -731,7 +779,6 @@
             { name: 'Instagram', url: 'https://instagram.com', icon: '📷' },
             { name: 'Netflix', url: 'https://netflix.com', icon: '🎬' },
             { name: 'Spotify', url: 'https://spotify.com', icon: '🎵' },
-            { name: 'sharkkadaw', url: 'https://sharkkadaw.netlify.app/', icon: '<img src="og.webp" style="width:35px; height:35px;" />' },
             { name: 'AI_AUTO_SCAN', url: 'https://goonee.netlify.app/ai/scan.html', icon: '☠︎' }
         ];
         

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shark Console Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 50%, #000 100%);
+            color: #00ff41;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff41;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #00ff41, #00cc33);
+            color: #000;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .header .version {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        .section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #00ff41;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            flex: 1;
+        }
+
+        .setting-label h3 {
+            font-size: 16px;
+            color: #00ff41;
+            margin-bottom: 4px;
+        }
+
+        .setting-label .description {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        .setting-control {
+            margin-left: 20px;
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #666;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle input:checked + .toggle-slider {
+            background-color: #00ff41;
+        }
+
+        .toggle input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+            background-color: #000;
+        }
+
+        /* Select */
+        .setting-select {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #333;
+            color: #00ff41;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        .setting-select:focus {
+            outline: none;
+            border-color: #00ff41;
+            box-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(45deg, #00ff41, #00cc33);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 65, 0.4);
+        }
+
+        .btn.secondary {
+            background: rgba(0, 255, 65, 0.2);
+            color: #00ff41;
+            border: 1px solid #00ff41;
+        }
+
+        .btn.danger {
+            background: linear-gradient(45deg, #ff4444, #cc3333);
+            color: #fff;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+
+        /* Keyboard shortcuts table */
+        .shortcuts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .shortcuts-table th,
+        .shortcuts-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        .shortcuts-table th {
+            background: rgba(0, 255, 65, 0.1);
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .shortcuts-table td {
+            color: #ccc;
+        }
+
+        .shortcuts-table .key {
+            background: rgba(0, 255, 65, 0.2);
+            color: #00ff41;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        /* Tool status grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .tool-item {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .tool-item h4 {
+            color: #00ff41;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .tool-item .description {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .tool-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #333;
+            color: #ccc;
+        }
+
+        .tool-status.loaded {
+            background: #00ff41;
+            color: #000;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00ff41;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .setting-control {
+                margin-left: 0;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦈 SHARK CONSOLE</h1>
+            <div class="version">Advanced Web Security Toolkit v2.1</div>
+        </div>
+
+        <div class="content">
+            <!-- General Settings -->
+            <div class="section">
+                <h2>⚙️ General Settings</h2>
+                <p>Configure how Shark Console behaves across all websites.</p>
+                
+                <div class="setting-group">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Auto-inject Console</h3>
+                            <div class="description">Automatically inject console on page load for bookmarked sites</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle">
+                                <input type="checkbox" id="autoInject">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Global Keyboard Shortcuts</h3>
+                            <div class="description">Enable keyboard shortcuts to work on all websites</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle">
+                                <input type="checkbox" id="globalShortcuts" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Quick Scan on Load</h3>
+                            <div class="description">Automatically run security scan when console is opened</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle">
+                                <input type="checkbox" id="quickScanOnLoad">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Default Theme</h3>
+                            <div class="description">Choose the default appearance theme</div>
+                        </div>
+                        <div class="setting-control">
+                            <select class="setting-select" id="defaultTheme">
+                                <option value="dark">Dark (Matrix)</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Tools -->
+            <div class="section">
+                <h2>🔧 Security Tools</h2>
+                <p>Information about available security tools and their current status.</p>
+                
+                <div class="tools-grid" id="toolsGrid">
+                    <div class="tool-item">
+                        <h4>🎯 Snipers</h4>
+                        <div class="description">Precision targeting and auto-click tool</div>
+                        <div class="tool-status">Ready</div>
+                    </div>
+                    <div class="tool-item">
+                        <h4>🔍 SharkScan</h4>
+                        <div class="description">Advanced vulnerability scanner</div>
+                        <div class="tool-status">Ready</div>
+                    </div>
+                    <div class="tool-item">
+                        <h4>📮 PostShark</h4>
+                        <div class="description">HTTP request manipulation tool</div>
+                        <div class="tool-status">Ready</div>
+                    </div>
+                    <div class="tool-item">
+                        <h4>📊 Monitor</h4>
+                        <div class="description">Real-time system monitoring</div>
+                        <div class="tool-status">Ready</div>
+                    </div>
+                    <div class="tool-item">
+                        <h4>✨ Magic Button</h4>
+                        <div class="description">Utility functions and helpers</div>
+                        <div class="tool-status">Ready</div>
+                    </div>
+                    <div class="tool-item">
+                        <h4>🦈 BurpShark</h4>
+                        <div class="description">Advanced web security testing</div>
+                        <div class="tool-status">Ready</div>
+                    </div>
+                    <div class="tool-item">
+                        <h4>🎨 Theme Manager</h4>
+                        <div class="description">UI theme customization</div>
+                        <div class="tool-status">Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyboard Shortcuts -->
+            <div class="section">
+                <h2>⌨️ Keyboard Shortcuts</h2>
+                <p>Learn the keyboard shortcuts to use Shark Console efficiently.</p>
+                
+                <table class="shortcuts-table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Shortcut</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Toggle Console</td>
+                            <td><span class="key">Ctrl+Shift+F12</span></td>
+                            <td>Show/hide the main console window</td>
+                        </tr>
+                        <tr>
+                            <td>Quick Scan</td>
+                            <td><span class="key">Ctrl+Shift+S</span></td>
+                            <td>Run quick security scan on current page</td>
+                        </tr>
+                        <tr>
+                            <td>Execute Code</td>
+                            <td><span class="key">Ctrl+Enter</span></td>
+                            <td>Execute JavaScript in console tab</td>
+                        </tr>
+                        <tr>
+                            <td>Legacy Toggle</td>
+                            <td><span class="key">Ctrl+`</span></td>
+                            <td>Alternative console toggle (fallback)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Advanced Settings -->
+            <div class="section">
+                <h2>🔬 Advanced Settings</h2>
+                <p>Advanced configuration options for power users.</p>
+                
+                <div class="setting-group">
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Debug Mode</h3>
+                            <div class="description">Enable detailed logging for troubleshooting</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle">
+                                <input type="checkbox" id="debugMode">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Network Monitoring</h3>
+                            <div class="description">Monitor and log network requests</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle">
+                                <input type="checkbox" id="networkMonitoring">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <h3>Console Position</h3>
+                            <div class="description">Remember console position between sessions</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle">
+                                <input type="checkbox" id="rememberPosition" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn" id="saveSettings">💾 Save Settings</button>
+                <button class="btn secondary" id="resetSettings">🔄 Reset to Defaults</button>
+                <button class="btn secondary" id="exportSettings">📤 Export Settings</button>
+                <button class="btn danger" id="clearData">🗑️ Clear All Data</button>
+            </div>
+
+            <!-- Footer Info -->
+            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; font-size: 12px; color: #666;">
+                <p>🦈 Shark Console v2.1 • Use responsibly and respect website terms of service</p>
+                <p>For support and updates, visit the extension page in Chrome Web Store</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">Settings saved successfully!</div>
+
+    <script src="options.js"></script>
+</body>
+</html>

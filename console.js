@@ -80,10 +80,10 @@
     .console-header {
       background: linear-gradient(90deg,var(--accent),var(--accent2));
       color: #001a0a;
-      padding: 8px 10px;
+      padding: 4px 7px;
       cursor: move;
       display: flex;
-      gap: 8px;
+      gap: 10px;
       justify-content: space-between;
       align-items: center;
       font-weight: 600;
@@ -98,20 +98,20 @@
     }
     .toolbar {
       background: rgba(0,255,65,.08);
-      padding: 6px;
-      border-bottom: 1px solid var(--accent);
+      padding: 2px;
+      border-bottom: 0.5px solid var(--accent);
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
     }
     .btn {
       background: rgba(0,255,65,.18);
-      border: 1px solid var(--accent);
+      border: 0.5px solid var(--accent);
       color: var(--accentText);
-      padding: 6px 10px;
-      border-radius: 6px;
+      padding: 2px 2px;
+      border-radius: 2px;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 8px;
     }
     .btn:hover {
       background: rgba(0,255,65,.26);
@@ -120,13 +120,13 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 4px;
-      gap: 4px;
+      padding: 2px;
+      gap: 3px;
       overflow: auto;
     }
     .section-title {
       color: #61ffa7;
-      font-size: 7px;
+      font-size: 5px;
       font-weight: 300;
     }
     .code-input {
@@ -162,7 +162,7 @@
     }
     .status-bar {
       background: rgba(0,255,65,.08);
-      padding: 4px 8px;
+      padding: 2px 2px;
       border-top: 1px solid var(--accent);
       font-size: 11px;
       color: var(--status);
@@ -186,13 +186,13 @@
         height: 68vh;
       }
       .toolbar {
-        gap: 3px;
+        gap: 2px;
         overflow-x: auto;
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
       }
       .btn {
-        padding: 5px 6px;
+        padding: 2px 2px;
         font-size: 7px;
       }
       .main-content {

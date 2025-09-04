@@ -51,17 +51,17 @@
         .toolbar{background:rgba(0,255,65,.08);padding:6px;border-bottom:1px solid var(--accent);display:flex;gap:6px;flex-wrap:wrap}
         .btn{background:rgba(0,255,65,.18);border:1px solid var(--accent);color:var(--accentText);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px}
         .btn:hover{background:rgba(0,255,65,.26)}
-        .main-content{flex:1;display:flex;flex-direction:column;padding:8px;gap:8px;overflow:auto}
-        .section-title{color:#61ffa7;font-size:13px;font-weight:600}
-        .code-input{background:var(--bgInput); border:1px solid var(--accent);color:#d6ffe8;padding:8px;border-radius:6px;font-size:12px;min-height:50px;max-height:200px;width:100%;max-width:100%;box-sizing:border-box;resize:vertical;overflow:auto}
-        .output{background:var(--bgOutput);border:1px solid var(--accent);color:#aaffd6;padding:8px;border-radius:6px;font-size:12px;white-space:pre-wrap;overflow:auto;min-height:50px;max-height:200px;width:100%;max-width:100%;box-sizing:border-box;resize:vertical}
+        .main-content{flex:1;display:flex;flex-direction:column;padding:4px;gap:4px;overflow:auto}
+        .section-title{color:#61ffa7;font-size:7px;font-weight:300}
+        .code-input{background:var(--bgInput); border:1px solid var(--accent);color:#d6ffe8;padding:8px;border-radius:6px;font-size:6px;min-height:50px;max-height:200px;width:100%;max-width:100%;box-sizing:border-box;resize:vertical;overflow:auto}
+        .output{background:var(--bgOutput);border:1px solid var(--accent);color:#aaffd6;padding:8px;border-radius:6px;font-size:16px;white-space:pre-wrap;overflow:auto;min-height:50px;max-height:100px;width:100%;max-width:100%;box-sizing:border-box;resize:vertical}
         .status-bar{background:rgba(0,255,65,.08);padding:4px 8px;border-top:1px solid var(--accent);font-size:11px;color:var(--status)}
-        .resize-handle{position:absolute;bottom:0;right:0;width:18px;height:18px;cursor:se-resize;background:linear-gradient(-45deg,transparent 40%,var(--accent) 40%,var(--accent) 60%,transparent 60%);touch-action:none}
-        @media (max-width:768px){
+        .resize-handle{position:absolute;bottom:0;right:0;left:0;width:18px;height:18px;cursor:se-resize;background:linear-gradient(-45deg,transparent 40%,var(--accent) 40%,var(--accent) 60%,transparent 60%);touch-action:none}
+        @media (max-width:568px){
           .console-panel{top:2vh;left:2vw;width:96vw;height:68vh}
-          .toolbar{gap:8px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
-          .btn{padding:10px 12px;font-size:14px}
-          .main-content{padding:8px;gap:8px}
+          .toolbar{gap:3px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+          .btn{padding:5px 6px;font-size:7px}
+          .main-content{padding:3px;gap:3px}
         }
       `;
       document.head.appendChild(s);

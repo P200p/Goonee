@@ -3,957 +3,1121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RTP LIVE</title>
-  <link rel="icon" type="image/png" sizes="16x16" href="../icon/16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="../icon/32x32.png">
-  <link rel="icon" type="image/png" sizes="48x48" href="../icon/48x48.png">
-  <link rel="icon" type="image/png" sizes="128x128" href="../icon/128x128.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="../icon/192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="../icon/512x512.png">
-  <link rel="apple-touch-icon" href="../icon/ios/AppIcon.appiconset/icon-180.png">
+  <title>AI Winrate Signup Grid</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
   <style>
-    body { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%); font-family: 'Orbitron', monospace; color: #00ff41; min-height: 100vh; overflow-x: hidden; }
-    .matrix-rain { position: fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:0; overflow:hidden; }
-    .matrix-column { position:absolute; top:-100px; font-size:14px; color:#00ff41; opacity:.6; animation: matrix-fall linear infinite; }
-    @keyframes matrix-fall { 0% { transform: translateY(-100px); opacity:1; } 100% { transform: translateY(100vh); opacity:0; } }
-    .header { text-align:center; padding:24px 0 18px; border-bottom:2px solid #00ff41; margin-bottom:32px; background:rgba(0,0,0,.8); backdrop-filter: blur(10px); position: relative; z-index: 1; }
-    .header h1 { font-size:2rem; font-weight:900; text-shadow:0 0 20px #00ff41; margin-bottom:8px; animation: glow-pulse 2s ease-in-out infinite alternate; letter-spacing:2px; }
-    @keyframes glow-pulse { from { text-shadow:0 0 20px #00ff41; } to { text-shadow:0 0 30px #00ff41, 0 0 40px #00ff41; } }
-    .subtitle { font-size:1rem; color:#00ccff; opacity:.8; }
+    body { background: radial-gradient(1200px 600px at 10% -10%, #112 0%, #0a0a0a 40%), linear-gradient(135deg, #0a0a0a 0%, #121225 50%, #0c0c1a 100%); font-family: 'Orbitron', monospace; color:#00ff41; min-height:100vh; overflow-x:hidden; }
+    .go-matrix { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .go-mcol { position:absolute; top:-100px; font-size:13px; color:#00ff41; opacity:.6; animation: go-fall linear infinite; }
+    @keyframes go-fall { 0%{ transform:translateY(-100px); opacity:1;} 100%{ transform:translateY(100vh); opacity:0;} }
+    .go-header { text-align:center; padding:22px 0 16px; border-bottom:2px solid #00ff41; margin-bottom:24px; background:rgba(0,0,0,.72); backdrop-filter: blur(10px); position:relative; z-index:1; }
+    .go-title { font-size:1.9rem; font-weight:900; text-shadow:0 0 18px #00ff41; letter-spacing:1.8px; animation: go-glow 2s ease-in-out infinite alternate; margin:0 0 6px; }
+    @keyframes go-glow { from{ text-shadow:0 0 18px #00ff41;} to{ text-shadow:0 0 28px #00ff41, 0 0 38px #00ff41;} }
+    .go-sub { font-size:.95rem; color:#00ccff; opacity:.85; }
 
-    .grid-container { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:24px; padding: 0 20px 40px; max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
-    .pack-card { background: rgba(0,0,0,.92); border:2px solid #00ff41; border-radius:14px; padding:16px; position:relative; overflow:hidden; box-shadow:0 0 30px rgba(0,255,65,0.18); transition: all .3s; text-align:center; }
-    .pack-card.high-rate { animation: border-flash 1.2s ease-in-out infinite; box-shadow: 0 0 50px rgba(255,215,0,.3); }
-    @keyframes border-flash { 0%,100%{ border-color:#00ff41; box-shadow:0 0 30px rgba(0,255,65,.2);} 50%{ border-color:#ffd700; box-shadow:0 0 50px rgba(255,215,0,.6);} }
+    .go-wrap { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:22px; padding: 0 16px 40px; max-width:1200px; margin: 0 auto; position:relative; z-index:1; }
+    .go-card { perspective: 900px; }
+    .go-card-tilt { background: rgba(0,0,0,.9); border:2px solid #00ff41; border-radius:16px; padding:14px; position:relative; overflow:hidden; box-shadow: 0 0 26px rgba(0,255,65,.18); transition: transform .25s, box-shadow .25s, border-color .25s; }
+    .go-card-tilt:hover { transform: rotateX(2deg) rotateY(-2deg) translateY(-2px); border-color:#ffd700; box-shadow: 0 0 46px rgba(255,215,0,.32); }
 
-    .brand-title { font-size:1.25rem; font-weight:700; color:#00ccff; margin-bottom:10px; letter-spacing:1.2px; text-shadow: 0 0 8px #00ccff99; }
-    .media-carousel { width:100%; min-height:140px; display:flex; gap:10px; overflow-x:auto; margin-bottom:12px; scrollbar-width:thin; justify-content:flex-start; align-items:center; }
-    .media-carousel img, .media-carousel video { height:140px; width:auto; object-fit:contain; border-radius:8px; border:2px solid #00ff41; background:#111; box-shadow:0 0 15px #00ff4199; transition: transform .22s, box-shadow .22s; flex: 0 0 auto; display:block; }
-    .media-carousel img:hover, .media-carousel video:hover { transform: scale(1.07) rotate(-1deg); box-shadow: 0 0 32px #00ff41cc, 0 0 8px #fff; }
+    .go-brand { font-size:1.1rem; font-weight:700; color:#00ccff; letter-spacing:1.1px; text-shadow: 0 0 6px #00ccff99; margin: 2px 0 10px; }
 
-    .progress-bars { display:flex; flex-direction:column; gap:12px; margin: 8px 0 6px; }
-    .progress-item { display:flex; align-items:center; gap:12px; }
-    .progress-label { min-width:80px; font-size:.9rem; color:#00ff41; }
-    .progress-bar { flex:1; height:18px; background:rgba(0,0,0,.8); border:1px solid #00ff41; border-radius:10px; overflow:hidden; position:relative; }
-    .progress-fill { height:100%; background:#00ff41; border-radius:10px; transition: width 1.2s ease, background-color .4s ease, box-shadow .4s ease; position:relative; box-shadow: 0 0 12px rgba(0,255,65,.35); }
-    .progress-fill.orange { background:#ff9800; box-shadow: 0 0 12px rgba(255,152,0,.45); }
-    .progress-fill.red { background:#ff1744; box-shadow: 0 0 14px rgba(255,23,68,.55); }
-    .progress-fill::after { content:''; position:absolute; inset:0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.25) 50%, transparent 100%); animation: progress-shine 4.5s linear infinite; }
-    @keyframes progress-shine { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%);} }
+    /* Full-frame hero with aspect ratio for all screens */
+    .go-hero { position:relative; width:100%; aspect-ratio: 16 / 9; border-radius:12px; overflow:hidden; border:2px solid #00ff41; background:#090909; box-shadow: inset 0 0 25px #00ff4188; }
+    .go-media-el { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+    .go-media-placeholder { position:absolute; inset:0; display:grid; place-items:center; color:#00ccff; opacity:.7; }
 
-    .progress-value { min-width:52px; text-align:right; font-weight:700; color:#00ccff; }
-    .signup-btn { background: linear-gradient(45deg, #00ff41, #00ccff); color:#000; border:none; border-radius: 999px; padding: 8px 30px; font-size: 1.02rem; font-family: 'Orbitron', monospace; font-weight:700; letter-spacing:1.2px; margin-top:.6rem; box-shadow:0 0 18px #00ff41cc; cursor:pointer; transition: all .18s; }
-    .signup-btn:hover { background: linear-gradient(45deg, #00ccff, #00ff41); color:#fff; box-shadow:0 0 32px #00ff41ee, 0 0 8px #fff; filter: brightness(1.12); }
+    /* Thumbnails strip */
+    .go-thumbs { display:flex; gap:8px; overflow-x:auto; padding:10px 2px 4px; scrollbar-width:thin; }
+    .go-thumb { width:110px; height:70px; object-fit:cover; border-radius:8px; border:2px solid #00ff41; background:#111; box-shadow:0 0 12px #00ff4199; transition: transform .18s, box-shadow .18s; flex: 0 0 auto; cursor:pointer; }
+    .go-thumb:hover { transform: scale(1.05); box-shadow: 0 0 22px #00ff41cc, 0 0 6px #fff; }
 
-    @media (max-width:768px) { .header h1{ font-size:1.5rem;} .grid-container { grid-template-columns: 1fr; padding: 0 8px;} .media-carousel img, .media-carousel video { width: 96px; height:96px; } }
+    /* AI bars */
+    .go-ai { display:flex; flex-direction:column; gap:10px; margin:10px 2px 6px; }
+    .go-ai-row { display:flex; align-items:center; gap:10px; }
+    .go-ai-label { min-width:74px; font-size:.9rem; color:#00ff41; }
+    .go-ai-bar { flex:1; height:16px; background:rgba(0,0,0,.85); border:1px solid #00ff41; border-radius:10px; overflow:hidden; position:relative; }
+    .go-ai-fill { height:100%; background:#00ff41; border-radius:10px; transition: width 1.1s ease, background-color .35s ease, box-shadow .35s ease; position:relative; box-shadow: 0 0 10px rgba(0,255,65,.35); }
+    .go-ai-fill.go-o { background:#ff9800; box-shadow: 0 0 10px rgba(255,152,0,.45); }
+    .go-ai-fill.go-r { background:#ff1744; box-shadow: 0 0 12px rgba(255,23,68,.55); }
+    .go-ai-val { min-width:48px; text-align:right; font-weight:700; color:#00ccff; }
+
+    .go-btn { background: linear-gradient(45deg, #00ff41, #00ccff); color:#000; border:none; border-radius:999px; padding: 8px 28px; font-size:1.02rem; font-family:'Orbitron', monospace; font-weight:700; letter-spacing:1.2px; margin-top:.5rem; box-shadow:0 0 16px #00ff41cc; cursor:pointer; transition: all .18s; display:inline-block; text-decoration:none; }
+    .go-btn:hover { background: linear-gradient(45deg, #00ccff, #00ff41); color:#fff; box-shadow:0 0 28px #00ff41ee, 0 0 6px #fff; filter: brightness(1.1); }
+
+    @media (max-width: 768px) {
+      .go-title { font-size:1.5rem; }
+      .go-wrap { grid-template-columns:1fr; padding: 0 10px 32px; }
+      .go-thumb { width:88px; height:60px; }
+    }
   </style>
 </head>
 <body>
-  <div class="matrix-rain" id="matrixRain"></div>
-  <div class="header">
-    <h1>WIN RATE SIGNUP GRID</h1>
-    <div class="subtitle">AI AUTO SCAN</div>
+  <div class="go-matrix" id="goMatrix"></div>
+  <div class="go-header">
+    <h1 class="go-title">AI WIN RATE SIGNUP GRID</h1>
+    <div class="go-sub">AUTO SCAN FOLDERS · RESPONSIVE HERO MEDIA · DYNAMIC AI RATES</div>
   </div>
-  <div class="grid-container">
+  <div class="go-wrap">
     
-      <div class="pack-card" data-pack="1" data-brand="59G">
-        <div class="brand-title">59G</div>
-        <div class="media-carousel"><img src="web/59G/1.png" alt="59G" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/59G/96.webp" alt="59G" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/59G/97.webp" alt="59G" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/59G/98.webp" alt="59G" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/59G/99.webp" alt="59G" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="1" data-brand="59G">
+        <div class="go-card-tilt">
+          <div class="go-brand">59G</div>
+          <div class="go-hero" aria-label="59G media"><img class="go-media-el" src="web/59G/1.png" alt="59G"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/59G/96.webp" alt="59G"><img class="go-thumb" src="web/59G/97.webp" alt="59G"><img class="go-thumb" src="web/59G/98.webp" alt="59G"><img class="go-thumb" src="web/59G/99.webp" alt="59G"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://486147.59gbet6.com/?referralCode=uks8975" class="go-btn" target="_blank" rel="noopener">สมัครกับ 59G</a>
         </div>
-        <a href="http://486147.59gbet6.com/?referralCode=uks8975" class="signup-btn" target="_blank" rel="noopener">ลุย 59G</a>
       </div>
 
-      <div class="pack-card" data-pack="2" data-brand="68g">
-        <div class="brand-title">68g</div>
-        <div class="media-carousel"><img src="web/68g/80.gif" alt="68g" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/68g/81.gif" alt="68g" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/68g/82.gif" alt="68g" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/68g/83.gif" alt="68g" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="43" data-brand="Win333">
+        <div class="go-card-tilt">
+          <div class="go-brand">Win333</div>
+          <div class="go-hero" aria-label="Win333 media"><img class="go-media-el" src="web/Win333/win33.webp" alt="Win333"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/Win333/af11.jpg" alt="Win333"><img class="go-thumb" src="web/Win333/e2fb.jpg" alt="Win333"><img class="go-thumb" src="web/Win333/293.jpg" alt="Win333"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="#" class="go-btn" target="_blank" rel="noopener">สมัครกับ Win333</a>
         </div>
-        <a href="https://68g11.com/#/register?referCode=vze8cf" class="signup-btn" target="_blank" rel="noopener">ลุย 68g</a>
       </div>
 
-      <div class="pack-card" data-pack="3" data-brand="77neko">
-        <div class="brand-title">77neko</div>
-        <div class="media-carousel"><img src="web/77neko/16.webp" alt="77neko" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/77neko/161.webp" alt="77neko" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="2" data-brand="68g">
+        <div class="go-card-tilt">
+          <div class="go-brand">68g</div>
+          <div class="go-hero" aria-label="68g media"><img class="go-media-el" src="web/68g/80.gif" alt="68g"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/68g/81.gif" alt="68g"><img class="go-thumb" src="web/68g/82.gif" alt="68g"><img class="go-thumb" src="web/68g/83.gif" alt="68g"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://68g11.com/#/register?referCode=vze8cf" class="go-btn" target="_blank" rel="noopener">สมัครกับ 68g</a>
         </div>
-        <a href="https://77neko1.com/register/referer/41b4108e49" class="signup-btn" target="_blank" rel="noopener">ลุย 77neko</a>
       </div>
 
-      <div class="pack-card" data-pack="4" data-brand="77pg">
-        <div class="brand-title">77pg</div>
-        <div class="media-carousel"><img src="web/77pg/77p.webp" alt="77pg" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="3" data-brand="77neko">
+        <div class="go-card-tilt">
+          <div class="go-brand">77neko</div>
+          <div class="go-hero" aria-label="77neko media"><img class="go-media-el" src="web/77neko/16.webp" alt="77neko"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/77neko/161.webp" alt="77neko"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://77neko1.com/register/referer/41b4108e49" class="go-btn" target="_blank" rel="noopener">สมัครกับ 77neko</a>
         </div>
-        <a href="https://77pgs.org/register/referer/d8ff0ec6d5" class="signup-btn" target="_blank" rel="noopener">ลุย 77pg</a>
       </div>
 
-      <div class="pack-card" data-pack="5" data-brand="77w">
-        <div class="brand-title">77w</div>
-        <div class="media-carousel"><img src="web/77w/77w.webp" alt="77w" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/77w/7w.webp" alt="77w" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="4" data-brand="77pg">
+        <div class="go-card-tilt">
+          <div class="go-brand">77pg</div>
+          <div class="go-hero" aria-label="77pg media"><img class="go-media-el" src="web/77pg/77p.webp" alt="77pg"></div>
+          <div class="go-thumbs"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://77pgs.org/register/referer/d8ff0ec6d5" class="go-btn" target="_blank" rel="noopener">สมัครกับ 77pg</a>
         </div>
-        <a href="https://77w-thai.com/register/referer/e14d8269ef" class="signup-btn" target="_blank" rel="noopener">ลุย 77w</a>
       </div>
 
-      <div class="pack-card" data-pack="6" data-brand="78win">
-        <div class="brand-title">78win</div>
-        <div class="media-carousel"><img src="web/78win/100.webp" alt="78win" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/78win/101.webp" alt="78win" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/78win/102.webp" alt="78win" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/78win/103.webp" alt="78win" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="5" data-brand="77ruay">
+        <div class="go-card-tilt">
+          <div class="go-brand">77ruay</div>
+          <div class="go-hero" aria-label="77ruay media"><img class="go-media-el" src="web/77ruay/3r61zak8.png" alt="77ruay"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/77ruay/8jda.png" alt="77ruay"><img class="go-thumb" src="web/77ruay/za2workp.png" alt="77ruay"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="#" class="go-btn" target="_blank" rel="noopener">สมัครกับ 77ruay</a>
         </div>
-        <a href="http://www.7878121.com/?r=guk9246" class="signup-btn" target="_blank" rel="noopener">ลุย 78win</a>
       </div>
 
-      <div class="pack-card" data-pack="7" data-brand="79Z">
-        <div class="brand-title">79Z</div>
-        <div class="media-carousel"><img src="web/79Z/799.webp" alt="79Z" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/79Z/79z.webp" alt="79Z" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="6" data-brand="77w">
+        <div class="go-card-tilt">
+          <div class="go-brand">77w</div>
+          <div class="go-hero" aria-label="77w media"><img class="go-media-el" src="web/77w/77w.webp" alt="77w"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/77w/7w.webp" alt="77w"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://77w-thai.com/register/referer/e14d8269ef" class="go-btn" target="_blank" rel="noopener">สมัครกับ 77w</a>
         </div>
-        <a href="http://79zz013.79z8.com/?referralCode=kiw5515" class="signup-btn" target="_blank" rel="noopener">ลุย 79Z</a>
       </div>
 
-      <div class="pack-card" data-pack="8" data-brand="BV99">
-        <div class="brand-title">BV99</div>
-        <div class="media-carousel"><img src="web/BV99/2729093_17.webp" alt="BV99" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="7" data-brand="78win">
+        <div class="go-card-tilt">
+          <div class="go-brand">78win</div>
+          <div class="go-hero" aria-label="78win media"><img class="go-media-el" src="web/78win/100.webp" alt="78win"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/78win/101.webp" alt="78win"><img class="go-thumb" src="web/78win/102.webp" alt="78win"><img class="go-thumb" src="web/78win/103.webp" alt="78win"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://www.7878121.com/?r=guk9246" class="go-btn" target="_blank" rel="noopener">สมัครกับ 78win</a>
         </div>
-        <a href="#" class="signup-btn" target="_blank" rel="noopener">ลุย BV99</a>
       </div>
 
-      <div class="pack-card" data-pack="9" data-brand="da999">
-        <div class="brand-title">da999</div>
-        <div class="media-carousel"><img src="web/da999/image.webp" alt="da999" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="8" data-brand="79Z">
+        <div class="go-card-tilt">
+          <div class="go-brand">79Z</div>
+          <div class="go-hero" aria-label="79Z media"><img class="go-media-el" src="web/79Z/799.webp" alt="79Z"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/79Z/79z.webp" alt="79Z"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://79zz013.79z8.com/?referralCode=kiw5515" class="go-btn" target="_blank" rel="noopener">สมัครกับ 79Z</a>
         </div>
-        <a href="http://www.da999.fans/?r=ypt5232" class="signup-btn" target="_blank" rel="noopener">ลุย da999</a>
       </div>
 
-      <div class="pack-card" data-pack="10" data-brand="DK7">
-        <div class="brand-title">DK7</div>
-        <div class="media-carousel"><img src="web/DK7/26.webp" alt="DK7" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/DK7/%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88.webp" alt="DK7" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="9" data-brand="AK77">
+        <div class="go-card-tilt">
+          <div class="go-brand">AK77</div>
+          <div class="go-hero" aria-label="AK77 media"><img class="go-media-el" src="web/AK77/17.webp" alt="AK77"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/AK77/ez171.webp" alt="AK77"><img class="go-thumb" src="web/AK77/d3d3c8.webp" alt="AK77"><img class="go-thumb" src="web/AK77/e540.webp" alt="AK77"><img class="go-thumb" src="web/AK77/ee5.png" alt="AK77"><img class="go-thumb" src="web/AK77/753.webp" alt="AK77"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="#" class="go-btn" target="_blank" rel="noopener">สมัครกับ AK77</a>
         </div>
-        <a href="iphttps://www.dk7a.com/th-th/register?refid=nkrssmhp" class="signup-btn" target="_blank" rel="noopener">ลุย DK7</a>
       </div>
 
-      <div class="pack-card" data-pack="11" data-brand="E19">
-        <div class="brand-title">E19</div>
-        <div class="media-carousel"><img src="web/E19/13c5a0f8-0d83-4e8c-8cdf-b6e329e9c844.jpg" alt="E19" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/E19/29.jpg" alt="E19" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/E19/30.jpg" alt="E19" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/E19/31.jpg" alt="E19" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/E19/32.jpg" alt="E19" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/E19/33.jpg" alt="E19" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="10" data-brand="BV99">
+        <div class="go-card-tilt">
+          <div class="go-brand">BV99</div>
+          <div class="go-hero" aria-label="BV99 media"><img class="go-media-el" src="web/BV99/2729093_17.webp" alt="BV99"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/BV99/e125.webp" alt="BV99"><img class="go-thumb" src="web/BV99/e5b9f.webp" alt="BV99"><img class="go-thumb" src="web/BV99/ez11.webp" alt="BV99"><img class="go-thumb" src="web/BV99/ez125.webp" alt="BV99"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="#" class="go-btn" target="_blank" rel="noopener">สมัครกับ BV99</a>
         </div>
-        <a href="https://www.e19slot.com/?af=MTEEYX" class="signup-btn" target="_blank" rel="noopener">ลุย E19</a>
       </div>
 
-      <div class="pack-card" data-pack="12" data-brand="FK9">
-        <div class="brand-title">FK9</div>
-        <div class="media-carousel"><img src="web/FK9/112.webp" alt="FK9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/FK9/113.webp" alt="FK9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/FK9/114.webp" alt="FK9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/FK9/115.webp" alt="FK9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/FK9/4572004_1750982994504.webp" alt="FK9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="11" data-brand="da999">
+        <div class="go-card-tilt">
+          <div class="go-brand">da999</div>
+          <div class="go-hero" aria-label="da999 media"><img class="go-media-el" src="web/da999/ez864.webp" alt="da999"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/da999/image.webp" alt="da999"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://www.da999.fans/?r=ypt5232" class="go-btn" target="_blank" rel="noopener">สมัครกับ da999</a>
         </div>
-        <a href="http://qmdl888.fk9.bet/?referralCode=pnb8602" class="signup-btn" target="_blank" rel="noopener">ลุย FK9</a>
       </div>
 
-      <div class="pack-card" data-pack="13" data-brand="H25">
-        <div class="brand-title">H25</div>
-        <div class="media-carousel"><img src="web/H25/202506232244304136572.webp" alt="H25" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/H25/84.gif" alt="H25" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/H25/85.gif" alt="H25" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/H25/86.gif" alt="H25" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="12" data-brand="DK7">
+        <div class="go-card-tilt">
+          <div class="go-brand">DK7</div>
+          <div class="go-hero" aria-label="DK7 media"><img class="go-media-el" src="web/DK7/26.webp" alt="DK7"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/DK7/%E0%B9%82%E0%B8%84%E0%B8%A3%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88.webp" alt="DK7"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="iphttps://www.dk7a.com/th-th/register?refid=nkrssmhp" class="go-btn" target="_blank" rel="noopener">สมัครกับ DK7</a>
         </div>
-        <a href="https://h25bb.com/#/register?referCode=a1uuzm" class="signup-btn" target="_blank" rel="noopener">ลุย H25</a>
       </div>
 
-      <div class="pack-card" data-pack="14" data-brand="Hi89">
-        <div class="brand-title">Hi89</div>
-        <div class="media-carousel"><img src="web/Hi89/1752533840348_2400-800-th(1)4.webp" alt="Hi89" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Hi89/1754569574309_2400-800(1)%E0%B9%81%E0%B8%AD%E0%B8%9E.webp" alt="Hi89" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Hi89/1754569870560_2400-800-ezgif.com-png-to-webp-converter%20(5)(15).webp" alt="Hi89" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Hi89/1754570585922_2400-800(1)6966666.webp" alt="Hi89" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Hi89/green-backgrgr.webp" alt="Hi89" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="13" data-brand="E19">
+        <div class="go-card-tilt">
+          <div class="go-brand">E19</div>
+          <div class="go-hero" aria-label="E19 media"><img class="go-media-el" src="web/E19/13c5a0f8-0d83-4e8c-8cdf-b6e329e9c844.jpg" alt="E19"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/E19/29.jpg" alt="E19"><img class="go-thumb" src="web/E19/30.jpg" alt="E19"><img class="go-thumb" src="web/E19/31.jpg" alt="E19"><img class="go-thumb" src="web/E19/32.jpg" alt="E19"><img class="go-thumb" src="web/E19/33.jpg" alt="E19"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.e19slot.com/?af=MTEEYX" class="go-btn" target="_blank" rel="noopener">สมัครกับ E19</a>
         </div>
-        <a href="https://qmdl88.hi89.bet/?referralCode=ckm0890" class="signup-btn" target="_blank" rel="noopener">ลุย Hi89</a>
       </div>
 
-      <div class="pack-card" data-pack="15" data-brand="jackpotdays365">
-        <div class="brand-title">jackpotdays365</div>
-        <div class="media-carousel"><img src="web/jackpotdays365/73be0634-40fe-47c2-ab40-e6448adfaf5c.webp" alt="jackpotdays365" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/jackpotdays365/7out.png" alt="jackpotdays365" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/jackpotdays365/a0122f19-73eb-411b-b6ac-c41facd4c658.webp" alt="jackpotdays365" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/jackpotdays365/b4df7066-5875-4bb4-be08-eccdd452e648.webp" alt="jackpotdays365" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/jackpotdays365/f3533094-2fe1-489a-96ca-12a9e0d5722a.webp" alt="jackpotdays365" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/jackpotdays365/fc5.png" alt="jackpotdays365" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="14" data-brand="FK9">
+        <div class="go-card-tilt">
+          <div class="go-brand">FK9</div>
+          <div class="go-hero" aria-label="FK9 media"><img class="go-media-el" src="web/FK9/112.webp" alt="FK9"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/FK9/113.webp" alt="FK9"><img class="go-thumb" src="web/FK9/114.webp" alt="FK9"><img class="go-thumb" src="web/FK9/115.webp" alt="FK9"><img class="go-thumb" src="web/FK9/4572004_1750982994504.webp" alt="FK9"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://qmdl888.fk9.bet/?referralCode=pnb8602" class="go-btn" target="_blank" rel="noopener">สมัครกับ FK9</a>
         </div>
-        <a href="#" class="signup-btn" target="_blank" rel="noopener">ลุย jackpotdays365</a>
       </div>
 
-      <div class="pack-card" data-pack="16" data-brand="L86">
-        <div class="brand-title">L86</div>
-        <div class="media-carousel"><img src="web/L86/4e34c3fb-0c6b-432d-bdfa-84b4f2aeb010.webp" alt="L86" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/L86/68174fd8-3a74-4517-b295-b1fb850263bc.png" alt="L86" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/L86/9aa12737-e115-4e23-ab33-7b8188a1bd34.webp" alt="L86" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/L86/9b6181b3-d1f2-4472-a37a-76af26f0caf4.webp" alt="L86" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="15" data-brand="H25">
+        <div class="go-card-tilt">
+          <div class="go-brand">H25</div>
+          <div class="go-hero" aria-label="H25 media"><img class="go-media-el" src="web/H25/202506232244304136572.webp" alt="H25"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/H25/84.gif" alt="H25"><img class="go-thumb" src="web/H25/85.gif" alt="H25"><img class="go-thumb" src="web/H25/86.gif" alt="H25"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://h25bb.com/#/register?referCode=a1uuzm" class="go-btn" target="_blank" rel="noopener">สมัครกับ H25</a>
         </div>
-        <a href="#" class="signup-btn" target="_blank" rel="noopener">ลุย L86</a>
       </div>
 
-      <div class="pack-card" data-pack="17" data-brand="LV155">
-        <div class="brand-title">LV155</div>
-        <div class="media-carousel"><img src="web/LV155/119.webp" alt="LV155" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LV155/120.webp" alt="LV155" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LV155/121.webp" alt="LV155" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LV155/122.webp" alt="LV155" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LV155/abstract-colorful-swirled-balls-pink-candies-fly-in-zero-gravity-creative-background-3d-rendering-2a5dned%20(2).webp" alt="LV155" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="16" data-brand="Hi89">
+        <div class="go-card-tilt">
+          <div class="go-brand">Hi89</div>
+          <div class="go-hero" aria-label="Hi89 media"><img class="go-media-el" src="web/Hi89/1752533840348_2400-800-th(1)4.webp" alt="Hi89"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/Hi89/1754569574309_2400-800(1)%E0%B9%81%E0%B8%AD%E0%B8%9E.webp" alt="Hi89"><img class="go-thumb" src="web/Hi89/1754569870560_2400-800-ezgif.com-png-to-webp-converter%20(5)(15).webp" alt="Hi89"><img class="go-thumb" src="web/Hi89/1754570585922_2400-800(1)6966666.webp" alt="Hi89"><img class="go-thumb" src="web/Hi89/green-backgrgr.webp" alt="Hi89"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://qmdl88.hi89.bet/?referralCode=ckm0890" class="go-btn" target="_blank" rel="noopener">สมัครกับ Hi89</a>
         </div>
-        <a href="http://qmdllv155.lv155.vip/?referralCode=vpz0469" class="signup-btn" target="_blank" rel="noopener">ลุย LV155</a>
       </div>
 
-      <div class="pack-card" data-pack="18" data-brand="LV77">
-        <div class="brand-title">LV77</div>
-        <div class="media-carousel"><img src="web/LV77/0bf42dfd-a6c5-46e5-a938-51b623d137af.png" alt="LV77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LV77/5.png" alt="LV77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LV77/6.png" alt="LV77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LV77/7.png" alt="LV77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LV77/8.png" alt="LV77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="17" data-brand="jackpotdays365">
+        <div class="go-card-tilt">
+          <div class="go-brand">jackpotdays365</div>
+          <div class="go-hero" aria-label="jackpotdays365 media"><img class="go-media-el" src="web/jackpotdays365/73be0634-40fe-47c2-ab40-e6448adfaf5c.webp" alt="jackpotdays365"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/jackpotdays365/7out.png" alt="jackpotdays365"><img class="go-thumb" src="web/jackpotdays365/a0122f19-73eb-411b-b6ac-c41facd4c658.webp" alt="jackpotdays365"><img class="go-thumb" src="web/jackpotdays365/b4df7066-5875-4bb4-be08-eccdd452e648.webp" alt="jackpotdays365"><img class="go-thumb" src="web/jackpotdays365/f3533094-2fe1-489a-96ca-12a9e0d5722a.webp" alt="jackpotdays365"><img class="go-thumb" src="web/jackpotdays365/fc5.png" alt="jackpotdays365"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="#" class="go-btn" target="_blank" rel="noopener">สมัครกับ jackpotdays365</a>
         </div>
-        <a href="https://www.lv77.me/?af=79UGFR" class="signup-btn" target="_blank" rel="noopener">ลุย LV77</a>
       </div>
 
-      <div class="pack-card" data-pack="19" data-brand="LVvip">
-        <div class="brand-title">LVvip</div>
-        <div class="media-carousel"><img src="web/LVvip/2.png" alt="LVvip" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LVvip/3.png" alt="LVvip" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LVvip/34.jpg" alt="LVvip" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LVvip/35.jpg" alt="LVvip" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LVvip/36.jpg" alt="LVvip" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/LVvip/4.png" alt="LVvip" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="18" data-brand="L86">
+        <div class="go-card-tilt">
+          <div class="go-brand">L86</div>
+          <div class="go-hero" aria-label="L86 media"><img class="go-media-el" src="web/L86/4e34c3fb-0c6b-432d-bdfa-84b4f2aeb010.webp" alt="L86"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/L86/68174fd8-3a74-4517-b295-b1fb850263bc.png" alt="L86"><img class="go-thumb" src="web/L86/9aa12737-e115-4e23-ab33-7b8188a1bd34.webp" alt="L86"><img class="go-thumb" src="web/L86/9b6181b3-d1f2-4472-a37a-76af26f0caf4.webp" alt="L86"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="#" class="go-btn" target="_blank" rel="noopener">สมัครกับ L86</a>
         </div>
-        <a href="https://www.lvvipf.com/?af=PG0UIQ" class="signup-btn" target="_blank" rel="noopener">ลุย LVvip</a>
       </div>
 
-      <div class="pack-card" data-pack="20" data-brand="M280">
-        <div class="brand-title">M280</div>
-        <div class="media-carousel"><img src="web/M280/202506230042200420191.webp" alt="M280" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/M280/202506230044337992234.webp" alt="M280" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/M280/202508031305372677685.webp" alt="M280" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/M280/202508050210384280445.webp" alt="M280" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/M280/202508201623475253439.webp" alt="M280" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="19" data-brand="LV155">
+        <div class="go-card-tilt">
+          <div class="go-brand">LV155</div>
+          <div class="go-hero" aria-label="LV155 media"><img class="go-media-el" src="web/LV155/119.webp" alt="LV155"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/LV155/120.webp" alt="LV155"><img class="go-thumb" src="web/LV155/121.webp" alt="LV155"><img class="go-thumb" src="web/LV155/122.webp" alt="LV155"><img class="go-thumb" src="web/LV155/abstract-colorful-swirled-balls-pink-candies-fly-in-zero-gravity-creative-background-3d-rendering-2a5dned%20(2).webp" alt="LV155"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://qmdllv155.lv155.vip/?referralCode=vpz0469" class="go-btn" target="_blank" rel="noopener">สมัครกับ LV155</a>
         </div>
-        <a href="https://m280a.com/#/register?referCode=r19ifa" class="signup-btn" target="_blank" rel="noopener">ลุย M280</a>
       </div>
 
-      <div class="pack-card" data-pack="21" data-brand="M98">
-        <div class="brand-title">M98</div>
-        <div class="media-carousel"><img src="web/M98/20220527163513-219e1d18-c428-4a8b-9bef-8a3f10ceac94-cutout.png" alt="M98" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/M98/20220527163513-219e1d18-c428-4a8b-9bef-8a3f10ceac94.png" alt="M98" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/M98/20221223105428-6cb1498a-83e6-4778-af91-0bd48e3e644d.png" alt="M98" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/M98/20221223112544-e7cac33d-89f2-4fbd-bf6e-6b2e9a62b781.png" alt="M98" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/M98/20230127091455-1a106bcc-7db6-4445-8c32-8db152b0d1ef.png" alt="M98" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="20" data-brand="LV77">
+        <div class="go-card-tilt">
+          <div class="go-brand">LV77</div>
+          <div class="go-hero" aria-label="LV77 media"><img class="go-media-el" src="web/LV77/0bf42dfd-a6c5-46e5-a938-51b623d137af.png" alt="LV77"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/LV77/5.png" alt="LV77"><img class="go-thumb" src="web/LV77/6.png" alt="LV77"><img class="go-thumb" src="web/LV77/7.png" alt="LV77"><img class="go-thumb" src="web/LV77/8.png" alt="LV77"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.lv77.me/?af=79UGFR" class="go-btn" target="_blank" rel="noopener">สมัครกับ LV77</a>
         </div>
-        <a href="https://www.m9801.com/th-th/register?refid=drgbfgdx" class="signup-btn" target="_blank" rel="noopener">ลุย M98</a>
       </div>
 
-      <div class="pack-card" data-pack="22" data-brand="mgm">
-        <div class="brand-title">mgm</div>
-        <div class="media-carousel"><img src="web/mgm/92-cutout.png" alt="mgm" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/mgm/92.gif" alt="mgm" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/mgm/93.gif" alt="mgm" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/mgm/94.gif" alt="mgm" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="21" data-brand="LVvip">
+        <div class="go-card-tilt">
+          <div class="go-brand">LVvip</div>
+          <div class="go-hero" aria-label="LVvip media"><img class="go-media-el" src="web/LVvip/2.png" alt="LVvip"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/LVvip/3.png" alt="LVvip"><img class="go-thumb" src="web/LVvip/34.jpg" alt="LVvip"><img class="go-thumb" src="web/LVvip/35.jpg" alt="LVvip"><img class="go-thumb" src="web/LVvip/36.jpg" alt="LVvip"><img class="go-thumb" src="web/LVvip/4.png" alt="LVvip"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.lvvipf.com/?af=PG0UIQ" class="go-btn" target="_blank" rel="noopener">สมัครกับ LVvip</a>
         </div>
-        <a href="https://mgm6658.com/#/register?referCode=cplmrj" class="signup-btn" target="_blank" rel="noopener">ลุย mgm</a>
       </div>
 
-      <div class="pack-card" data-pack="23" data-brand="N98">
-        <div class="brand-title">N98</div>
-        <div class="media-carousel"><img src="web/N98/12.png" alt="N98" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/N98/13.png" alt="N98" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/N98/14.png" alt="N98" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="22" data-brand="M280">
+        <div class="go-card-tilt">
+          <div class="go-brand">M280</div>
+          <div class="go-hero" aria-label="M280 media"><img class="go-media-el" src="web/M280/202506230042200420191.webp" alt="M280"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/M280/202506230044337992234.webp" alt="M280"><img class="go-thumb" src="web/M280/202508031305372677685.webp" alt="M280"><img class="go-thumb" src="web/M280/202508050210384280445.webp" alt="M280"><img class="go-thumb" src="web/M280/202508201623475253439.webp" alt="M280"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://m280a.com/#/register?referCode=r19ifa" class="go-btn" target="_blank" rel="noopener">สมัครกับ M280</a>
         </div>
-        <a href="https://www.n98.com/th-th/register?refid=iovuyzcn" class="signup-btn" target="_blank" rel="noopener">ลุย N98</a>
       </div>
 
-      <div class="pack-card" data-pack="24" data-brand="P6">
-        <div class="brand-title">P6</div>
-        <div class="media-carousel"><img src="web/P6/37.jpg" alt="P6" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/P6/38.jpg" alt="P6" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/P6/39.jpg" alt="P6" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/P6/40.jpg" alt="P6" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="23" data-brand="M98">
+        <div class="go-card-tilt">
+          <div class="go-brand">M98</div>
+          <div class="go-hero" aria-label="M98 media"><img class="go-media-el" src="web/M98/20220527163513-219e1d18-c428-4a8b-9bef-8a3f10ceac94-cutout.png" alt="M98"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/M98/20220527163513-219e1d18-c428-4a8b-9bef-8a3f10ceac94.png" alt="M98"><img class="go-thumb" src="web/M98/20221223105428-6cb1498a-83e6-4778-af91-0bd48e3e644d.png" alt="M98"><img class="go-thumb" src="web/M98/20221223112544-e7cac33d-89f2-4fbd-bf6e-6b2e9a62b781.png" alt="M98"><img class="go-thumb" src="web/M98/20230127091455-1a106bcc-7db6-4445-8c32-8db152b0d1ef.png" alt="M98"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.m9801.com/th-th/register?refid=drgbfgdx" class="go-btn" target="_blank" rel="noopener">สมัครกับ M98</a>
         </div>
-        <a href="https://www.p6thb.com/#/register?referCode=1zetzb" class="signup-btn" target="_blank" rel="noopener">ลุย P6</a>
       </div>
 
-      <div class="pack-card" data-pack="25" data-brand="P62">
-        <div class="brand-title">P62</div>
-        <div class="media-carousel"><img src="web/P62/123.webp" alt="P62" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/P62/124.webp" alt="P62" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/P62/125.webp" alt="P62" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/P62/126.webp" alt="P62" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/P62/127.webp" alt="P62" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/P62/128.webp" alt="P62" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="24" data-brand="mgm">
+        <div class="go-card-tilt">
+          <div class="go-brand">mgm</div>
+          <div class="go-hero" aria-label="mgm media"><img class="go-media-el" src="web/mgm/92-cutout.png" alt="mgm"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/mgm/92.gif" alt="mgm"><img class="go-thumb" src="web/mgm/93.gif" alt="mgm"><img class="go-thumb" src="web/mgm/94.gif" alt="mgm"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://mgm6658.com/#/register?referCode=cplmrj" class="go-btn" target="_blank" rel="noopener">สมัครกับ mgm</a>
         </div>
-        <a href="http://p62com0701.66p62.com/?referralCode=wcw4773" class="signup-btn" target="_blank" rel="noopener">ลุย P62</a>
       </div>
 
-      <div class="pack-card" data-pack="26" data-brand="PG38TH">
-        <div class="brand-title">PG38TH</div>
-        <div class="media-carousel"><img src="web/PG38TH/129.webp" alt="PG38TH" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/PG38TH/41.jpg" alt="PG38TH" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/PG38TH/42.jpg" alt="PG38TH" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/PG38TH/4293049_1752593332282.jpg" alt="PG38TH" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/PG38TH/4293049_1752851059757.jpg" alt="PG38TH" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="25" data-brand="N98">
+        <div class="go-card-tilt">
+          <div class="go-brand">N98</div>
+          <div class="go-hero" aria-label="N98 media"><img class="go-media-el" src="web/N98/12.png" alt="N98"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/N98/13.png" alt="N98"><img class="go-thumb" src="web/N98/14.png" alt="N98"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.n98.com/th-th/register?refid=iovuyzcn" class="go-btn" target="_blank" rel="noopener">สมัครกับ N98</a>
         </div>
-        <a href="https://www.pg38thai.com/?af=2YRTYF" class="signup-btn" target="_blank" rel="noopener">ลุย PG38TH</a>
       </div>
 
-      <div class="pack-card" data-pack="27" data-brand="PXJ">
-        <div class="brand-title">PXJ</div>
-        <div class="media-carousel"><img src="web/PXJ/prm-20250822051209594.gif" alt="PXJ" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/PXJ/prm-20250822052814542.gif" alt="PXJ" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/PXJ/prm-20250822054028263.gif" alt="PXJ" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/PXJ/prm-20250822054601997.gif" alt="PXJ" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/PXJ/prm-20250822071346579.gif" alt="PXJ" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="26" data-brand="P6">
+        <div class="go-card-tilt">
+          <div class="go-brand">P6</div>
+          <div class="go-hero" aria-label="P6 media"><img class="go-media-el" src="web/P6/37.jpg" alt="P6"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/P6/38.jpg" alt="P6"><img class="go-thumb" src="web/P6/39.jpg" alt="P6"><img class="go-thumb" src="web/P6/40.jpg" alt="P6"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.p6thb.com/#/register?referCode=1zetzb" class="go-btn" target="_blank" rel="noopener">สมัครกับ P6</a>
         </div>
-        <a href="https://www.14pxj.com/th-th/register?refid=bdpabfaz" class="signup-btn" target="_blank" rel="noopener">ลุย PXJ</a>
       </div>
 
-      <div class="pack-card" data-pack="28" data-brand="Rad99">
-        <div class="brand-title">Rad99</div>
-        <div class="media-carousel"><img src="web/Rad99/6f97b039-1732-4dc0-a228-7d7f095e0f18.webp" alt="Rad99" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Rad99/830d60fc-c182-42a6-8ac1-fd7f4036a67e.webp" alt="Rad99" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Rad99/a46d3114-a4a0-4fb4-9703-9c259fc23f31.webp" alt="Rad99" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Rad99/db767a64-cbe6-4bc3-97bc-c38aaf5bc68c.webp" alt="Rad99" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="27" data-brand="P62">
+        <div class="go-card-tilt">
+          <div class="go-brand">P62</div>
+          <div class="go-hero" aria-label="P62 media"><img class="go-media-el" src="web/P62/123.webp" alt="P62"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/P62/124.webp" alt="P62"><img class="go-thumb" src="web/P62/125.webp" alt="P62"><img class="go-thumb" src="web/P62/126.webp" alt="P62"><img class="go-thumb" src="web/P62/127.webp" alt="P62"><img class="go-thumb" src="web/P62/128.webp" alt="P62"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://p62com0701.66p62.com/?referralCode=wcw4773" class="go-btn" target="_blank" rel="noopener">สมัครกับ P62</a>
         </div>
-        <a href="#" class="signup-btn" target="_blank" rel="noopener">ลุย Rad99</a>
       </div>
 
-      <div class="pack-card" data-pack="29" data-brand="Rol88">
-        <div class="brand-title">Rol88</div>
-        <div class="media-carousel"><img src="web/Rol88/0976dfcf-99c1-474b-9d46-c04463633254.webp" alt="Rol88" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Rol88/152a0a77-d73c-470e-b179-24dd44268d11.webp" alt="Rol88" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Rol88/c6336a1d-d287-47cc-9318-850fcedec449.webp" alt="Rol88" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/Rol88/d7ed5c59-6f75-40d9-95f9-9a0711fd92ed.webp" alt="Rol88" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="28" data-brand="PG38TH">
+        <div class="go-card-tilt">
+          <div class="go-brand">PG38TH</div>
+          <div class="go-hero" aria-label="PG38TH media"><img class="go-media-el" src="web/PG38TH/129.webp" alt="PG38TH"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/PG38TH/41.jpg" alt="PG38TH"><img class="go-thumb" src="web/PG38TH/42.jpg" alt="PG38TH"><img class="go-thumb" src="web/PG38TH/4293049_1752593332282.jpg" alt="PG38TH"><img class="go-thumb" src="web/PG38TH/4293049_1752851059757.jpg" alt="PG38TH"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.pg38thai.com/?af=2YRTYF" class="go-btn" target="_blank" rel="noopener">สมัครกับ PG38TH</a>
         </div>
-        <a href="#" class="signup-btn" target="_blank" rel="noopener">ลุย Rol88</a>
       </div>
 
-      <div class="pack-card" data-pack="30" data-brand="siam212">
-        <div class="brand-title">siam212</div>
-        <div class="media-carousel"><img src="web/siam212/47.jpg" alt="siam212" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/siam212/48.jpg" alt="siam212" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/siam212/87_yBIMq8RKxFoszHMC_1755748028614.jpg" alt="siam212" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/siam212/%5BS2T%5D%20Refer%20Friends%20%20600X360%20TH_1752461721623.jpg" alt="siam212" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/siam212/%5BS2T%5D%20Welcome%20Bonus%20600X360%20TH_1752462053777.jpg" alt="siam212" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="29" data-brand="PXJ">
+        <div class="go-card-tilt">
+          <div class="go-brand">PXJ</div>
+          <div class="go-hero" aria-label="PXJ media"><img class="go-media-el" src="web/PXJ/prm-20250822051209594.gif" alt="PXJ"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/PXJ/prm-20250822052814542.gif" alt="PXJ"><img class="go-thumb" src="web/PXJ/prm-20250822054028263.gif" alt="PXJ"><img class="go-thumb" src="web/PXJ/prm-20250822054601997.gif" alt="PXJ"><img class="go-thumb" src="web/PXJ/prm-20250822071346579.gif" alt="PXJ"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.14pxj.com/th-th/register?refid=bdpabfaz" class="go-btn" target="_blank" rel="noopener">สมัครกับ PXJ</a>
         </div>
-        <a href="https://www.siam212th9.com/en-th/?ref=S212C717E" class="signup-btn" target="_blank" rel="noopener">ลุย siam212</a>
       </div>
 
-      <div class="pack-card" data-pack="31" data-brand="siam55">
-        <div class="brand-title">siam55</div>
-        <div class="media-carousel"><img src="web/siam55/51.jpg" alt="siam55" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/siam55/52.jpg" alt="siam55" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/siam55/53.jpg" alt="siam55" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="30" data-brand="Rad99">
+        <div class="go-card-tilt">
+          <div class="go-brand">Rad99</div>
+          <div class="go-hero" aria-label="Rad99 media"><img class="go-media-el" src="web/Rad99/6f97b039-1732-4dc0-a228-7d7f095e0f18.webp" alt="Rad99"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/Rad99/830d60fc-c182-42a6-8ac1-fd7f4036a67e.webp" alt="Rad99"><img class="go-thumb" src="web/Rad99/a46d3114-a4a0-4fb4-9703-9c259fc23f31.webp" alt="Rad99"><img class="go-thumb" src="web/Rad99/db767a64-cbe6-4bc3-97bc-c38aaf5bc68c.webp" alt="Rad99"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="#" class="go-btn" target="_blank" rel="noopener">สมัครกับ Rad99</a>
         </div>
-        <a href="https://siam55a.com/register/referer/057dfff835" class="signup-btn" target="_blank" rel="noopener">ลุย siam55</a>
       </div>
 
-      <div class="pack-card" data-pack="32" data-brand="T83">
-        <div class="brand-title">T83</div>
-        <div class="media-carousel"><img src="web/T83/130.webp" alt="T83" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/T83/131.webp" alt="T83" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/T83/132.webp" alt="T83" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/T83/133.webp" alt="T83" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/T83/134.webp" alt="T83" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="31" data-brand="Rol88">
+        <div class="go-card-tilt">
+          <div class="go-brand">Rol88</div>
+          <div class="go-hero" aria-label="Rol88 media"><img class="go-media-el" src="web/Rol88/0976dfcf-99c1-474b-9d46-c04463633254.webp" alt="Rol88"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/Rol88/152a0a77-d73c-470e-b179-24dd44268d11.webp" alt="Rol88"><img class="go-thumb" src="web/Rol88/c6336a1d-d287-47cc-9318-850fcedec449.webp" alt="Rol88"><img class="go-thumb" src="web/Rol88/d7ed5c59-6f75-40d9-95f9-9a0711fd92ed.webp" alt="Rol88"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="#" class="go-btn" target="_blank" rel="noopener">สมัครกับ Rol88</a>
         </div>
-        <a href="https://www.t83.me/?af=UC1NGX" class="signup-btn" target="_blank" rel="noopener">ลุย T83</a>
       </div>
 
-      <div class="pack-card" data-pack="33" data-brand="T883">
-        <div class="brand-title">T883</div>
-        <div class="media-carousel"><img src="web/T883/135.webp" alt="T883" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/T883/136.webp" alt="T883" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/T883/137.webp" alt="T883" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/T883/54.jpg" alt="T883" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/T883/55.jpg" alt="T883" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="32" data-brand="siam212">
+        <div class="go-card-tilt">
+          <div class="go-brand">siam212</div>
+          <div class="go-hero" aria-label="siam212 media"><img class="go-media-el" src="web/siam212/47.jpg" alt="siam212"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/siam212/48.jpg" alt="siam212"><img class="go-thumb" src="web/siam212/87_yBIMq8RKxFoszHMC_1755748028614.jpg" alt="siam212"><img class="go-thumb" src="web/siam212/%5BS2T%5D%20Refer%20Friends%20%20600X360%20TH_1752461721623.jpg" alt="siam212"><img class="go-thumb" src="web/siam212/%5BS2T%5D%20Welcome%20Bonus%20600X360%20TH_1752462053777.jpg" alt="siam212"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.siam212th9.com/en-th/?ref=S212C717E" class="go-btn" target="_blank" rel="noopener">สมัครกับ siam212</a>
         </div>
-        <a href="http://645930.t883s.com/?referralCode=tlz7417" class="signup-btn" target="_blank" rel="noopener">ลุย T883</a>
       </div>
 
-      <div class="pack-card" data-pack="34" data-brand="THBet">
-        <div class="brand-title">THBet</div>
-        <div class="media-carousel"><img src="web/THBet/1730437688218_800-400.jpg" alt="THBet" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/THBet/1737549696873_800-400-1%20(3).jpg" alt="THBet" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/THBet/1739986485103_800-400.jpg" alt="THBet" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/THBet/2979042_1750479662170.jpg" alt="THBet" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/THBet/2979042_1753979257304.jpg" alt="THBet" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="33" data-brand="siam55">
+        <div class="go-card-tilt">
+          <div class="go-brand">siam55</div>
+          <div class="go-hero" aria-label="siam55 media"><img class="go-media-el" src="web/siam55/51.jpg" alt="siam55"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/siam55/52.jpg" alt="siam55"><img class="go-thumb" src="web/siam55/53.jpg" alt="siam55"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://siam55a.com/register/referer/057dfff835" class="go-btn" target="_blank" rel="noopener">สมัครกับ siam55</a>
         </div>
-        <a href="https://qmdl999.thbet66.com/?referralCode=gpw8378" class="signup-btn" target="_blank" rel="noopener">ลุย THBet</a>
       </div>
 
-      <div class="pack-card" data-pack="35" data-brand="THWIN">
-        <div class="brand-title">THWIN</div>
-        <div class="media-carousel"><img src="web/THWIN/tw.webp" alt="THWIN" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="34" data-brand="T83">
+        <div class="go-card-tilt">
+          <div class="go-brand">T83</div>
+          <div class="go-hero" aria-label="T83 media"><img class="go-media-el" src="web/T83/130.webp" alt="T83"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/T83/131.webp" alt="T83"><img class="go-thumb" src="web/T83/132.webp" alt="T83"><img class="go-thumb" src="web/T83/133.webp" alt="T83"><img class="go-thumb" src="web/T83/134.webp" alt="T83"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.t83.me/?af=UC1NGX" class="go-btn" target="_blank" rel="noopener">สมัครกับ T83</a>
         </div>
-        <a href="http://www.872thwin.com/?r=jpr9061" class="signup-btn" target="_blank" rel="noopener">ลุย THWIN</a>
       </div>
 
-      <div class="pack-card" data-pack="36" data-brand="TMB66">
-        <div class="brand-title">TMB66</div>
-        <div class="media-carousel"><img src="web/TMB66/60.jpg" alt="TMB66" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/TMB66/61.jpg" alt="TMB66" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/TMB66/62.jpg" alt="TMB66" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/TMB66/63.jpg" alt="TMB66" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/TMB66/64.jpg" alt="TMB66" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="35" data-brand="T883">
+        <div class="go-card-tilt">
+          <div class="go-brand">T883</div>
+          <div class="go-hero" aria-label="T883 media"><img class="go-media-el" src="web/T883/135.webp" alt="T883"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/T883/136.webp" alt="T883"><img class="go-thumb" src="web/T883/137.webp" alt="T883"><img class="go-thumb" src="web/T883/54.jpg" alt="T883"><img class="go-thumb" src="web/T883/55.jpg" alt="T883"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://645930.t883s.com/?referralCode=tlz7417" class="go-btn" target="_blank" rel="noopener">สมัครกับ T883</a>
         </div>
-        <a href="https://www.tmb66th.com/?af=OMVUA5" class="signup-btn" target="_blank" rel="noopener">ลุย TMB66</a>
       </div>
 
-      <div class="pack-card" data-pack="37" data-brand="TMB77">
-        <div class="brand-title">TMB77</div>
-        <div class="media-carousel"><img src="web/TMB77/15.png" alt="TMB77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/TMB77/65.jpg" alt="TMB77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/TMB77/66.jpg" alt="TMB77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/TMB77/67.jpg" alt="TMB77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/TMB77/68.jpg" alt="TMB77" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="36" data-brand="THBet">
+        <div class="go-card-tilt">
+          <div class="go-brand">THBet</div>
+          <div class="go-hero" aria-label="THBet media"><img class="go-media-el" src="web/THBet/1730437688218_800-400.jpg" alt="THBet"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/THBet/1737549696873_800-400-1%20(3).jpg" alt="THBet"><img class="go-thumb" src="web/THBet/1739986485103_800-400.jpg" alt="THBet"><img class="go-thumb" src="web/THBet/2979042_1750479662170.jpg" alt="THBet"><img class="go-thumb" src="web/THBet/2979042_1753979257304.jpg" alt="THBet"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://qmdl999.thbet66.com/?referralCode=gpw8378" class="go-btn" target="_blank" rel="noopener">สมัครกับ THBet</a>
         </div>
-        <a href="http://qmdl888.tmb773.com/?referralCode=acy4714" class="signup-btn" target="_blank" rel="noopener">ลุย TMB77</a>
       </div>
 
-      <div class="pack-card" data-pack="38" data-brand="VM9">
-        <div class="brand-title">VM9</div>
-        <div class="media-carousel"><img src="web/VM9/141.webp" alt="VM9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/VM9/142.webp" alt="VM9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/VM9/143.webp" alt="VM9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/VM9/144.webp" alt="VM9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/VM9/OIP.webp" alt="VM9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="37" data-brand="THWIN">
+        <div class="go-card-tilt">
+          <div class="go-brand">THWIN</div>
+          <div class="go-hero" aria-label="THWIN media"><img class="go-media-el" src="web/THWIN/tw.webp" alt="THWIN"></div>
+          <div class="go-thumbs"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://www.872thwin.com/?r=jpr9061" class="go-btn" target="_blank" rel="noopener">สมัครกับ THWIN</a>
         </div>
-        <a href="http://aaaa07.vm9a1.com/?referralCode=trh3504" class="signup-btn" target="_blank" rel="noopener">ลุย VM9</a>
       </div>
 
-      <div class="pack-card" data-pack="39" data-brand="VT8">
-        <div class="brand-title">VT8</div>
-        <div class="media-carousel"><img src="web/VT8/wff.webp" alt="VT8" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="38" data-brand="TMB66">
+        <div class="go-card-tilt">
+          <div class="go-brand">TMB66</div>
+          <div class="go-hero" aria-label="TMB66 media"><img class="go-media-el" src="web/TMB66/60.jpg" alt="TMB66"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/TMB66/61.jpg" alt="TMB66"><img class="go-thumb" src="web/TMB66/62.jpg" alt="TMB66"><img class="go-thumb" src="web/TMB66/63.jpg" alt="TMB66"><img class="go-thumb" src="web/TMB66/64.jpg" alt="TMB66"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.tmb66th.com/?af=OMVUA5" class="go-btn" target="_blank" rel="noopener">สมัครกับ TMB66</a>
         </div>
-        <a href="http://534730.vt8app8.com/?referralCode=kvp6186" class="signup-btn" target="_blank" rel="noopener">ลุย VT8</a>
       </div>
 
-      <div class="pack-card" data-pack="40" data-brand="W9">
-        <div class="brand-title">W9</div>
-        <div class="media-carousel"><img src="web/W9/69.jpg" alt="W9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/W9/70.jpg" alt="W9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/W9/71.jpg" alt="W9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/W9/72.jpg" alt="W9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/W9/a801a691-dce6-43e4-ad3f-fd5ea3cda44a.webp" alt="W9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="39" data-brand="TMB77">
+        <div class="go-card-tilt">
+          <div class="go-brand">TMB77</div>
+          <div class="go-hero" aria-label="TMB77 media"><img class="go-media-el" src="web/TMB77/15.png" alt="TMB77"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/TMB77/65.jpg" alt="TMB77"><img class="go-thumb" src="web/TMB77/66.jpg" alt="TMB77"><img class="go-thumb" src="web/TMB77/67.jpg" alt="TMB77"><img class="go-thumb" src="web/TMB77/68.jpg" alt="TMB77"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://qmdl888.tmb773.com/?referralCode=acy4714" class="go-btn" target="_blank" rel="noopener">สมัครกับ TMB77</a>
         </div>
-        <a href="http://askejj.w299s.com/?referralCode=oic0919" class="signup-btn" target="_blank" rel="noopener">ลุย W9</a>
       </div>
 
-      <div class="pack-card" data-pack="41" data-brand="Win333">
-        <div class="brand-title">Win333</div>
-        <div class="media-carousel"><img src="web/Win333/win33.webp" alt="Win333" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="40" data-brand="VM9">
+        <div class="go-card-tilt">
+          <div class="go-brand">VM9</div>
+          <div class="go-hero" aria-label="VM9 media"><img class="go-media-el" src="web/VM9/141.webp" alt="VM9"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/VM9/142.webp" alt="VM9"><img class="go-thumb" src="web/VM9/143.webp" alt="VM9"><img class="go-thumb" src="web/VM9/144.webp" alt="VM9"><img class="go-thumb" src="web/VM9/OIP.webp" alt="VM9"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://aaaa07.vm9a1.com/?referralCode=trh3504" class="go-btn" target="_blank" rel="noopener">สมัครกับ VM9</a>
         </div>
-        <a href="#" class="signup-btn" target="_blank" rel="noopener">ลุย Win333</a>
       </div>
 
-      <div class="pack-card" data-pack="42" data-brand="YN9">
-        <div class="brand-title">YN9</div>
-        <div class="media-carousel"><img src="web/YN9/150.webp" alt="YN9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/YN9/151.webp" alt="YN9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/YN9/152.webp" alt="YN9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/YN9/73.jpg" alt="YN9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/YN9/74.jpg" alt="YN9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/YN9/75.jpg" alt="YN9" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="41" data-brand="VT8">
+        <div class="go-card-tilt">
+          <div class="go-brand">VT8</div>
+          <div class="go-hero" aria-label="VT8 media"><img class="go-media-el" src="web/VT8/wff.webp" alt="VT8"></div>
+          <div class="go-thumbs"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://534730.vt8app8.com/?referralCode=kvp6186" class="go-btn" target="_blank" rel="noopener">สมัครกับ VT8</a>
         </div>
-        <a href="http://qmdl999.yn9.bet/?referralCode=wva6410" class="signup-btn" target="_blank" rel="noopener">ลุย YN9</a>
       </div>
 
-      <div class="pack-card" data-pack="43" data-brand="YSL">
-        <div class="brand-title">YSL</div>
-        <div class="media-carousel"><img src="web/YSL/153.webp" alt="YSL" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/YSL/76.jpg" alt="YSL" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/YSL/77.jpg" alt="YSL" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/YSL/78.jpg" alt="YSL" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/YSL/79.jpg" alt="YSL" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="42" data-brand="W9">
+        <div class="go-card-tilt">
+          <div class="go-brand">W9</div>
+          <div class="go-hero" aria-label="W9 media"><img class="go-media-el" src="web/W9/69.jpg" alt="W9"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/W9/70.jpg" alt="W9"><img class="go-thumb" src="web/W9/71.jpg" alt="W9"><img class="go-thumb" src="web/W9/72.jpg" alt="W9"><img class="go-thumb" src="web/W9/a801a691-dce6-43e4-ad3f-fd5ea3cda44a.webp" alt="W9"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="http://askejj.w299s.com/?referralCode=oic0919" class="go-btn" target="_blank" rel="noopener">สมัครกับ W9</a>
         </div>
-        <a href="https://www.ysl99.net/?af=ABOHM4" class="signup-btn" target="_blank" rel="noopener">ลุย YSL</a>
+      </div>
+      <div class="go-card" data-pack="44" data-brand="YN9">
+        <div class="go-card-tilt">
+          <div class="go-brand">YN9</div>
+          <div class="go-hero" aria-label="YN9 media"><img class="go-media-el" src="web/YN9/150.webp" alt="YN9"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/YN9/151.webp" alt="YN9"><img class="go-thumb" src="web/YN9/152.webp" alt="YN9"><img class="go-thumb" src="web/YN9/73.jpg" alt="YN9"><img class="go-thumb" src="web/YN9/74.jpg" alt="YN9"><img class="go-thumb" src="web/YN9/75.jpg" alt="YN9"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+          </div>
+          <a href="http://qmdl999.yn9.bet/?referralCode=wva6410" class="go-btn" target="_blank" rel="noopener">สมัครกับ YN9</a>
+        </div>
       </div>
 
-      <div class="pack-card" data-pack="44" data-brand="z8">
-        <div class="brand-title">z8</div>
-        <div class="media-carousel"><img src="web/z8/1.png" alt="z8" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/z8/2.png" alt="z8" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/z8/3.png" alt="z8" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"><img src="web/z8/4.png" alt="z8" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';"></div>
-        <div class="progress-bars">
-          <div class="progress-item">
-            <div class="progress-label">WIN %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
+      <div class="go-card" data-pack="45" data-brand="YSL">
+        <div class="go-card-tilt">
+          <div class="go-brand">YSL</div>
+          <div class="go-hero" aria-label="YSL media"><img class="go-media-el" src="web/YSL/153.webp" alt="YSL"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/YSL/76.jpg" alt="YSL"><img class="go-thumb" src="web/YSL/77.jpg" alt="YSL"><img class="go-thumb" src="web/YSL/78.jpg" alt="YSL"><img class="go-thumb" src="web/YSL/79.jpg" alt="YSL"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-label">BONUS %</div>
-            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            <div class="progress-value">0%</div>
-          </div>
+          <a href="https://www.ysl99.net/?af=ABOHM4" class="go-btn" target="_blank" rel="noopener">สมัครกับ YSL</a>
         </div>
-        <a href="https://www.z803.com?inviteCode=83671" class="signup-btn" target="_blank" rel="noopener">ลุย z8</a>
+      </div>
+
+      <div class="go-card" data-pack="46" data-brand="z8">
+        <div class="go-card-tilt">
+          <div class="go-brand">z8</div>
+          <div class="go-hero" aria-label="z8 media"><img class="go-media-el" src="web/z8/1.png" alt="z8"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/z8/2.png" alt="z8"><img class="go-thumb" src="web/z8/3.png" alt="z8"><img class="go-thumb" src="web/z8/4.png" alt="z8"></div>
+          <div class="go-ai">
+            <div class="go-ai-row">
+              <span class="go-ai-label">WIN %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+            <div class="go-ai-row">
+              <span class="go-ai-label">BONUS %</span>
+              <div class="go-ai-bar"><div class="go-ai-fill" style="width:0%"></div></div>
+              <span class="go-ai-val">0%</span>
+            </div>
+          </div>
+          <a href="https://www.z803.com?inviteCode=83671" class="go-btn" target="_blank" rel="noopener">สมัครกับ z8</a>
+        </div>
       </div>
   </div>
 
   <script>
-    // Matrix rain effect
-    (function createMatrixRain(){
-      const matrixContainer = document.getElementById('matrixRain');
+  // Lightweight obfuscation for class names used only in JS
+  (function(){
+    const D = (s) => atob(s);
+    const C = {
+      m: D('Z29NYXRyaXg='), // goMatrix
+      col: D('Z29tY29s'),   // gomcol
+      card: D('Z29jYXJk'),  // gocard
+      tilt: D('Z29jYXJkLXRpbHQ='),
+      hero: D('Z29oZXJv'),
+      media: D('Z29tZWRpYS1lbA=='),
+      th: D('Z290aHVtYnM='),
+      btn: D('Z29i dG4=').replace(' ','')
+    };
+
+    // Matrix rain
+    const mc = document.getElementById(C.m);
+    if (mc) {
       const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-      for (let i=0;i<50;i++){
-        const col = document.createElement('div');
-        col.className='matrix-column';
-        col.style.left = Math.random()*100 + '%';
-        const duration = (Math.random()*3+2).toFixed(2);
-        const delay = (Math.random()*2).toFixed(2);
-        col.style.animationDuration = duration+'s';
-        col.style.animationDelay = delay+'s';
-        let t='';
-        for(let j=0;j<20;j++){ t += chars.charAt(Math.floor(Math.random()*chars.length)) + '<br>'; }
-        col.innerHTML = t;
-        matrixContainer.appendChild(col);
+      function mk() {
+        mc.innerHTML = '';
+        for (let i=0;i<48;i++){
+          const el = document.createElement('div');
+          el.className = 'go-mcol';
+          el.style.left = (Math.random()*100).toFixed(2)+'%';
+          const dur = (Math.random()*3+2).toFixed(2);
+          const del = (Math.random()*2).toFixed(2);
+          el.style.animationDuration = dur+'s';
+          el.style.animationDelay = del+'s';
+          let t='';
+          for(let j=0;j<18;j++){ t += chars.charAt(Math.floor(Math.random()*chars.length))+'<br>'; }
+          el.innerHTML = t;
+          mc.appendChild(el);
+        }
       }
-      setInterval(()=>{ while(matrixContainer.firstChild) matrixContainer.removeChild(matrixContainer.firstChild); createMatrixRain(); }, 30000);
-    })();
+      mk(); setInterval(mk, 30000);
+    }
 
-    // Dynamic Winrate/Bonus bars per contex.ini (slowed + thresholds)
-    (function setupRates(){
-      const cards = document.querySelectorAll('.pack-card');
-      const now = () => Date.now();
-      cards.forEach((card, idx)=>{
-        const fills = card.querySelectorAll('.progress-fill');
-        const values = card.querySelectorAll('.progress-value');
-        let currentWin = Math.random()*25+20; // 20-45 start
-        let currentBonus = Math.random()*25+10; // 10-35 start
-        let targetWin = 55 + Math.random()*30; // 55-85
-        let targetBonus = 25 + Math.random()*40; // 25-65
-        let speed = 0.5 + Math.random()*0.7; // 0.5 - 1.2 slower
-        let nextTargetAt = now() + (12000 + Math.random()*13000); // 12-25s
-        let lingerUntil = 0; // when both >=90, keep between 90-99 for up to 30m
-
-        function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-        function applyColor(el, val){
-          el.classList.remove('red','orange');
-          if (val < 30) el.classList.add('red');
-          else if (val < 50) el.classList.add('orange');
-        }
-        function setDisplays(w,b){
-          const W = Math.round(clamp(w, 0, 100));
-          const B = Math.round(clamp(b, 0, 100));
-          fills[0].style.width = W + '%';
-          fills[1].style.width = B + '%';
-          values[0].textContent = W + '%';
-          values[1].textContent = B + '%';
-          applyColor(fills[0], W); applyColor(fills[1], B);
-          if (W >= 90 && B >= 90) card.classList.add('high-rate'); else card.classList.remove('high-rate');
-        }
-
-        function chooseNewTargets(){
-          // randomize with variance, keep realistic ranges
-          targetWin = clamp(35 + Math.random()*50, 10, 99);
-          targetBonus = clamp(20 + Math.random()*55, 10, 99);
-          speed = 0.5 + Math.random()*0.9; // slower
-          nextTargetAt = now() + (12000 + Math.random()*13000); // 12-25s
-        }
-
-        const tick = () => {
-          const t = now();
-
-          // If in linger window, keep both between 90-99, slow oscillation
-          if (t < lingerUntil) {
-            currentWin = 92 + Math.sin(t/9000 + idx) * 2.5 + Math.random()*1.2; // ~90-99 slower
-            currentBonus = 92 + Math.cos(t/12000 + idx) * 2.5 + Math.random()*1.2;
-            setDisplays(currentWin, currentBonus);
-            requestAnimationFrame(tick);
-            return;
-          }
-
-          // ease towards targets
-          currentWin += (targetWin - currentWin) * 0.008 * speed; // slower approach
-          currentBonus += (targetBonus - currentBonus) * 0.008 * speed;
-
-          // small random jitter (not too fast)
-          currentWin += (Math.random()-0.5) * 0.2;
-          currentBonus += (Math.random()-0.5) * 0.2;
-
-          setDisplays(currentWin, currentBonus);
-
-          // Occasionally retarget
-          if (t > nextTargetAt) {
-            chooseNewTargets();
-          }
-
-          // When both exceed 90, with small chance enter 30-min linger
-          if (currentWin >= 90 && currentBonus >= 90) {
-            if (Math.random() < 0.02) { // small chance to trigger when both high
-              lingerUntil = now() + 30 * 60 * 1000; // 30 minutes
-            }
-          }
-
-          requestAnimationFrame(tick);
-        };
-
-        // start
-        chooseNewTargets();
-        setDisplays(currentWin, currentBonus);
-        requestAnimationFrame(tick);
+    // Click sfx (optional)
+    const sfx = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae7b7.mp3');
+    setTimeout(()=>{
+      document.querySelectorAll('.go-btn').forEach(b=>{
+        b.addEventListener('click', ()=>{ try{ sfx.currentTime=0; sfx.play(); }catch(e){} });
       });
-    })();
+    }, 120);
+
+    // Hero switching from thumbnails
+    document.querySelectorAll('.go-card').forEach((card)=>{
+      const hero = card.querySelector('.go-hero');
+      const th = card.querySelectorAll('.go-thumb');
+      th.forEach((t)=>{
+        t.addEventListener('click',()=>{
+          const el = t.cloneNode(true);
+          el.className = 'go-media-el';
+          hero.innerHTML = '';
+          hero.appendChild(el);
+        });
+      });
+    });
+
+    // AI-like dynamic bars per card
+    const now = ()=>Date.now();
+    document.querySelectorAll('.go-card').forEach((card, idx)=>{
+      const fills = card.querySelectorAll('.go-ai-fill');
+      const vals  = card.querySelectorAll('.go-ai-val');
+      let cw = 20+Math.random()*25, cb = 10+Math.random()*25; // start
+      let tw = 55+Math.random()*30, tb = 25+Math.random()*40; // targets
+      let sp = .6 + Math.random()*0.7;
+      let nextAt = now() + (12000 + Math.random()*13000);
+      let linger = 0;
+
+      function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+      function color(el, v){ el.classList.remove('go-r','go-o'); if (v<30) el.classList.add('go-r'); else if (v<50) el.classList.add('go-o'); }
+      function setD(w,b){ const W=Math.round(clamp(w,0,100)), B=Math.round(clamp(b,0,100)); fills[0].style.width=W+'%'; fills[1].style.width=B+'%'; vals[0].textContent=W+'%'; vals[1].textContent=B+'%'; color(fills[0],W); color(fills[1],B); }
+      function retarget(){ tw = clamp(35+Math.random()*50, 10, 99); tb = clamp(20+Math.random()*55,10,99); sp = .5+Math.random()*0.9; nextAt = now() + (12000 + Math.random()*13000); }
+
+      (function tick(){
+        const t = now();
+        if (t < linger) {
+          cw = 92 + Math.sin(t/9000 + idx)*2.5 + Math.random()*1.2;
+          cb = 92 + Math.cos(t/12000 + idx)*2.5 + Math.random()*1.2;
+          setD(cw,cb); return requestAnimationFrame(tick);
+        }
+        cw += (tw-cw)*0.008*sp; cb += (tb-cb)*0.008*sp;
+        cw += (Math.random()-.5)*.2; cb += (Math.random()-.5)*.2;
+        setD(cw,cb);
+        if (t>nextAt) retarget();
+        if (cw>=90 && cb>=90 && Math.random()<.02) linger = now() + 30*60*1000;
+        requestAnimationFrame(tick);
+      })();
+    });
+  })();
   </script>
 </body>
 </html>

@@ -43,13 +43,14 @@
       // พยายามเติมปีกกา/วงเล็บ/quote ให้ครบ
       try { return JSON.parse(str); } catch {}
       let fixed = str.trim()
-        .replace(/([,{]\s*)([a-zA-Z0-9_\-]+)\s*:/g, '$1"$2":') // key ไม่มี quote
+        .replace(/([,{]\s*)([a-zA-Z0-9_-]+)\s*:/g, '$1"$2":') // key ไม่มี quote
         .replace(/,\s*}/g, '}')
         .replace(/,\s*]/g, ']')
-        .replace(/(['"])?([a-zA-Z0-9_\-]+)(['"])?:/g, '"$2":') // key quote ผิด
+        .replace(/(['"])??([a-zA-Z0-9_-]+)(['"])?:/g, '"$2":') // key quote ผิด
         .replace(/:(\s*)'([^']*)'/g, ': "$2"') // value single quote
         .replace(/:(\s*)\b(true|false|null)\b/g, ': "$2"') // boolean/null เป็น string
         .replace(/\s+/g, ' ');
+  
       try { return JSON.parse(fixed); } catch {}
       // เติม } ปิดท้ายถ้าขาด
       if(fixed.lastIndexOf('{') > fixed.lastIndexOf('}')) fixed += '}';

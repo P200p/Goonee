@@ -1,12 +1,6 @@
 (function(){
   // --- Config: fallback tools list (used if manifest.json not reachable) ---
-  // Derive BASE URL from the script src so the loader works under any path (e.g., Netlify /sell/)
-  const thisScript = document.currentScript || (function(){
-    const scripts = document.getElementsByTagName('script');
-    return scripts[scripts.length - 1];
-  })();
-  const THIS_SRC = (thisScript && thisScript.src) || '';
-  const BASE = THIS_SRC ? THIS_SRC.replace(/[^\/]+$/, '') : '';
+  // Note: Previously derived BASE from script src; now using explicit REMOTE_BASE to ensure consistent loading.
 
   // Project requirement: load from this remote base regardless of host location
   const REMOTE_BASE = 'https://sharkkadaw.netlify.app/sharktool/';

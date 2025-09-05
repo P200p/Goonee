@@ -267,5 +267,7 @@
         alert(document.cookie || 'ไม่มีคุกกี้');
       });
 
-      document.body.appendChild(panel);
-    })()
+    });
+
+    document.body.appendChild(panel);
+  })();

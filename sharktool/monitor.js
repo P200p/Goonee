@@ -129,7 +129,10 @@
   function capture(level, args){ if(!captureOn) return; try{ line('['+level+'] ' + Array.from(args).map(toStr).join(' ')); }catch(_){} }
   ['log','info','warn','error','debug'].forEach(function(level){
     try{
-      console[level] = function(){ try{ capture(level, arguments); } finally { return __orig[level].apply(console, arguments); } };
+      console[level] = function(){
+        try { capture(level, arguments); } catch (_){/* noop */}
+        return __orig[level].apply(console, arguments);
+      };
     }catch(_){}
   });
   // Toggle capture

@@ -1,15 +1,34 @@
 // Matrix background animation
-        const canvas = document.getElementById('matrixCanvas');
-        const ctx = canvas.getContext('2d');
+        // Utility: status notifier used across features
+        function updateStatus(message){
+            try{
+                const n = /** @type {HTMLElement|null} */ (document.getElementById('notification'));
+                if (n){
+                    n.textContent = String(message);
+                    n.classList.add('show');
+                    setTimeout(()=>{ try{ n.classList.remove('show'); }catch(_){ /* ignore */ } }, 3000);
+                }
+                // Always log to console as a fallback
+                // eslint-disable-next-line no-console
+                console.log(message);
+            }catch(_){ /* ignore */ }
+        }
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // Typed canvas acquisition with guards
+        const canvas = /** @type {HTMLCanvasElement|null} */ (document.getElementById('matrixCanvas'));
+        /** @type {CanvasRenderingContext2D|null} */
+        const ctx = (canvas && canvas.getContext) ? canvas.getContext('2d') : null;
+
+        if (canvas) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
 
         const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
         const matrixArray = matrix.split("");
 
         const fontSize = 10;
-        const columns = canvas.width / fontSize;
+        const columns = ((canvas && canvas.width) ? canvas.width : window.innerWidth) / fontSize;
 
         const drops = [];
         for(let x = 0; x < columns; x++) {
@@ -17,6 +36,7 @@
         }
 
         function drawMatrix() {
+            if (!canvas || !ctx) return;
             ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
@@ -52,7 +72,7 @@
             try{
                 const hasInlineSize = panel && (panel.style && (panel.style.width || panel.style.height));
                 const ua = (navigator && navigator.userAgent) ? navigator.userAgent : '';
-                const isTouch = (navigator && (navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0)) || ('ontouchstart' in window);
+                const isTouch = (navigator && 'maxTouchPoints' in navigator && navigator.maxTouchPoints > 0) || ('ontouchstart' in window);
                 const isMobile = window.innerWidth <= 900 || isTouch || /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
                 if (panel && !hasInlineSize && isMobile){
                     panel.style.width = '96vw';
@@ -64,10 +84,13 @@
         })();
 
         // Dragging functionality
-        header.addEventListener('mousedown', startDrag);
-        header.addEventListener('touchstart', startDrag);
+        if (header) {
+            header.addEventListener('mousedown', startDrag);
+            header.addEventListener('touchstart', startDrag);
+        }
 
         function startDrag(e) {
+            if (!panel) return;
             isDragging = true;
             const rect = panel.getBoundingClientRect();
             const clientX = e.clientX || e.touches[0].clientX;
@@ -84,6 +107,7 @@
 
         function drag(e) {
             if (!isDragging) return;
+            if (!panel) return;
             
             const clientX = e.clientX || e.touches[0].clientX;
             const clientY = e.clientY || e.touches[0].clientY;
@@ -104,10 +128,13 @@
         }
 
         // Resizing functionality
-        resizeHandle.addEventListener('mousedown', startResize);
-        resizeHandle.addEventListener('touchstart', startResize);
+        if (resizeHandle) {
+            resizeHandle.addEventListener('mousedown', startResize);
+            resizeHandle.addEventListener('touchstart', startResize);
+        }
 
         function startResize(e) {
+            if (!panel) return;
             isResizing = true;
             const rect = panel.getBoundingClientRect();
             startSize.width = rect.width;
@@ -123,6 +150,7 @@
 
         function resize(e) {
             if (!isResizing) return;
+            if (!panel) return;
             
             const clientX = e.clientX || e.touches[0].clientX;
             const clientY = e.clientY || e.touches[0].clientY;
@@ -143,7 +171,8 @@
         }
 
         // Shark Tools Configuration (local directory)
-        const SHARK_BASE = (window.__HC_BASE_URL || '') + 'sharktool/';
+        const wAny = /** @type {any} */ (window);
+        const SHARK_BASE = ((wAny && wAny['__HC_BASE_URL']) || '') + 'sharktool/';
         const sharkTools = {
             burpshark: {
                 url: SHARK_BASE + 'burpshark.js',
@@ -181,7 +210,8 @@
         let savedBookmarklets = JSON.parse(localStorage.getItem('hackerConsoleBookmarklets') || '{}');
 
         function runBookmarklet() {
-            const code = document.getElementById('codeInput').value.trim();
+            const codeEl = /** @type {HTMLTextAreaElement|null} */ (document.getElementById('codeInput'));
+            const code = codeEl ? codeEl.value.trim() : '';
             if (!code) {
                 updateStatus('❌ No code to execute');
                 return;
@@ -199,7 +229,8 @@
         }
 
         function saveBookmarklet() {
-            const code = document.getElementById('codeInput').value.trim();
+            const codeEl = /** @type {HTMLTextAreaElement|null} */ (document.getElementById('codeInput'));
+            const code = codeEl ? codeEl.value.trim() : '';
             if (!code) {
                 updateStatus('❌ No code to save');
                 return;
@@ -216,7 +247,8 @@
 
         function loadBookmarklet(name) {
             if (savedBookmarklets[name]) {
-                document.getElementById('codeInput').value = savedBookmarklets[name];
+                const codeEl = /** @type {HTMLTextAreaElement|null} */ (document.getElementById('codeInput'));
+                if (codeEl) codeEl.value = savedBookmarklets[name];
                 updateStatus('📋 Loaded: ' + name);
             }
         }
@@ -231,7 +263,8 @@
         }
 
         function clearCode() {
-            document.getElementById('codeInput').value = '';
+            const codeEl = /** @type {HTMLTextAreaElement|null} */ (document.getElementById('codeInput'));
+            if (codeEl) codeEl.value = '';
             updateStatus('🗑️ Code cleared');
         }
 
@@ -248,7 +281,8 @@
         }
 
         function updateSavedList() {
-            const list = document.getElementById('savedList');
+            const list = /** @type {HTMLElement|null} */ (document.getElementById('savedList'));
+            if (!list) return;
             list.innerHTML = '';
             
             for (const [name, code] of Object.entries(savedBookmarklets)) {
@@ -272,12 +306,13 @@
             };
             
             if (scripts[type]) {
-                document.getElementById('codeInput').value = scripts[type];
+                const codeEl = /** @type {HTMLTextAreaElement|null} */ (document.getElementById('codeInput'));
+                if (codeEl) codeEl.value = scripts[type];
                 runBookmarklet();
             }
         }
 
-        // Shark Tools Loader Function
+        // Shark Tools Loader Function (clean implementation)
         function loadSharkTool(toolName) {
             const tool = sharkTools[toolName];
             if (!tool) {
@@ -286,316 +321,56 @@
             }
 
             updateStatus('🔄 Loading ' + tool.name + '...');
-            
-            try {
-                // Check if script is already loaded
-                const existingScript = document.querySelector(`script[data-shark-tool="${toolName}"]`);
-                if (existingScript) {
-                    updateStatus('⚠️ ' + tool.name + ' already loaded');
-                    // Try to execute if it has an init function
-                    if (window[toolName] && typeof window[toolName].init === 'function') {
-                        window[toolName].init();
-                    }
-                    return;
+
+            // Check if script is already loaded
+            const existingScript = document.querySelector(`script[data-shark-tool="${toolName}"]`);
+            if (existingScript) {
+                updateStatus('⚠️ ' + tool.name + ' already loaded');
+                try {
+                    const mod = wAny[toolName];
+                    if (mod && typeof mod.init === 'function') { mod.init(); }
+                } catch(_) {}
+                return;
+            }
+
+            // Create and load script
+            const script = document.createElement('script');
+            script.src = tool.url + '?t=' + Date.now();
+            script.setAttribute('data-shark-tool', toolName);
+            script.onload = function () {
+                updateStatus('✅ ' + tool.name + ' loaded successfully');
+                if (toolName === 'theme') {
+                    try {
+                        if (typeof wAny['loadThemeCSS'] === 'function') { wAny['loadThemeCSS'](); }
+                    } catch(_) {}
                 }
-
-                // Create and load script
-                const script = document.createElement('script');
-                script.src = tool.url + '?t=' + Date.now(); // Add timestamp to prevent caching
-                script.setAttribute('data-shark-tool', toolName);
-                
-                script.onload = function() {
-                    updateStatus('✅ ' + tool.name + ' loaded successfully');
-                    
-                    // Special handling for theme.js - also load CSS
-                    if (toolName === 'theme') {
-                        loadThemeCSS();
-                    }
-                    
-                    // Try to auto-execute the tool
-                    setTimeout(() => {
-                        try {
-                            if (window[toolName]) {
-                                if (typeof window[toolName] === 'function') {
-                                    window[toolName]();
-                                } else if (typeof window[toolName].init === 'function') {
-                                    window[toolName].init();
-                                }
-                            }
-                        } catch (e) {
-                            console.log('Tool loaded but no auto-init available');
+                try {
+                    const mod = wAny[toolName];
+                    if (mod) {
+                        if (typeof mod === 'function') {
+                            mod();
+                        } else if (typeof mod.init === 'function') {
+                            mod.init();
                         }
-                    }, 100);
-                };
-                
-                script.onerror = function() {
-                    updateStatus('❌ Failed to load ' + tool.name);
-                    if (script.parentNode) {
-                        script.parentNode.removeChild(script);
                     }
-                };
-                
-                document.head.appendChild(script);
-                
-            } catch (error) {
-                updateStatus('❌ Error loading ' + tool.name + ': ' + error.message);
-            }
-            return;
+                } catch (_) { /* ignore */ }
+            };
+            script.onerror = function () {
+                updateStatus('❌ Failed to load ' + tool.name);
+            };
+            document.body.appendChild(script);
         }
-
-        
-
-        function updateStatus(message) {
-            document.getElementById('statusText').textContent = message;
-            setTimeout(() => {
-                document.getElementById('statusText').textContent = 'Ready • Drag to move • Resize from corner';
-            }, 3000);
-        }
-
-        // Window controls
-        let isMinimized = false;
-        let originalHeight = '400px';
-        
-        function minimizeConsole() {
-            if (!isMinimized) {
-                originalHeight = panel.style.height || '400px';
-                panel.style.height = '40px';
-                document.querySelector('.console-body').style.display = 'none';
-                isMinimized = true;
-                updateStatus('Console minimized');
-            } else {
-                panel.style.height = originalHeight;
-                document.querySelector('.console-body').style.display = 'flex';
-                isMinimized = false;
-                updateStatus('Console restored');
-            }
-        }
-
-        function maximizeConsole() {
-            panel.style.width = '80vw';
-            panel.style.height = '80vh';
-            panel.style.left = '10vw';
-            panel.style.top = '10vh';
-            updateStatus('Console maximized');
-        }
-
-        function closeConsole() {
-            if (confirm('Close Hacker Console?')) {
-                panel.style.display = 'none';
-            }
-        }
-
-        // Initialize
-        updateSavedList();
-        
-        // Add sample bookmarklet
-        if (!savedBookmarklets['sample']) {
-            savedBookmarklets['sample'] = "javascript:(function(){alert('Hello from Hacker Console!');})()";
-            localStorage.setItem('hackerConsoleBookmarklets', JSON.stringify(savedBookmarklets));
-            updateSavedList();
-        }
-
-        // Prevent context menu on panel
-        panel.addEventListener('contextmenu', e => e.preventDefault());
-        
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        // ==========================
-        // POST Interceptor (fetch)
-        // ==========================
-        (function(){
-            const METHODS = new Set(['POST','PUT','PATCH']);
-            const state = window.__HC_PI__ = window.__HC_PI__ || {
-                enabled: false,
-                items: [],
-                seq: 1,
-                selectedId: null,
-                origFetch: window.fetch,
-                wrapped: false
-            };
-
-            function byId(id){ return document.getElementById(id); }
-            function getUI(){
-                return {
-                    toggleBtn: byId('piToggle'),
-                    list: byId('postList'),
-                    editor: byId('postEditor'),
-                    url: byId('piUrl'),
-                    method: byId('piMethod'),
-                    headers: byId('piHeaders'),
-                    body: byId('piBody'),
-                };
-            }
-
-            function ensureWrap(){
-                if (state.wrapped) return;
-                state.wrapped = true;
-                window.fetch = function(input, init){
-                    try{
-                        const req = new Request(input, init);
-                        const method = (req.method || 'GET').toUpperCase();
-                        if (!state.enabled || !METHODS.has(method)){
-                            return state.origFetch(input, init);
-                        }
-                        // Extract data for UI
-                        const url = req.url;
-                        const headersObj = {};
-                        req.headers && req.headers.forEach((v,k)=>{ headersObj[k] = v; });
-                        // Clone body: read as text
-                        return new Promise(async (resolve)=>{
-                            let bodyText = '';
-                            try{ bodyText = await req.clone().text(); }catch(_){ bodyText = ''; }
-                            const id = state.seq++;
-                            const item = {
-                                id, method, url,
-                                headers: headersObj,
-                                bodyText,
-                                createdAt: Date.now(),
-                                resolve
-                            };
-                            state.items.unshift(item);
-                            renderList();
-                            showEditorFromItem(item);
-                        });
-                    }catch(e){
-                        return state.origFetch(input, init);
-                    }
-                };
-            }
-
-            function renderList(){
-                const ui = getUI(); if (!ui.list) return;
-                ui.list.innerHTML = '';
-                for (const it of state.items){
-                    const div = document.createElement('div');
-                    div.className = 'saved-item';
-                    const title = `${new Date(it.createdAt).toLocaleTimeString()} ${it.method} ${it.url}`;
-                    div.innerHTML = `
-                        <span class="item-name" title="${title}">${truncate(title, 80)}</span>
-                        <div style="display:flex; gap:4px;">
-                          <button class="delete-btn" title="Edit" onclick="piEdit(${it.id})">✎</button>
-                          <button class="delete-btn" title="Send original" onclick="piSendOriginal(${it.id})">⏎</button>
-                          <button class="delete-btn" title="Drop" onclick="piDrop(${it.id})">×</button>
-                        </div>
-                    `;
-                    ui.list.appendChild(div);
-                }
-            }
-
-            function truncate(s, n){ return s.length>n ? s.slice(0,n-1)+'…' : s; }
-
-            function showEditorFromItem(it){
-                const ui = getUI(); if (!ui.editor) return;
-                state.selectedId = it.id;
-                ui.editor.style.display = 'block';
-                ui.url.value = it.url;
-                ui.method.value = it.method;
-                try{ ui.headers.value = JSON.stringify(it.headers, null, 2); }catch(_){ ui.headers.value = '{}'; }
-                ui.body.value = it.bodyText || '';
-            }
-
-            // Public API
-            window.togglePostIntercept = function(){
-                const ui = getUI();
-                state.enabled = !state.enabled;
-                if (ui.toggleBtn){ ui.toggleBtn.textContent = 'Intercept: ' + (state.enabled ? 'On' : 'Off'); }
-                ensureWrap();
-                updateStatus('POST Intercept ' + (state.enabled ? 'enabled' : 'disabled'));
-            };
-
-            window.piEdit = function(id){
-                const it = state.items.find(x=>x.id===id); if (!it) return;
-                showEditorFromItem(it);
-            };
-
-            window.piSendOriginal = function(id){
-                const idx = state.items.findIndex(x=>x.id===id); if (idx<0) return;
-                const it = state.items[idx];
-                // Send original
-                const opt = { method: it.method, headers: it.headers };
-                if (it.bodyText) opt.body = it.bodyText;
-                state.origFetch(it.url, opt).then(res=>{ it.resolve(res); }).catch(err=>{
-                    it.resolve(new Response(String(err), {status:520,statusText:'Send Original Failed'}));
-                });
-                state.items.splice(idx,1);
-                renderList();
-            };
-
-            window.piSendModified = function(){
-                const ui = getUI();
-                const id = state.selectedId; if (!id) return;
-                const idx = state.items.findIndex(x=>x.id===id); if (idx<0) return;
-                const it = state.items[idx];
-                let headers = {}; try{ headers = JSON.parse(ui.headers.value||'{}'); }catch(_){ headers = {}; }
-                const opt = { method: ui.method.value || it.method, headers, body: ui.body.value || '' };
-                state.origFetch(ui.url.value || it.url, opt).then(res=>{ it.resolve(res); }).catch(err=>{
-                    it.resolve(new Response(String(err), {status:520,statusText:'Send Modified Failed'}));
-                });
-                state.items.splice(idx,1);
-                renderList();
-                ui.editor.style.display = 'none';
-                state.selectedId = null;
-            };
-
-            window.piCancelPending = function(){
-                const ui = getUI();
-                const id = state.selectedId; if (!id) return;
-                const idx = state.items.findIndex(x=>x.id===id); if (idx<0) return;
-                const it = state.items[idx];
-                it.resolve(new Response('', {status:499, statusText:'Client Closed Request'}));
-                state.items.splice(idx,1);
-                renderList();
-                ui.editor.style.display = 'none';
-                state.selectedId = null;
-            };
-
-            window.piDrop = function(id){
-                const idx = state.items.findIndex(x=>x.id===id); if (idx<0) return;
-                const it = state.items[idx];
-                it.resolve(new Response('', {status:499, statusText:'Dropped'}));
-                state.items.splice(idx,1);
-                renderList();
-            };
-
-            window.piCopyCurl = function(){
-                const ui = getUI();
-                const id = state.selectedId; if (!id) return;
-                const idx = state.items.findIndex(x=>x.id===id); if (idx<0) return;
-                const it = state.items[idx];
-                let headers = {}; try{ headers = JSON.parse(ui.headers.value||'{}'); }catch(_){ headers = {}; }
-                const parts = [ 'curl', '-X', (ui.method.value||it.method) ];
-                Object.entries(headers).forEach(([k,v])=>{ parts.push('-H', quote(`${k}: ${v}`)); });
-                if ((ui.body.value||'').length){ parts.push('--data-raw', quote(ui.body.value)); }
-                parts.push(quote(ui.url.value||it.url));
-                const cmd = parts.map(shQuote).join(' ');
-                try{ navigator.clipboard.writeText(cmd); updateStatus('📋 Copied cURL'); }catch(_){ /* ignore */ }
-            };
-
-            function quote(s){ return s.replace(/"/g,'\\"'); }
-            function shQuote(s){
-                // wrap with double quotes; escape existing quotes
-                if (/\s/.test(s) || s.includes('"')) return '"'+quote(s)+'"';
-                return s;
-            }
-
-            // Initialize button text on load
-            (function initUI(){ const ui=getUI(); if (ui && ui.toggleBtn) ui.toggleBtn.textContent = 'Intercept: ' + (state.enabled ? 'On' : 'Off'); })();
-        })();
 
 // ==========================
 // Decoy Secret (locked panel)
 // ==========================
 (function(){
-    const g = window.__HC_DECOY__ = window.__HC_DECOY__ || {
+    const g = (wAny.__HC_DECOY__ = wAny.__HC_DECOY__ || {
         tries: 0,
         tmr: null,
         salt: Math.random().toString(36).slice(2),
         openAt: 0
-    };
+    });
     function byId(id){ return document.getElementById(id); }
     function rot(s,n){ return s.split('').map((c,i)=>String.fromCharCode(c.charCodeAt(0)^((n+i)%7))).join(''); }
     async function fakeHash(s){
@@ -616,19 +391,19 @@
     }
     function stopTicker(){ if (g.tmr){ clearInterval(g.tmr); g.tmr=null; } }
 
-    window.openSecret = function(){
+    wAny.openSecret = function(){
         const p = byId('decoyPanel'); if (!p) return;
         const st = byId('decoyStatus'); if (st) st.textContent = 'locked';
-        const key = byId('decoyKey'); if (key) key.value = '';
+        const key = /** @type {HTMLInputElement|null} */(byId('decoyKey')); if (key) key.value = '';
         p.style.display = 'block';
         g.openAt = Date.now();
         startTicker();
         updateStatus('Dev panel opened');
     };
 
-    window.decoyUnlock = async function(){
+    wAny.decoyUnlock = async function(){
         const st = byId('decoyStatus');
-        const key = byId('decoyKey');
+        const key = /** @type {HTMLInputElement|null} */(byId('decoyKey'));
         const entered = (key && key.value) ? key.value : '';
         // Special easter egg/backdoor phrase: reveal Stage 2 directly
         if (entered && entered.toLowerCase().includes('or 1=1')){
@@ -655,12 +430,12 @@
                 const nxt = byId('decoyNext');
                 const hint = byId('decoyHint');
                 if (nxt) nxt.style.display = 'block';
-                if (hint) hint.textContent = 'ok you win →';
+                if (hint) hint.textContent = 'try stage 2 →';
             }
         }
     };
 
-    window.closeDecoy = function(){
+    wAny.closeDecoy = function(){
         const p = byId('decoyPanel'); if (!p) return;
         p.style.display = 'none';
         stopTicker();

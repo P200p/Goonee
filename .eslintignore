@@ -1,0 +1,12 @@
+# Ignore built, vendor, and non-source noise
+__tests__ex/eruda/
+__tests__ex/GooneeXeruda/
+__tests__ex/tool-XX/
+**/*.min.js
+**/dist/
+**/build/
+**/node_modules/
+**/*.bundle.js
+**/*.vendor.js
+
+# Allow linting of our source by default

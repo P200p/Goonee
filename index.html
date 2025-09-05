@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Favicon for browser tab -->
-<link rel="icon" href="https://goonee.netlify.app/image.png" type="image/image.png">
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="icon/icon16.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="icon/icon48.png">
+    <link rel="icon" type="image/png" sizes="128x128" href="icon/icon128.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon/192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon/512x512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon/192x192.png">
 
 <!-- Open Graph meta tags for social sharing -->
 <meta property="og:title" content="Goonee Terminal - Hacker Browser">
@@ -522,21 +527,13 @@
         <div class="terminal-container">
             <div class="terminal-header">
                 <span>🖥️</span>
-                <span>Goonee'@terminal:~$</span>
+                 <a href="https://goonee.netlify.app/__tests__ex\guide.html" target="_blank" rel="noopener" class="guide-link">Goonee'@terminal:~$</a>
             </div>
             <div class="terminal-body">
                 <div class="kiwi-section">
-                    <div style="margin-bottom:0.5em;">🧪โหลด kiwi แล้ว</div>
-                    <div style="margin-bottom:0.5em;">คัดลอกโค้ดนี้เพื่อนำไปใช้:</div>
-                    <textarea id="spellCode" class="spell-code" readonly>javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/loader.js?t='+Date.now();s.onload=function(){toggleConsole();};document.body.appendChild(s);})();</textarea>
-                    <button onclick="copySpell()" class="copy-btn">
-                        🔮 คัดลอกเวท
-                    </button>
+                    <iframe src="__tests__ex/guide.html" style="width:100%;min-height:900px;border:0;border-radius:8px;overflow:hidden" loading="lazy"></iframe>
                     <div style="margin-top:1em;">
-                        <a href="https://goonee.netlify.app/guide" target="_blank" class="guide-link">คู่มืออยู่นี่</a>
-                    </div>
-                    <div style="margin-top:1em;">
-                        <a href="https://goonee.netlify.app/welcome" target="_blank" class="guide-link">คี่มืออยู่นี่</a>
+                        <a href="https://goonee.netlify.app/" target="_blank" rel="noopener" class="guide-link">เปิด Goonee PWA ที่ goonee.netlify.app</a>
                     </div>
                 </div>
             </div>
@@ -782,7 +779,7 @@
             { name: 'Instagram', url: 'https://instagram.com', icon: '📷' },
             { name: 'Netflix', url: 'https://netflix.com', icon: '🎬' },
             { name: 'Spotify', url: 'https://spotify.com', icon: '🎵' },
-            { name: 'AI_AUTO_SCAN', url: 'https://goonee.netlify.app/ai/scan.html', icon: '☠︎' }
+            { name: 'AI_AUTO_SCAN', url: 'https://huggingface.co/spaces/Rummaitak/deepscanner', icon: '☠︎' }
         ];
         
         function renderShortcuts() {

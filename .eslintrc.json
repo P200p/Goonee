@@ -1,0 +1,56 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "script"
+  },
+  "globals": {
+    "eruda": "readonly",
+    "toggleConsole": "readonly"
+  },
+  "overrides": [
+    {
+      "files": ["sw.js"],
+      "env": { "serviceworker": true, "browser": false },
+      "globals": { "self": "readonly", "caches": "readonly", "clients": "readonly" },
+      "parserOptions": { "sourceType": "script" }
+    },
+    {
+      "files": ["scan/**/*.js"],
+      "env": { "node": true },
+      "parserOptions": { "sourceType": "script" }
+    },
+    {
+      "files": ["scan/gen.js"],
+      "env": { "node": true },
+      "parserOptions": { "sourceType": "module" }
+    },
+    {
+      "files": [
+        "sharktool/BM.js",
+        "sharktool/BM-postshark.js",
+        "sharktool/deldis.js"
+      ],
+      "rules": {
+        "no-unused-labels": "off"
+      }
+    }
+  ],
+  "rules": {
+    "no-unused-vars": ["warn", { "args": "none", "ignoreRestSiblings": true }],
+    "no-undef": "error",
+    "no-extra-semi": "warn",
+    "no-cond-assign": ["error", "except-parens"],
+    "eqeqeq": ["warn", "smart"],
+    "curly": ["warn", "multi-line"],
+    "no-console": "off",
+    "no-empty": ["warn", { "allowEmptyCatch": true }]
+  }
+}

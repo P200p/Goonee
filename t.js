@@ -79,17 +79,17 @@ s.textContent = `
   .go-console-header {
     background: linear-gradient(90deg,var(--accent),var(--accent2));
     color: #001a0a;
-    padding: 10px 14px;
+    padding: 4px 7px;
     cursor: move;
     display: flex;
-    gap: 5px;
+    gap: 10px;
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
     user-select: none;
     touch-action: none;
   }
-  .go-console-controls { display:flex; gap: 42px; }
+  .go-console-controls { display:flex; gap: 12px; }
   .go-console-body {
     height: calc(100% - 40px);
     display: flex;
@@ -111,7 +111,7 @@ s.textContent = `
     padding: 2px 2px;
     border-radius: 2px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 8px;
   }
   .go-btn:hover {
     background: rgba(0,255,65,.26);
@@ -178,7 +178,7 @@ s.textContent = `
   #resizeSW { left: 0;  bottom: 0; cursor: sw-resize; }
   #resizeNE { right: 0; top: 0;    cursor: ne-resize; }
   #resizeNW { left: 0;  top: 0;    cursor: nw-resize; }
-  @media (max-width: 968px) {
+  @media (max-width: 568px) {
     .go-console-panel {
       top: 2vh;
       left: 2vw;
@@ -193,7 +193,7 @@ s.textContent = `
     }
     .go-btn {
       padding: 2px 2px;
-      font-size: 14px;
+      font-size: 7px;
     }
     .go-main-content {
       padding: 3px;
@@ -546,219 +546,4 @@ document.head.appendChild(s);
     const status = document.getElementById('statusText'); if(status) status.textContent = 'Layout saved';
   }
   G.loadLayout = function(){
-    const panel = document.getElementById('consolePanel');
-    if (!panel) return;
-    let data = null;
-    try{ data = JSON.parse(localStorage.getItem(LAYOUT_KEY)||'null'); }catch(_){ data=null; }
-    if (!data) { const s=document.getElementById('statusText'); if(s) s.textContent='No saved layout'; return; }
-    if (data.left) panel.style.left = data.left;
-    if (data.top) panel.style.top = data.top;
-    if (data.width) panel.style.width = data.width;
-    if (data.height) panel.style.height = data.height;
-    const status = document.getElementById('statusText'); if(status) status.textContent = 'Layout loaded';
-  }
-
-  // Snippet management (localStorage)
-  const SNIP_KEY = 'hc_snippets_v1';
-  function readSnips(){
-    try{ return JSON.parse(localStorage.getItem(SNIP_KEY) || '[]'); }catch(_){ return []; }
-  }
-  function writeSnips(list){
-    try{ localStorage.setItem(SNIP_KEY, JSON.stringify(list)); }catch(_){ }
-  }
-  function refreshSnippetSelect(){
-    const sel = document.getElementById('snippetSelect');
-    if (!sel) return;
-    if (!(sel instanceof HTMLSelectElement)) return;
-    const list = readSnips();
-    const prevIndex = sel.selectedIndex;
-    sel.innerHTML = '';
-    list.forEach((it, idx)=>{
-      const opt = document.createElement('option');
-      opt.value = String(idx);
-      opt.textContent = it.name || ('Snippet '+(idx+1));
-      sel.appendChild(opt);
-    });
-    if (list.length > 0){
-      sel.selectedIndex = (prevIndex >= 0 && prevIndex < list.length) ? prevIndex : 0;
-    }
-  }
-  G.saveSnippet = function(){
-    const ta = document.getElementById('codeInput');
-    if (!(ta instanceof HTMLTextAreaElement)) return;
-    const code = ta.value.trim();
-    if (!code) return;
-    let name = prompt('Snippet name?', 'My Snippet');
-    if (name === null) { // user cancelled
-      const status = document.getElementById('statusText'); if(status) status.textContent = 'Save cancelled';
-      return;
-    }
-    name = String(name).trim();
-    if (!name) name = 'My Snippet';
-    const list = readSnips();
-    list.push({name, code});
-    writeSnips(list);
-    refreshSnippetSelect();
-    // Select the newly saved snippet and sync to textarea
-    const sel = document.getElementById('snippetSelect');
-    if (sel instanceof HTMLSelectElement){
-      sel.selectedIndex = Math.max(0, list.length - 1);
-    }
-    ta.value = code;
-    const status = document.getElementById('statusText'); if(status) status.textContent = 'Snippet saved';
-  }
-  G.deleteSnippet = function(){
-    const sel = document.getElementById('snippetSelect');
-    const ta = document.getElementById('codeInput');
-    if (!(sel instanceof HTMLSelectElement)) return;
-    const list = readSnips();
-    const idx = sel.selectedIndex >= 0 ? sel.selectedIndex : 0;
-    if (!list.length || !list[idx]){ const s=document.getElementById('statusText'); if(s) s.textContent='No snippet to delete'; return; }
-    const target = list[idx];
-    const ok = confirm(`Delete snippet "${target.name || ('Snippet '+(idx+1))}" ?`);
-    if (!ok) { const s=document.getElementById('statusText'); if(s) s.textContent='Delete cancelled'; return; }
-    list.splice(idx, 1);
-    writeSnips(list);
-    refreshSnippetSelect();
-    // Adjust selection
-    if (sel.options.length){ sel.selectedIndex = Math.min(idx, sel.options.length - 1); }
-    // Sync textarea to new selection or clear if none
-    if (ta instanceof HTMLTextAreaElement){
-      if (sel.options.length){
-        const i = sel.selectedIndex;
-        const l2 = readSnips();
-        ta.value = (l2[i] && l2[i].code) ? l2[i].code : '';
-      } else {
-        ta.value = '';
-      }
-    }
-    const status = document.getElementById('statusText'); if(status) status.textContent = 'Snippet deleted';
-  }
-  G.loadSnippet = function(){
-    const sel = document.getElementById('snippetSelect');
-    const ta = document.getElementById('codeInput');
-    if (!(sel instanceof HTMLSelectElement) || !(ta instanceof HTMLTextAreaElement)) return;
-    const list = readSnips();
-    let idx = parseInt(sel.value, 10);
-    if (isNaN(idx)) idx = (sel.selectedIndex >= 0 ? sel.selectedIndex : 0);
-    if (list.length && !list[idx] && idx === 0) idx = 0;
-    if (!isNaN(idx) && list[idx]){
-      ta.value = list[idx].code || '';
-      const status = document.getElementById('statusText'); if(status) status.textContent = 'Snippet loaded';
-    }
-  }
-
-  // Theme randomizer (persist only theme)
-  const THEME_KEY = 'hc_theme_v1';
-  const THEMES = [
-    {accent:'#00ff41',accent2:'#00cc33',accentText:'#00ffc3',bgPanel:'rgba(0,0,0,.96)',bgInput:'#002200',bgOutput:'#001b12',status:'#00ff83'},
-    {accent:'#00e1ff',accent2:'#0077ff',accentText:'#b8f3ff',bgPanel:'rgba(2,8,23,.96)',bgInput:'#001a33',bgOutput:'#001326',status:'#6dd6ff'},
-    {accent:'#ff9900',accent2:'#ff5500',accentText:'#ffe0b3',bgPanel:'rgba(20,10,0,.96)',bgInput:'#261a00',bgOutput:'#1a1200',status:'#ffcc66'},
-    {accent:'#ff3d7f',accent2:'#a71d5d',accentText:'#ffd1e6',bgPanel:'rgba(23,0,12,.96)',bgInput:'#330016',bgOutput:'#260011',status:'#ff8ab3'}
-  ];
-  function applyThemeVars(panel, t){
-    if (!(panel instanceof HTMLElement)) return;
-    panel.style.setProperty('--accent', t.accent);
-    panel.style.setProperty('--accent2', t.accent2);
-    panel.style.setProperty('--accentText', t.accentText);
-    panel.style.setProperty('--bgPanel', t.bgPanel);
-    panel.style.setProperty('--bgInput', t.bgInput);
-    panel.style.setProperty('--bgOutput', t.bgOutput);
-    panel.style.setProperty('--status', t.status);
-  }
-  function readTheme(){ try{ return JSON.parse(localStorage.getItem(THEME_KEY)||'null'); }catch(_){ return null; } }
-  function writeTheme(t){ try{ localStorage.setItem(THEME_KEY, JSON.stringify(t)); }catch(_){ } }
-  G.randomTheme = function(){
-    const panel = document.getElementById('consolePanel');
-    if (!panel) return;
-    const t = THEMES[Math.floor(Math.random()*THEMES.length)];
-    applyThemeVars(panel, t);
-    writeTheme(t); // persist only theme
-    const status = document.getElementById('statusText'); if(status) status.textContent = 'Theme applied';
-  }
-
-  // Lazy Eruda integration (not loaded by default)
-  const ERUDA_KEY = 'hc_eruda_on';
-  const ERUDA_URL = (window && /** @type {any} */(window).ERUDA_URL) || 'https://cdn.jsdelivr.net/npm/eruda@3/eruda.min.js';
-  function isErudaLoaded(){ return typeof /** @type {any} */(window).eruda !== 'undefined'; }
-  /** @returns {Promise<void>} */
-  function loadEruda(){
-    return new Promise((resolve, reject)=>{
-      if (isErudaLoaded()) { resolve(undefined); return; }
-      const id='__hc_eruda_loader';
-      if (document.getElementById(id)){
-        const chk=setInterval(()=>{ if(isErudaLoaded()){ clearInterval(chk); resolve(undefined); } }, 80);
-        setTimeout(()=>{ clearInterval(chk); isErudaLoaded()?resolve(undefined):reject(new Error('Eruda timeout')); }, 10000);
-        return;
-      }
-      const s=document.createElement('script'); s.id=id; s.src=ERUDA_URL; s.async=true;
-      s.onload=()=> resolve(undefined);
-      s.onerror=()=> reject(new Error('Failed to load Eruda'));
-      document.documentElement.appendChild(s);
-    });
-  }
-  function setErudaState(on){ try{ localStorage.setItem(ERUDA_KEY, on?'1':'0'); }catch(_){ } }
-  function getErudaState(){ try{ return localStorage.getItem(ERUDA_KEY)==='1'; }catch(_){ return false; } }
-  G.toggleEruda = async function(){
-    const status = document.getElementById('statusText');
-    try{
-      if (!isErudaLoaded()){
-        if (status) status.textContent = 'Loading Eruda…';
-        await loadEruda();
-        /** @type {any} */(window).eruda && /** @type {any} */(window).eruda.init();
-      }
-      const E = /** @type {any} */(window).eruda;
-      if (!E) return;
-      const visible = E._devTools && E._devTools._isShow; // internal but works
-      if (visible) { E.hide(); setErudaState(false); if(status) status.textContent='Eruda hidden'; }
-      else { E.show(); setErudaState(true); if(status) status.textContent='Eruda shown'; }
-    }catch(err){ if(status) status.textContent='Eruda error'; }
-  }
-
-  // Init helpers when panel is shown/created
-  function initPanelExtras(){
-    const panel = document.getElementById('consolePanel');
-    if (!panel) return;
-    // Apply saved theme if any
-    const t = readTheme();
-    if (t) applyThemeVars(panel, t);
-    // Populate snippets
-    refreshSnippetSelect();
-    // Bind change -> auto-fill code input from selected snippet
-    try{
-      const sel = document.getElementById('snippetSelect');
-      const ta = document.getElementById('codeInput');
-      if (sel instanceof HTMLSelectElement && ta instanceof HTMLTextAreaElement){
-        sel.addEventListener('change', function(){
-          const list = readSnips();
-          const i = sel.selectedIndex;
-          if (i >= 0 && list[i]){ ta.value = list[i].code || ''; }
-        });
-      }
-    }catch(_){ /* ignore */ }
-    // Ensure touch-action none on draggable elements
-    const header = panel.querySelector('#consoleHeader');
-    const handle = panel.querySelector('#resizeHandle');
-    if (header && header instanceof HTMLElement) header.style.touchAction='none';
-    if (handle && handle instanceof HTMLElement) handle.style.touchAction='none';
-    // Restore eruda visibility if saved on
-    try{
-      if (getErudaState()){
-        loadEruda().then(()=>{ const E=/** @type {any} */(window).eruda; if(E){ E.init(); E.show(); } });
-      }
-    }catch(_){ }
-  }
-
-  G.closeConsole = function(){
-    const panel = document.getElementById('consolePanel');
-    if (!panel) return;
-    panel.style.display = 'none';
-    const status = document.getElementById('statusText'); if(status) status.textContent = 'Closed';
-  }
-
-  // Auto open if requested via data-auto or ?auto=1
-  const auto = (currentScript && currentScript.getAttribute && currentScript.getAttribute('data-auto')==='1') ||
-               (currentScript && currentScript.src && /[?&]auto=1/.test(currentScript.src)) ||
-               (typeof window.HC_AUTO!== 'undefined' && !!window.HC_AUTO);
-  if (auto){ showConsole(); }
-})();
+    

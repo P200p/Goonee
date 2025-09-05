@@ -1,12 +1,17 @@
+// @ts-nocheck
 /* Service Worker for Hacker Console assets */
-const VERSION = 'v1.0.0';
+const VERSION = 'v1.0.1';
 const CACHE_NAME = `hc-cache-${VERSION}`;
 const CORE = [
   '/',            // for Netlify root fallback (optional)
-  '/index.html',  // optional: helpful when visiting origin directly
+  '/index.html',  // helpful when visiting origin directly
+  '/__tests__ex/guide.html', // embedded manual
+  '/console.js',  // main console
   '/loader.js',
   '/main.js',
-  '/style.css'
+  '/style.css',
+  '/manifest.json',
+  '/icon.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -39,6 +44,12 @@ self.addEventListener('fetch', (event) => {
         return cache.match('/index.html');
       })
     );
+    return;
+  }
+
+  // Cache-first for manual page when offline
+  if (url.pathname === '/__tests__ex/guide.html' && req.method === 'GET') {
+    event.respondWith(cacheFirst(req));
     return;
   }
 

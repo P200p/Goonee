@@ -71,10 +71,10 @@ s.textContent = `
     border-radius: 5px;
     box-shadow: 0 8px 28px rgba(0,255,65,.25);
     z-index: 100000;
-    min-width: 70px;
-    min-height: 30px;
+    min-width: 100px;
+    min-height: 20px;
     overflow: auto;
-    resize: both; /* ✅ เพิ่มตรงนี้ */
+    resize: both;
   }
   .go-console-header {
     background: linear-gradient(90deg,var(--accent),var(--accent2));
@@ -89,6 +89,7 @@ s.textContent = `
     user-select: none;
     touch-action: none;
   }
+  .go-console-controls { display:flex; gap: 12px; }
   .go-console-body {
     height: calc(100% - 40px);
     display: flex;
@@ -168,15 +169,15 @@ s.textContent = `
   }
   .go-resize-handle {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    width: 18px;
-    height: 18px;
-    cursor: se-resize;
+    width: 14px;
+    height: 14px;
     background: linear-gradient(-45deg,transparent 40%,var(--accent) 40%,var(--accent) 60%,transparent 60%);
     touch-action: none;
   }
+  #resizeSE { right: 0; bottom: 0; cursor: se-resize; }
+  #resizeSW { left: 0;  bottom: 0; cursor: sw-resize; }
+  #resizeNE { right: 0; top: 0;    cursor: ne-resize; }
+  #resizeNW { left: 0;  top: 0;    cursor: nw-resize; }
   @media (max-width: 568px) {
     .go-console-panel {
       top: 2vh;
@@ -236,6 +237,9 @@ document.head.appendChild(s);
           <button class="go-btn" onclick="copyOutput()">📋 Copy Output</button>
           <button class="go-btn" onclick="saveSnippet()">💾 Save Snippet</button>
           <button class="go-btn" onclick="randomTheme()">🎨 Random Theme</button>
+          <button class="go-btn" onclick="saveLayout()">💾 Save Layout</button>
+          <button class="go-btn" onclick="loadLayout()">⤴️ Load Layout</button>
+          <button class="go-btn" onclick="resetConsole()">↺ Reset</button>
           <select class="go-btn" id="snippetSelect" title="Saved snippets"></select>
           <button class="go-btn" onclick="loadSnippet()">⤴️ Load</button>
           <button class="go-btn" onclick="deleteSnippet()">🗑️ Delete</button>
@@ -252,10 +256,13 @@ document.head.appendChild(s);
           </div>
         </div>
         <div class="go-status-bar">
-          <span id="statusText">Ready • Drag to move • Resize from corner</span>
+          <span id="statusText">Ready • Drag to move • Resize from corners</span>
         </div>
       </div>
-      <div class="go-resize-handle" id="resizeHandle"></div>
+      <div class="go-resize-handle" id="resizeNW"></div>
+      <div class="go-resize-handle" id="resizeNE"></div>
+      <div class="go-resize-handle" id="resizeSW"></div>
+      <div class="go-resize-handle" id="resizeSE"></div>
     `;
     document.body.appendChild(panel);
 
@@ -278,35 +285,49 @@ document.head.appendChild(s);
           e.preventDefault();
           if(!drag.on) return;
           const dx=ev.clientX-drag.sx, dy=ev.clientY-drag.sy;
-          panel.style.left = Math.max(0, drag.l+dx) + 'px';
-          panel.style.top  = Math.max(0, drag.t+dy) + 'px';
+          panel.style.left = (drag.l+dx) + 'px';
+          panel.style.top  = (drag.t+dy) + 'px';
         });
         header.addEventListener('pointerup', ()=>{ drag.on=false; });
         header.addEventListener('pointercancel', ()=>{ drag.on=false; });
       }
 
-      const handle = panel.querySelector('#resizeHandle');
-      let rs = {on:false, sx:0, sy:0, w:0, h:0};
-      if (handle) {
-        handle.addEventListener('pointerdown', (e)=>{
+      // Multi-corner resize handles
+      const setupHandle = (el, dir)=>{
+        if (!el) return;
+        let rs = {on:false, sx:0, sy:0, w:0, h:0, l:0, t:0};
+        el.addEventListener('pointerdown', (e)=>{
           const ev = /** @type {any} */ (e);
           if (ev.button!==0) return;
           rs.on=true; rs.sx=ev.clientX; rs.sy=ev.clientY;
-          const r=panel.getBoundingClientRect(); rs.w=r.width; rs.h=r.height;
-          try { handle.setPointerCapture(ev.pointerId); } catch(_){ }
+          const r=panel.getBoundingClientRect();
+          rs.w=r.width; rs.h=r.height; rs.l=r.left; rs.t=r.top;
+          try { el.setPointerCapture(ev.pointerId); } catch(_){ }
           e.preventDefault();
         });
-        handle.addEventListener('pointermove', (e)=>{
+        el.addEventListener('pointermove', (e)=>{
           const ev = /** @type {any} */ (e);
           e.preventDefault();
           if(!rs.on) return;
           const dx=ev.clientX-rs.sx, dy=ev.clientY-rs.sy;
-          panel.style.width = Math.max(280, rs.w+dx) + 'px';
-          panel.style.height = Math.max(200, rs.h+dy) + 'px';
+          let newW = rs.w, newH = rs.h, newL = rs.l, newT = rs.t;
+          const MIN_W = 100, MIN_H = 20;
+          if (dir.includes('E')) newW = Math.max(MIN_W, rs.w + dx);
+          if (dir.includes('S')) newH = Math.max(MIN_H, rs.h + dy);
+          if (dir.includes('W')) { newW = Math.max(MIN_W, rs.w - dx); newL = rs.l + (rs.w - newW); }
+          if (dir.includes('N')) { newH = Math.max(MIN_H, rs.h - dy); newT = rs.t + (rs.h - newH); }
+          panel.style.width = newW + 'px';
+          panel.style.height = newH + 'px';
+          panel.style.left = newL + 'px';
+          panel.style.top = newT + 'px';
         });
-        handle.addEventListener('pointerup', ()=>{ rs.on=false; });
-        handle.addEventListener('pointercancel', ()=>{ rs.on=false; });
+        el.addEventListener('pointerup', ()=>{ rs.on=false; });
+        el.addEventListener('pointercancel', ()=>{ rs.on=false; });
       }
+      setupHandle(panel.querySelector('#resizeSE'), 'SE');
+      setupHandle(panel.querySelector('#resizeSW'), 'SW');
+      setupHandle(panel.querySelector('#resizeNE'), 'NE');
+      setupHandle(panel.querySelector('#resizeNW'), 'NW');
     }catch(_){ /* ignore */ }
   }
 
@@ -429,7 +450,7 @@ document.head.appendChild(s);
     if (!panel) return;
     const header = panel.querySelector('.go-console-header');
     const body = panel.querySelector('.go-console-body');
-    const handle = panel.querySelector('#resizeHandle');
+    const handles = panel.querySelectorAll('.go-resize-handle');
     const bg = document.getElementById('matrixCanvas');
     const isCollapsed = panel.getAttribute('data-collapsed')==='1';
     const status = document.getElementById('statusText');
@@ -444,7 +465,7 @@ document.head.appendChild(s);
         }
       }
       if (body && body instanceof HTMLElement) body.style.display='none';
-      if (handle && handle instanceof HTMLElement) handle.style.display='none';
+      handles && handles.forEach && handles.forEach(h=>{ if(h instanceof HTMLElement) h.style.display='none'; });
       if (header && header instanceof HTMLElement && panel instanceof HTMLElement) {
         panel.style.height = header.offsetHeight + 'px';
       }
@@ -453,7 +474,7 @@ document.head.appendChild(s);
       if(status) status.textContent = 'Minimized';
     }else{
       if (body && body instanceof HTMLElement) body.style.display='block';
-      if (handle && handle instanceof HTMLElement) handle.style.display='block';
+      handles && handles.forEach && handles.forEach(h=>{ if(h instanceof HTMLElement) h.style.display='block'; });
       panel.removeAttribute('data-collapsed');
       if (panel instanceof HTMLElement){
         if (panel.dataset.prevW) { panel.style.width = panel.dataset.prevW; delete panel.dataset.prevW; }
@@ -470,9 +491,9 @@ document.head.appendChild(s);
     try{
       const wasCollapsed = panel.getAttribute('data-collapsed')==='1';
       const body = panel.querySelector('.go-console-body');
-      const handle = panel.querySelector('#resizeHandle');
+      const handles = panel.querySelectorAll('.go-resize-handle');
       if (body && body instanceof HTMLElement) body.style.display='block';
-      if (handle && handle instanceof HTMLElement) handle.style.display='block';
+      handles && handles.forEach && handles.forEach(h=>{ if(h instanceof HTMLElement) h.style.display='block'; });
       panel.removeAttribute('data-collapsed');
       if (wasCollapsed && panel instanceof HTMLElement) {
         // Restore previous size if we have it; otherwise go fullscreen
@@ -497,9 +518,9 @@ document.head.appendChild(s);
     try{
       panel.removeAttribute('data-collapsed');
       const body = panel.querySelector('.go-console-body');
-      const handle = panel.querySelector('#resizeHandle');
+      const handles = panel.querySelectorAll('.go-resize-handle');
       if (body && body instanceof HTMLElement) body.style.display='block';
-      if (handle && handle instanceof HTMLElement) handle.style.display='block';
+      handles && handles.forEach && handles.forEach(h=>{ if(h instanceof HTMLElement) h.style.display='block'; });
       // Default desktop size, mobile responsive handled by showConsole()
       panel.style.left = '24px';
       panel.style.top = '24px';
@@ -507,6 +528,34 @@ document.head.appendChild(s);
       panel.style.height = '320px';
       const status = document.getElementById('statusText'); if(status) status.textContent = 'Reset to default';
     }catch(_){/* ignore */}
+  }
+
+  // Optional: layout persistence only on explicit actions
+  const LAYOUT_KEY = 'hc_layout_v1';
+  G.saveLayout = function(){
+    const panel = document.getElementById('consolePanel');
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const data = {
+      left: panel.style.left || (r.left + 'px'),
+      top: panel.style.top || (r.top + 'px'),
+      width: panel.style.width || (r.width + 'px'),
+      height: panel.style.height || (r.height + 'px')
+    };
+    try{ localStorage.setItem(LAYOUT_KEY, JSON.stringify(data)); }catch(_){ }
+    const status = document.getElementById('statusText'); if(status) status.textContent = 'Layout saved';
+  }
+  G.loadLayout = function(){
+    const panel = document.getElementById('consolePanel');
+    if (!panel) return;
+    let data = null;
+    try{ data = JSON.parse(localStorage.getItem(LAYOUT_KEY)||'null'); }catch(_){ data=null; }
+    if (!data) { const s=document.getElementById('statusText'); if(s) s.textContent='No saved layout'; return; }
+    if (data.left) panel.style.left = data.left;
+    if (data.top) panel.style.top = data.top;
+    if (data.width) panel.style.width = data.width;
+    if (data.height) panel.style.height = data.height;
+    const status = document.getElementById('statusText'); if(status) status.textContent = 'Layout loaded';
   }
 
   // Snippet management (localStorage)

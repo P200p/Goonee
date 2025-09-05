@@ -79,17 +79,17 @@ s.textContent = `
   .go-console-header {
     background: linear-gradient(90deg,var(--accent),var(--accent2));
     color: #001a0a;
-    padding: 4px 7px;
+    padding: 10px 14px;
     cursor: move;
     display: flex;
-    gap: 10px;
+    gap: 5px;
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
     user-select: none;
     touch-action: none;
   }
-  .go-console-controls { display:flex; gap: 12px; }
+  .go-console-controls { display:flex; gap: 42px; }
   .go-console-body {
     height: calc(100% - 40px);
     display: flex;
@@ -111,7 +111,7 @@ s.textContent = `
     padding: 2px 2px;
     border-radius: 2px;
     cursor: pointer;
-    font-size: 8px;
+    font-size: 14px;
   }
   .go-btn:hover {
     background: rgba(0,255,65,.26);
@@ -178,7 +178,7 @@ s.textContent = `
   #resizeSW { left: 0;  bottom: 0; cursor: sw-resize; }
   #resizeNE { right: 0; top: 0;    cursor: ne-resize; }
   #resizeNW { left: 0;  top: 0;    cursor: nw-resize; }
-  @media (max-width: 568px) {
+  @media (max-width: 968px) {
     .go-console-panel {
       top: 2vh;
       left: 2vw;
@@ -193,7 +193,7 @@ s.textContent = `
     }
     .go-btn {
       padding: 2px 2px;
-      font-size: 7px;
+      font-size: 14px;
     }
     .go-main-content {
       padding: 3px;

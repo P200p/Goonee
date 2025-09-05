@@ -33,7 +33,8 @@ async function getSignupLink(folder) {
 
 async function generateMatrixGrid() {
   const folders = await getBrandFolders();
-</head>
+  const html = `<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -186,7 +187,6 @@ async function generateMatrixGrid() {
     }
   </style>
 </head>
-</head>
 <body>
   <div class="matrix-rain" id="matrixRain"></div>
   <div class="header">
@@ -208,7 +208,7 @@ ${(
               if (/\.(mp4|webm|ogg)$/i.test(item)) {
                 return `<video src="${folder}/${item}" muted loop autoplay playsinline></video>`;
               }
-              return `<img src="${folder}/${item}" alt="${folder}" onerror=\"this.style.opacity=0.13;this.style.borderStyle='dashed';\">`;
+              return `<img src="${folder}/${item}" alt="${folder}" onerror="this.style.opacity=0.13;this.style.borderStyle='dashed';">`;
             })
             .join("")}
         </div>
@@ -218,45 +218,38 @@ ${(
   )
 ).join("\n")}
   </div>
-</div>
-<script>
-// Matrix rain effect
-function createMatrixRain() {
-  const matrixContainer = document.getElementById('matrixRain');
-  const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-  matrixContainer.innerHTML = '';
-  for (let i = 0; i < 50; i++) {
-    const column = document.createElement('div');
-    column.className = 'matrix-column';
-    column.style.left = Math.random() * 100 + '%';
-    // กำหนด duration และ delay แบบสุ่ม
-    const duration = (Math.random() * 3 + 2).toFixed(2);
-    const delay = (Math.random() * 2).toFixed(2);
-    column.style.animationDuration = duration + 's';
-    column.style.animationDelay = delay + 's';
-    let columnText = '';
-    for (let j = 0; j < 20; j++) {
-      columnText += characters.charAt(Math.floor(Math.random() * characters.length)) + '<br>';
+
+  <script>
+  // Matrix rain effect
+  function createMatrixRain() {
+    const matrixContainer = document.getElementById('matrixRain');
+    const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌเนノハヒฟヘホマミムメモヤユヨラリルレロワヲン';
+    matrixContainer.innerHTML = '';
+    for (let i = 0; i < 50; i++) {
+      const column = document.createElement('div');
+      column.className = 'matrix-column';
+      column.style.left = Math.random() * 100 + '%';
+      const duration = (Math.random() * 3 + 2).toFixed(2);
+      const delay = (Math.random() * 2).toFixed(2);
+      column.style.animationDuration = duration + 's';
+      column.style.animationDelay = delay + 's';
+      let columnText = '';
+      for (let j = 0; j < 20; j++) {
+        columnText += characters.charAt(Math.floor(Math.random() * characters.length)) + '<br>';
+      }
+      column.innerHTML = columnText;
+      matrixContainer.appendChild(column);
     }
-    column.innerHTML = columnText;
-    matrixContainer.appendChild(column);
   }
-}
-createMatrixRain();
-setInterval(() => {
   createMatrixRain();
-}, 30000);
-// Button click sound
-const clickSound = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae7b7.mp3');
-setTimeout(() => {
-  document.querySelectorAll('.signup-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      clickSound.currentTime = 0;
-      clickSound.play();
+  setInterval(() => { createMatrixRain(); }, 30000);
+  const clickSound = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae7b7.mp3');
+  setTimeout(() => {
+    document.querySelectorAll('.signup-btn').forEach(btn => {
+      btn.addEventListener('click', () => { clickSound.currentTime = 0; clickSound.play(); });
     });
-  });
-}, 100);
-</script>
+  }, 100);
+  </script>
 </body>
 </html>`;
   await fs.writeFile("glow_gift_grid.html", html);

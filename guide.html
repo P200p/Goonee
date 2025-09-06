@@ -236,22 +236,21 @@ javascript:(function(){var s=document.createElement('script');s.src='https://goo
       <pre><code id="userscript">// ==UserScript==
 // @name         SharkTool Console Toggle (Floating Button)
 // @namespace    sharktool
-// @version      1.0.0
-// @description  Floating button to toggle the SharkTool console loaded from your Netlify
+// @version      1.0.5
+// @description  Floating button that runs SharkTool console (same as bookmarklet)
 // @match        *://*/*
 // @grant        GM_addStyle
 // @run-at       document-end
 // ==/UserScript==
+
 (function(){
   'use strict';
-  const SCRIPT_URL = 'https://goonee.netlify.app/console.js'; // ← เปลี่ยนเป็นไฟล์ของคุณ
-  // ตั้ง URL ของ Eruda เองได้ (ถ้าจะใช้)
-  window.ERUDA_URL = 'https://cdn.jsdelivr.net/npm/eruda@3/eruda.min.js';
+  const SCRIPT_URL = 'https://goonee.netlify.app/console.js';
 
   if (window.__shark_console_btn) return;
 
   function addStyle(css){
-    try{ if (typeof GM_addStyle==='function'){ GM_addStyle(css); return; } }catch(_){ }
+    try{ if (typeof GM_addStyle==='function'){ GM_addStyle(css); return; } }catch(_){}
     const s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
   }
 
@@ -260,23 +259,27 @@ javascript:(function(){var s=document.createElement('script');s.src='https://goo
       background:#00ff41;color:#062;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;
       box-shadow:0 6px 18px rgba(0,0,0,.35),0 0 0 2px #00ff41 inset;cursor:pointer;user-select:none;z-index:2147483647;
       transition:transform .12s ease, box-shadow .12s ease;touch-action:none}
-    #__shark_toggle_btn:hover{ transform: translateY(-1px); box-shadow:0 8px 22px rgba(0,0,0,.45),0 0 0 2px #00ff41 inset; }
-    #__shark_toggle_btn.__loading{ background:#ccc;color:#333;box-shadow:0 0 0 2px #bbb inset }
+    #__shark_toggle_btn:hover{ transform: translateY(-1px); box-shadow:0 8px 22px rgba(0,0,0,.45),0 0 0 2px #00ff41 inset;}
+    #__shark_toggle_btn.__loading{ background:#ccc;color:#333;box-shadow:0 0 0 2px #bbb inset;}
   `);
 
-  function ensureConsoleLoaded(){
+  function injectConsole(){
     return new Promise((resolve, reject)=>{
-      if (window.toggleConsole){ resolve(undefined); return; }
-      const id='__shark_console_loader';
-      if (document.getElementById(id)){
-        const chk=setInterval(()=>{ if(window.toggleConsole){ clearInterval(chk); resolve(undefined);} },80);
-        setTimeout(()=>{ clearInterval(chk); window.toggleConsole?resolve(undefined):reject(new Error('Timeout')); },10000);
-        return;
-      }
-      const s=document.createElement('script'); s.id=id; s.src=SCRIPT_URL; s.async=true;
-      s.onload=()=> resolve(undefined);
-      s.onerror=()=> reject(new Error('Failed to load console.js'));
-      document.documentElement.appendChild(s);
+      const s=document.createElement('script');
+      s.src=SCRIPT_URL+'?t='+Date.now();  // กัน cache เหมือน bookmarklet
+      s.async=true;
+      s.onload=()=>{
+        try{
+          if (typeof toggleConsole==='function'){
+            toggleConsole();   // 🟢 เรียกเหมือน bookmarklet
+          }
+        }catch(e){
+          console.error('[SharkTool] toggleConsole error:', e);
+        }
+        resolve();
+      };
+      s.onerror=()=>reject(new Error('Failed to load console.js'));
+      document.body.appendChild(s);
     });
   }
 
@@ -287,9 +290,14 @@ javascript:(function(){var s=document.createElement('script');s.src='https://goo
     btn.textContent='≡';
     btn.addEventListener('click', async ()=>{
       btn.classList.add('__loading');
-      try{ await ensureConsoleLoaded(); window.toggleConsole(); }
-      catch(err){ console.error('[SharkTool] load error:',err); alert('Cannot load console.js'); }
-      finally{ btn.classList.remove('__loading'); }
+      try{
+        await injectConsole();
+      }catch(err){
+        console.error('[SharkTool] load error:',err);
+        alert('Cannot load console.js');
+      }finally{
+        btn.classList.remove('__loading');
+      }
     });
     document.body.appendChild(btn);
     window.__shark_console_btn = btn;
@@ -297,6 +305,7 @@ javascript:(function(){var s=document.createElement('script');s.src='https://goo
 
   createButton();
 })();
+
 </code></pre>
       <p><a class="btn" href="#" onclick="navigator.clipboard.writeText(document.getElementById('userscript').textContent||'');return false;">คัดลอก Userscript</a></p>
       <p class="note"><strong>หมายเหตุ:</strong> ถ้าเว็บไซต์มี CSP เข้มงวด อาจบล็อกการโหลดสคริปต์จากโดเมนภายนอก ให้โฮสต์ไฟล์ไว้บนโดเมนที่ได้รับอนุญาต หรือใช้ @require ของ Userscript แทน</p>

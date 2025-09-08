@@ -112,7 +112,7 @@
       </div>
       <div>
         <div class="gc2-label">💡 Tips</div>
-        <div class="gc2-output" style="min-height:60px" id="gc2Tips">Ctrl+` to toggle • Drag header to move • Mobile friendly</div>
+        <div class="gc2-output" style="min-height:60px" id="gc2Tips">Ctrl+~ to toggle • Drag header to move • Mobile friendly</div>
       </div>
     </div>
     <div class="gc2-footer">
@@ -278,6 +278,18 @@
       e.preventDefault();
     }
   }, { capture: true });
+
+  // Public API for programmatic control
+  try {
+    /** @type {any} */(window).GO2 = {
+      open: openPanel,
+      close: closePanel,
+      toggle: function(){
+        const vis = panel.style.display !== 'none' && panel.style.display !== '' ? true : false;
+        vis ? closePanel() : openPanel();
+      }
+    };
+  } catch(_) { /* ignore */ }
 
   // Initial populate
   refreshSelect();

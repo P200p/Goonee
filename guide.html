@@ -3,560 +3,132 @@
 <html lang=th>
 <head>
   <meta charset=utf-8 />
-  <meta name=viewport content=width=device-width initial-scale=1 />
-  <title>คู่มือสั้น Goonee Console</title>
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" sizes="16x16" href="../icon/icon16.png" />
-  <link rel="icon" type="image/png" sizes="48x48" href="../icon/icon48.png" />
-  <link rel="icon" type="image/png" sizes="128x128" href="../icon/icon128.png" />
+  <meta name=viewport content="width=device-width, initial-scale=1" />
+  <title>คู่มือ Goonee Console</title>
   <link rel="icon" type="image/png" sizes="192x192" href="../icon/192x192.png" />
-  <link rel="icon" type="image/png" sizes="512x512" href="../icon/512x512.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="../icon/192x192.png" />
   <link rel=stylesheet href=home.css />
   <style>
-    :root{
-      --c-body: #8ef;
-      --c-container: #ff9f1c;
-      --c-header-img: #ff006e;
-      --c-h: #00e5ff;
-      --c-card: #2efc6b;
-      --c-code: #a78bfa;
-      --c-btn: #fb5607;
-      --c-btn-alt: #3a86ff;
-      --c-sub: #ffd166;
-      --c-note: #bdb2ff;
-      --c-list: #ffadad;
-      --c-link: #caffbf;
-    }
-    body{background:url('BG.png') center/cover fixed #0b1020;color:#ff0000fb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;text-shadow:0 1px 2px rgba(0,0,0,.75)}
+    body{background:url('BG.png') center/cover fixed #0b1020;color:#e0e0e0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;text-shadow:0 1px 2px rgba(0,0,0,.75)}
     .container{max-width:900px;margin:0 auto;padding:20px}
     .header-img{display:block;width:100%;max-width:900px;height:auto;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.35);margin:8px 0 16px}
     .card{background:rgba(2,255,18,.08);border:1px solid rgba(8,20,253,.35);backdrop-filter:blur(6px);border-radius:12px;padding:16px;margin:12px 0}
-    .card h2{margin:0 0 8px;color:#011055;-webkit-text-stroke:0.6px rgba(0,0,0,.6);text-shadow:0 2px 4px rgba(0,0,0,.55)}
-    h1,h2,h3{ -webkit-text-stroke:0.6px rgba(0,0,0,.45) }
-    pre,code{background:rgba(22,8,226,.18);border:1px solid #00ff26;border-radius:10px;padding:10px;display:block;white-space:pre-wrap;word-break:break-word;color:#d7fffd}
-    a.btn{display:inline-block;margin:6px 6px 6px 0;padding:10px 14px;background:#16a34a;color:#0800ff;border-radius:10px;text-decoration:none;font-weight:600;text-shadow:0 1px 1px rgba(255,255,255,.35),0 1px 3px rgba(0,0,0,.45)}
+    h1,h2,h3{color:#00e5ff; -webkit-text-stroke:0.6px rgba(0,0,0,.45)}
+    h2{margin:0 0 8px;color:#011055;-webkit-text-stroke:0.6px rgba(0,0,0,.6);text-shadow:0 2px 4px rgba(0,0,0,.55)}
+    pre,code{background:rgba(22,8,226,.18);border:1px solid #00ff26;border-radius:10px;padding:10px;display:block;white-space:pre-wrap;word-break:break-word;color:#d7fffd; font-family: 'Courier New', monospace;}
+    a.btn{display:inline-block;margin:6px 6px 6px 0;padding:10px 14px;background:#16a34a;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;text-shadow:0 1px 1px rgba(0,0,0,.45)}
     a.btn.alt{background:#08d1ff;color:#001b44}
-    .sub{opacity:.95;-webkit-text-stroke:0.4px rgba(0,0,0,.35)}
-    ul{margin:8px 0 0 18px}
-    ol{margin:8px 0 0 18px}
+    .sub{opacity:.95;-webkit-text-stroke:0.4px rgba(0,0,0,.35); font-size: 1.1em; color: #ffd166;}
     .note{opacity:.95;font-size:.95em;text-shadow:0 1px 2px rgba(0,0,0,.6)}
-.card.dark-edition {
-  background: #0f0f0f;
-  color: #eaeaea;
-  border: 2px solid #ff0055;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(255, 0, 80, 0.5);
-  font-family: 'Courier New', monospace, sans-serif, system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
-}
-
-.card.dark-edition h2 {
-  color: #33ff00;
-  margin-bottom: 16px;
-  font-size: 1.6em;
-}
-code {
-  background: #ff0000;
-  color: #e83434;
-  border: 2px solid #ff0256;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(255, 0, 80, 0.5);
-  font-family: 'Courier New', monospace, sans-serif, system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
-
-  height: 30px;              /* จำกัดความสูง */
-  overflow-y: auto;          /* เปิด scrollbar แนวตั้ง */
-  scrollbar-width: thin;     /* สำหรับ Firefox */
-}
-code::-webkit-scrollbar {
-  height: 6px;
-  width: 6px;
-}
-
-code::-webkit-scrollbar-thumb {
-  background: #ff0256;
-  border-radius: 6px;
-}
-.license-list li {
-  margin-bottom: 12px;
-  line-height: 1.7;
-}
-
-.license-list a {
-  color: #0011ff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.license-list a:hover {
-  color: #ffcc00;
-  text-decoration: underline;
-}
-
-    /* Debug color mode: highlight each part with visible colors for easy editing */
-    body[data-debug-colors="1"]{outline:4px dashed var(--c-body); outline-offset:-6px}
-    body[data-debug-colors="1"] .container{outline:3px solid var(--c-container);background:color-mix(in srgb, var(--c-container) 12%, transparent);border-radius:14px}
-    body[data-debug-colors="1"] .header-img{box-shadow:0 0 0 4px var(--c-header-img),0 6px 24px rgba(0,0,0,.35)}
-    body[data-debug-colors="1"] h1,body[data-debug-colors="1"] h2,body[data-debug-colors="1"] h3{background:color-mix(in srgb, var(--c-h) 20%, transparent);padding:.15em .35em;border-radius:8px}
-    body[data-debug-colors="1"] .card{background:color-mix(in srgb, var(--c-card) 14%, transparent);border:2px solid var(--c-card)}
-    body[data-debug-colors="1"] pre,body[data-debug-colors="1"] code{background:color-mix(in srgb, var(--c-code) 18%, transparent);border:2px solid var(--c-code);color:#051018}
-    body[data-debug-colors="1"] a.btn{background:color-mix(in srgb, var(--c-btn) 75%, #fff);color:#111;border:2px solid var(--c-btn)}
-    body[data-debug-colors="1"] a.btn.alt{background:color-mix(in srgb, var(--c-btn-alt) 75%, #fff);color:#07112b;border:2px solid var(--c-btn-alt)}
-    body[data-debug-colors="1"] .sub{background:color-mix(in srgb, var(--c-sub) 22%, transparent);padding:.2em .4em;border-radius:8px}
-    body[data-debug-colors="1"] .note{background:color-mix(in srgb, var(--c-note) 20%, transparent);padding:.2em .4em;border-radius:8px}
-    body[data-debug-colors="1"] ul,body[data-debug-colors="1"] ol{outline:2px dashed var(--c-list);padding:10px;border-radius:8px}
-    body[data-debug-colors="1"] a{outline:2px dotted var(--c-link);outline-offset:2px}
-
-    /* Floating debug toolbar */
-    .debug-toolbar{position:fixed;right:14px;bottom:14px;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:10px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
-    .debug-toolbar button{margin:4px 6px 0 0;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:#1f2937;color:#e5e7eb;cursor:pointer}
-    .debug-toolbar .swatch{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid #0002;margin:0 4px -2px 0}
-    /* Warning styles for Eruda notice */
-    .warn-btn{display:inline-flex;align-items:center;gap:6px;margin:6px 0;padding:8px 12px;border-radius:10px;border:2px solid #ff6a00;background:#ffcc00;color:#111;font-weight:700;cursor:pointer;text-shadow:none}
-    .warn-btn:hover{filter:brightness(0.95)}
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:10000}
-    .modal{background:#0b1020;color:#e5e7eb;border:2px solid #ff6a00;border-radius:12px;max-width:720px;margin:0 12px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-    .modal h3{margin:0 0 8px;color:#ffd166}
-    .modal p{margin:8px 0;line-height:1.6}
-    .modal .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
-    .modal .actions button{padding:8px 12px;border-radius:8px;border:1px solid #fff3;background:#1f2937;color:#e5e7eb;cursor:pointer}
-    .modal .actions button.primary{background:#ff6a00;color:#111;border-color:#ff6a00;font-weight:700}
-    /* lightweight toast */
+    .kiwi-link { display: inline-flex; align-items: center; gap: 8px; background-color: #252525; color: #fff; border: 1px solid #444; }
+    .kiwi-link img { width: 20px; height: 20px; border-radius: 4px; }
     .go-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px);font-size:14px;z-index:10001;opacity:0;transition:opacity .18s ease}
   </style>
 </head>
-<body data-debug-colors="1">
-  <div class="debug-toolbar" aria-label="Debug color toolbar">
-    <button id="dbg-toggle" type="button">แสดงสีส่วนประกอบ</button>
-    <button id="dbg-rand" type="button">สุ่มสีใหม่</button>
-    <div style="margin-top:6px;font-size:.9em;opacity:.9">
-      <span class=swatch style="background:var(--c-container)"></span>container
-      <span class=swatch style="background:var(--c-card)"></span>card
-      <span class=swatch style="background:var(--c-code)"></span>code
-      <span class=swatch style="background:var(--c-btn)"></span>btn
-      <span class=swatch style="background:var(--c-btn-alt)"></span>btn.alt
-    </div>
-  </div>
+<body>
   <div class=container>
     <img class="header-img" src="Sharkkadaw.jpg" alt="Goonee Guide" />
-    <h1>คู่มือสั้น: Goonee Console</h1>
-    <p class=sub>คู่มือนี้มี 4 ส่วน: 1) Bookmarklet 2) Userscript 3) Extension 4) Eruda • เน้นใช้ <code>console.js</code> เป็นหลัก</p>
-    <div class="card" id="live-test">
-      <h2>🧪 ทดสอบเรียกเครื่องมือบนหน้านี้</h2>
-      <p class="note">เลือกว่าจะโหลดจากไฟล์ในเครื่อง (รีโปนี้) หรือจากโปรเจกต์ที่ Deploy อยู่</p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:8px 0">
-        <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">
-          <input type="radio" name="env" value="deploy" checked /> ออนไลน์ (Netlify)
-        </label>
-        <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">
-          <input type="radio" name="env" value="local" /> ท้องถิ่น (ไฟล์ในรีโป)
-        </label>
-        <button id="btn-test-console" class="btn" type="button">🧪 ทดสอบ Console</button>
-      </div>
-      <div class="note" style="opacity:.9">
-        • Deploy: <code>https://goonee.netlify.app/console.js</code><br/>
-        • Local: <code>../console.js</code>
-      </div>
+    <h1>คู่มือ: Goonee Console</h1>
+    <p class=sub>คู่มือการใช้งานเครื่องมือสำหรับนักพัฒนาเว็บ Goonee Console V2</p>
+
+    <div class="card" id="console2-main">
+        <h2>🚀 กูนี่คอนโซล V2 (แนะนำ)</h2>
+        <p class="note">เครื่องมือเวอร์ชันใหม่ล่าสุดที่ปรับปรุงประสิทธิภาพ, การใช้งานบนมือถือ, และเพิ่มเครื่องมือช่วยเหลือใหม่ๆ</p>
+        <h3>1. คัดลอก Bookmarklet</h3>
+        <p class="note">ลากปุ่มนี้ไปที่แถบบุ๊คมาร์ค หรือคัดลอกโค้ดไปสร้างบุ๊คมาร์คใหม่</p>
+        <pre><code id="bm-console2">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/console2.js?t='+Date.now();document.body.appendChild(s);})();</code></pre>
+        <p>
+            <a class="btn" href="#" data-copy="#bm-console2">คัดลอกโค้ด</a>
+            <a class="btn alt" href="#" id="btn-test-console2">🧪 ทดสอบบนหน้านี้</a>
+        </p>
+        <h3>2. สำหรับผู้ใช้ Android</h3>
+        <p class="note">เพื่อประสบการณ์ที่ดีที่สุด (รองรับส่วนขยายจาก Chrome) แนะนำให้ใช้ Kiwi Browser</p>
+        <p>
+            <a class="btn kiwi-link" href="https://apkpure.com/kiwi-browser-fast-quiet/com.kiwibrowser.browser" target="_blank" rel="noopener">
+                <img src="https://image.winudf.com/v2/image1/Y29tLmtpd2licm93c2VyLmJyb3dzZXJfaWNvbl8xNTYxNTg4NjMxXzAxNg/icon.webp?w=140&fakeurl=1&type=.webp" alt="Kiwi Browser icon">
+                <span>ดาวน์โหลด Kiwi Browser</span>
+            </a>
+        </p>
     </div>
 
     <div class="card">
-      <h2>1) Bookmarklet</h2>
-      <p>คัดลอกโค้ดไปสร้างปุ่มลัด แล้วกดบนหน้าเว็บที่ต้องใช้เครื่องมือ</p>
-      <h3>• Goonee Console (หลัก)</h3>
-      <pre><code id="bm-console">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/console.js?t='+Date.now();s.onload=function(){try{toggleConsole&&toggleConsole();}catch(e){}};document.body.appendChild(s);})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-console">คัดลอกโค้ด</a>
-        <a class="btn alt" href="https://goonee.netlify.app/console.js" target="_blank" rel="noopener">เปิดไฟล์ console.js</a>
-      </p>
-      <h3>• Loader (โหลดชุดเครื่องมือ)</h3>
-      <pre><code id="bm-loader">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/loader.js?t='+Date.now();document.body.appendChild(s);})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-loader">คัดลอกโค้ด</a>
-        <a class="btn alt" href="https://goonee.netlify.app/loader.js" target="_blank" rel="noopener">เปิดไฟล์ loader.js</a>
-      </p>
-      <h3>• ตัวอย่าง Bookmarklet ชี้ไปไฟล์เครื่องมือ (สั้น)</h3>
-      <pre><code>javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/monitor.js';document.body.appendChild(s)})();
-javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/Theme.js';document.body.appendChild(s)})();</code></pre>
-      <p class="note">หมายเหตุ: บางเว็บอาจบล็อกสคริปต์ภายนอก (CSP) ให้ใช้ Extension หรือ Userscript แทน</p>
-    </div>
-
-    <div class="card">
-      <h2>1.1) Bookmarklet สำหรับเครื่องมือในโฟลเดอร์ sharktool/</h2>
-      <p>คัดลอกโค้ดสำหรับเครื่องมือที่ต้องการใช้งาน</p>
+      <h2>เครื่องมืออื่นๆ (Bookmarklets)</h2>
+      <p>คัดลอกโค้ดสำหรับเครื่องมือเฉพาะทางอื่นๆ ที่ต้องการใช้งาน</p>
       <h3>• Monitor</h3>
       <pre><code id="bm-monitor">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/monitor.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-monitor">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/monitor.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
+      <p><a class="btn" href="#" data-copy="#bm-monitor">คัดลอกโค้ด</a></p>
 
       <h3>• Theme</h3>
       <pre><code id="bm-theme">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/Theme.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-theme">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/Theme.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
-
-      <h3>• Snipers</h3>
-      <pre><code id="bm-snipers">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/snipers.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-snipers">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/snipers.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
-
-      <h3>• BurpShark</h3>
-      <pre><code id="bm-burpshark">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/burpshark.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-burpshark">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/burpshark.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
-
-      <h3>• SharkScan</h3>
-      <pre><code id="bm-sharkscan">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/sharkscan.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-sharkscan">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/sharkscan.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
-
-      <h3>• PostShark</h3>
-      <pre><code id="bm-postshark">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/postshark.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-postshark">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/postshark.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
-
-      <h3>• DelDis</h3>
-      <pre><code id="bm-deldis">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/deldis.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-deldis">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/deldis.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
-
-      <h3>• Tool (ตัวจัดการเครื่องมือ)</h3>
-      <pre><code id="bm-tool">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/tool.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-tool">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/tool.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
-
-      <h3>• BM (รวมคำสั่งลัด)</h3>
-      <pre><code id="bm-bm">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/BM.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-bm">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/BM.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
-
-      <h3>• BM-postshark (ชุดปุ่มลัดสำหรับ PostShark)</h3>
-      <pre><code id="bm-bm-postshark">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/BM-postshark.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-bm-postshark">คัดลอกโค้ด</a> <a class="btn alt" href="https://goonee.netlify.app/sharktool/BM-postshark.js" target="_blank" rel="noopener">เปิดไฟล์</a></p>
-
-      <p class="note">ปล. ไฟล์ <code>sharksnipers.js</code> ปัจจุบันว่างเปล่า จึงยังไม่สร้าง Bookmarklet ให้</p>
-    </div>
-
-    <div class="card">
-      <h2>2) Userscript (Tampermonkey/Violentmonkey)</h2>
-      <p>คัดลอกสคริปต์นี้ไปวาง</p>
-      <ol>
-        <li>มือถือ Android (แนะนำ Kiwi Browser) ลงปลั๊กอินจาก <a href=https://chromewebstore.google.com/category/extensions target=_blank rel=noopener>Chrome Web Store</a> หรือ <a href=https://microsoftedge.microsoft.com/addons/collections/mobile_android_extensions target=_blank rel=noopener>Edge</a></li>
-      </ol>
-      <pre><code id="userscript">// ==UserScript==
-// @name         SharkTool Console Toggle (Floating Button)
-// @namespace    sharktool
-// @version      1.0.5
-// @description  Floating button that runs SharkTool console (same as bookmarklet)
-// @match        *://*/*
-// @grant        GM_addStyle
-// @run-at       document-end
-// ==/UserScript==
-
-(function(){
-  'use strict';
-  const SCRIPT_URL = 'https://goonee.netlify.app/console.js';
-
-  if (window.__shark_console_btn) return;
-
-  function addStyle(css){
-    try{ if (typeof GM_addStyle==='function'){ GM_addStyle(css); return; } }catch(_){}
-    const s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
-  }
-
-  addStyle(`
-    #__shark_toggle_btn{position:fixed;right:16px;bottom:16px;width:48px;height:48px;border-radius:50%;
-      background:#00ff41;color:#062;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;
-      box-shadow:0 6px 18px rgba(0,0,0,.35),0 0 0 2px #00ff41 inset;cursor:pointer;user-select:none;z-index:2147483647;
-      transition:transform .12s ease, box-shadow .12s ease;touch-action:none}
-    #__shark_toggle_btn:hover{ transform: translateY(-1px); box-shadow:0 8px 22px rgba(0,0,0,.45),0 0 0 2px #00ff41 inset;}
-    #__shark_toggle_btn.__loading{ background:#ccc;color:#333;box-shadow:0 0 0 2px #bbb inset;}
-  `);
-
-  function injectConsole(){
-    return new Promise((resolve, reject)=>{
-      const s=document.createElement('script');
-      s.src=SCRIPT_URL+'?t='+Date.now();  // กัน cache เหมือน bookmarklet
-      s.async=true;
-      s.onload=()=>{
-        try{
-          if (typeof toggleConsole==='function'){
-            toggleConsole();   // 🟢 เรียกเหมือน bookmarklet
-          }
-        }catch(e){
-          console.error('[SharkTool] toggleConsole error:', e);
-        }
-        resolve();
-      };
-      s.onerror=()=>reject(new Error('Failed to load console.js'));
-      document.body.appendChild(s);
-    });
-  }
-
-  function createButton(){
-    const btn=document.createElement('div');
-    btn.id='__shark_toggle_btn';
-    btn.title='SharkTool Console';
-    btn.textContent='≡';
-    btn.addEventListener('click', async ()=>{
-      btn.classList.add('__loading');
-      try{
-        await injectConsole();
-      }catch(err){
-        console.error('[SharkTool] load error:',err);
-        alert('Cannot load console.js');
-      }finally{
-        btn.classList.remove('__loading');
-      }
-    });
-    document.body.appendChild(btn);
-    window.__shark_console_btn = btn;
-  }
-
-  createButton();
-})();
-
-</code></pre>
-      <p><a class="btn" href="#" onclick="navigator.clipboard.writeText(document.getElementById('userscript').textContent||'');return false;">คัดลอก Userscript</a></p>
-      <p class="note"><strong>หมายเหตุ:</strong> ถ้าเว็บไซต์มี CSP เข้มงวด อาจบล็อกการโหลดสคริปต์จากโดเมนภายนอก ให้โฮสต์ไฟล์ไว้บนโดเมนที่ได้รับอนุญาต หรือใช้ @require ของ Userscript แทน</p>
-    </div>
-
-    <div class="card">
-      <h2>3) Extension</h2>
-      <ul>
-        <li>
-          Goonee X Eruda (.zip):
-          <a href="https://goonee.netlify.app/sharktool/GooneeXeruda.zip" target="_blank" rel="noopener">ดาวน์โหลดและนำเข้าในหน้าส่วนขยาย</a>
-        </li>
-      </ul>
-    </div>
-
-    <div class="card dark-edition">
-      <h2>4) Eruda</h2>
-      <button id="btn-eruda-warning" class="warn-btn" type="button">⚠️ คำเตือน</button>
-      <ul class="license-list">
-        <li>Eruda โดย <a href="https://github.com/liriliri/eruda" target="_blank" rel="noopener">LiriLiri</a> — MIT License</li>
-      </ul>
-      <p>กดปุ่ม 🧪 Eruda ในคอนโซลของ Goonee เพื่อโหลด/แสดง/ซ่อน</p>
-      <h3>หรือ Bookmarklet สำหรับ Eruda โดยตรง</h3>
-      <pre><code>javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda@3/eruda.min.js';s.onload=function(){eruda.init();eruda.show();};document.body.appendChild(s)})();</code></pre>
-      <h3>พื้นที่คัดลอก Bookmarklet (Goonee Console)</h3>
-      <pre><code id="bm-console-copy">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/console.js?t='+Date.now();s.onload=function(){try{toggleConsole&&toggleConsole();}catch(e){}};document.body.appendChild(s);})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-console-copy">คัดลอกโค้ด</a></p>
+      <p><a class="btn" href="#" data-copy="#bm-theme">คัดลอกโค้ด</a></p>
     </div>
 
     <p><a class='btn' href='https://goonee.netlify.app'>← กลับหน้า Home</a></p>
   </div>
-  <!-- Eruda Warning Modal -->
-  <div id="eruda-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="erudaWarnTitle">
-    <div class="modal">
-      <h3 id="erudaWarnTitle">⚠️ คำเตือนการใช้งาน Eruda/โค้ดที่รันด้วย eval</h3>
-      <p><strong>อย่า</strong>นำไปใช้แบบมั่ว ๆ หรือใช้กับเว็บไซต์ที่ไม่ได้รับอนุญาต การรันโค้ดจากภายนอกหรือโค้ดที่แก้เอง (รวมถึง Bookmarklet) อาจใช้ <code>eval</code> หรือสร้างสคริปต์ไดนามิก ซึ่งมีความเสี่ยงต่อความปลอดภัยและความเป็นส่วนตัวของคุณ</p>
-      <p>ควรใช้เฉพาะกับหน้าเว็บที่คุณมีสิทธิ์ทดสอบ/พัฒนา เท่านั้น และเข้าใจสิ่งที่โค้ดทำจริง ๆ หากคุณไม่ใช่นักพัฒนา การคัดลอกโค้ดจากที่อื่นมาใช้โดยไม่ตรวจสอบ อาจทำให้บัญชีหรือข้อมูลของคุณตกอยู่ในความเสี่ยง</p>
-      <p style="opacity:.9">สรุป: ใช้อย่างมีวิจารณญาณ ทดสอบบนสภาพแวดล้อมที่ควบคุมได้ และงดใช้งานบนเว็บที่ห้ามหรือผิดกฎ/กฎหมาย</p>
-      <div class="actions">
-        <button type="button" id="erudaWarnClose">ปิด</button>
-        <button type="button" id="erudaWarnAgree" class="primary">เข้าใจแล้ว</button>
-      </div>
-    </div>
-  </div>
+
   <script>
     (function(){
       function showToast(msg){
-        try{
-          const el=document.createElement('div');
-          el.className='go-toast';
-          el.textContent=msg;
-          document.body.appendChild(el);
-          requestAnimationFrame(()=>{ el.style.opacity='1'; });
-          setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>{ el.remove(); }, 220); }, 1400);
-        }catch(_){ /* ignore */ }
+        const el=document.createElement('div');
+        el.className='go-toast';
+        el.textContent=msg;
+        document.body.appendChild(el);
+        requestAnimationFrame(()=> { el.style.opacity='1'; });
+        setTimeout(()=> { el.style.opacity='0'; setTimeout(()=>el.remove(), 220); }, 1400);
       }
 
       async function copyText(t){
-        t = String(t||'');
+        t = String(t||'').trim();
         if(!t) return false;
-        // Try async clipboard first (requires secure context + user gesture)
         try{
           if (navigator.clipboard && window.isSecureContext){
             await navigator.clipboard.writeText(t);
             return true;
           }
-        }catch(_){ /* fallthrough to fallback */ }
-        // Fallback: textarea + execCommand
-        try{
-          const ta=document.createElement('textarea');
-          ta.value=t;
-          ta.setAttribute('readonly','');
-          ta.style.position='fixed';
-          ta.style.top='-1000px';
-          ta.style.left='-9999px';
-          ta.style.opacity='0';
-          document.body.appendChild(ta);
-          ta.focus();
-          ta.select();
-          ta.setSelectionRange(0, ta.value.length);
-          const ok=document.execCommand('copy');
-          document.body.removeChild(ta);
-          return !!ok;
-        }catch(_){
-          return false;
-        }
-      }
-      document.addEventListener('click',async function(e){
-        const a=e.target.closest('a[data-copy]');
-        if(!a) return; e.preventDefault();
-        const sel=a.getAttribute('data-copy');
-        if (!sel) return;
-        const el=sel && document.querySelector(sel);
-        if(el){
-          const ok = await copyText(el.textContent || '');
-          if (ok) { showToast('คัดลอกแล้ว'); }
-          else {
-            try{
-              // As last resort, open a small modal with selectable text
-              const t=(el.textContent||'').trim();
-              const wrap=document.createElement('div');
-              wrap.className='modal-backdrop';
-              wrap.style.display='flex';
-              wrap.innerHTML='<div class="modal"><h3>คัดลอกไม่สำเร็จ</h3><p>อุปกรณ์/เบราว์เซอร์บล็อกการคัดลอกอัตโนมัติ กรุณาเลือกทั้งหมดแล้วคัดลอกด้วยตนเอง</p><textarea style="width:100%;min-height:160px;border:1px solid #333;border-radius:8px;background:#0b1020;color:#e5e7eb;padding:10px">'+t.replace(/</g,'&lt;')+'</textarea><div class="actions"><button type="button" class="primary" id="copyManual">เลือกทั้งหมด</button><button type="button" id="closeManual">ปิด</button></div></div>';
-              document.body.appendChild(wrap);
-              const ta=wrap.querySelector('textarea');
-              const btnSel=wrap.querySelector('#copyManual');
-              const btnClose=wrap.querySelector('#closeManual');
-              if(btnSel){ btnSel.addEventListener('click',()=>{ try{ ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length); }catch(_){ } }); }
-              if(btnClose){ btnClose.addEventListener('click',()=>{ try{ wrap.remove(); }catch(_){ } }); }
-              wrap.addEventListener('click', (ev)=>{ if(ev.target===wrap){ try{ wrap.remove(); }catch(_){ } } });
-            }catch(_){ alert('คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง'); }
-          }
-        }
-      });
-      // Debug color toolbar
-      const btnT=document.getElementById('dbg-toggle');
-      const btnR=document.getElementById('dbg-rand');
-      function rand(){return '#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0');}
-      function randomizeVars(){
-        const r=document.documentElement.style;
-        r.setProperty('--c-container', rand());
-        r.setProperty('--c-header-img', rand());
-        r.setProperty('--c-h', rand());
-        r.setProperty('--c-card', rand());
-        r.setProperty('--c-code', rand());
-        r.setProperty('--c-btn', rand());
-        r.setProperty('--c-btn-alt', rand());
-        r.setProperty('--c-sub', rand());
-        r.setProperty('--c-note', rand());
-        r.setProperty('--c-list', rand());
-        r.setProperty('--c-link', rand());
-      }
-      // Enable debug colors by default and randomize at each load
-      document.body.setAttribute('data-debug-colors','1');
-      randomizeVars();
-      if(btnT){ btnT.textContent='ซ่อนสีส่วนประกอบ'; }
-      if(btnT){
-        btnT.addEventListener('click',function(){
-          const on=document.body.getAttribute('data-debug-colors')==='1';
-          document.body.setAttribute('data-debug-colors', on? '0':'1');
-          btnT.textContent = on? 'แสดงสีส่วนประกอบ' : 'ซ่อนสีส่วนประกอบ';
-        });
-      }
-      if(btnR){ btnR.addEventListener('click', randomizeVars); }
-      // Helpers to pick environment and icon
-      function getEnv(){ return (document.querySelector('input[name="env"]:checked')||{}).value || 'deploy'; }
-      function getIconUrl(){
-        const env = getEnv();
-        return env === 'local' ? '../icon/192x192.png' : 'https://goonee.netlify.app/icon/192x192.png';
-      }
-      function createIconImg(){
-        const img = document.createElement('img');
-        img.className = 'env-icon';
-        img.src = getIconUrl();
-        img.alt = 'env';
-        img.style.width = '16px';
-        img.style.height = '16px';
-        img.style.verticalAlign = 'middle';
-        img.style.marginRight = '6px';
-        return img;
-      }
-      function refreshAllEnvIcons(){
-        const url = getIconUrl();
-        document.querySelectorAll('img.env-icon').forEach(function(img){ img.setAttribute('src', url); });
-      }
-      // Update icons when env changes
-      document.querySelectorAll('input[name="env"]').forEach(function(r){ r.addEventListener('change', refreshAllEnvIcons); });
-
-      // Test loader for local/deploy console.js
-      const testBtn = document.getElementById('btn-test-console');
-      if (testBtn){
-        // decorate with icon according to env
+        } catch(e) { /* fallback */ }
         try {
-          testBtn.textContent = '';
-          testBtn.appendChild(createIconImg());
-          testBtn.appendChild(document.createTextNode('🧪 ทดสอบ Console'));
-        } catch(_){ /* ignore */ }
-        testBtn.addEventListener('click', function(){
-          try{
-            const env = getEnv();
-            const src = env === 'local' ? '../console.js' : 'https://goonee.netlify.app/console.js';
-            const id = '__guide_test_console_loader';
-            let s = document.getElementById(id);
-            if (!window.toggleConsole){
-              if (!s){
-                s = document.createElement('script');
-                s.id = id;
-                s.src = src + (src.includes('?') ? '&' : '?') + 't=' + Date.now();
-                s.async = true;
-                s.onerror = function(){ alert('โหลดสคริปต์ไม่สำเร็จ: ' + src); };
-                document.documentElement.appendChild(s);
-              }
-              const chk = setInterval(function(){
-                if (window.toggleConsole){ clearInterval(chk); try{ window.toggleConsole(); }catch(_){} }
-              }, 100);
-              setTimeout(function(){ clearInterval(chk); }, 10000);
-            } else {
-              // ถ้าโหลดไว้แล้ว กดปุ่มเพื่อสลับแสดง/ซ่อน
-              try{ window.toggleConsole(); }catch(_){ }
-            }
-          }catch(err){ console.error(err); alert('เกิดข้อผิดพลาดระหว่างทดสอบ'); }
-        });
+          const ta = document.createElement('textarea');
+          ta.value=t; ta.style.position='fixed'; ta.style.opacity='0';
+          document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+          ta.remove();
+          return true;
+        } catch(e) { return false; }
       }
 
-      // --- Augment each callable block with a Test button ---
       function runBookmarkletText(text){
         if (!text) return;
         try{
           const code = String(text).trim();
           if (!code) return;
-          const src = code.startsWith('javascript:') ? code.slice('javascript:'.length) : code;
-          // eslint-disable-next-line no-eval
-          eval(src);
-        }catch(err){ console.error('Bookmarklet run error', err); alert('รันโค้ดไม่สำเร็จ: ' + (err && err.message || err)); }
+          const src = code.startsWith('javascript:') ? code.slice(11) : code;
+          (new Function(src))();
+        }catch(err){ console.error('Bookmarklet run error', err); alert('รันโค้ดไม่สำเร็จ: ' + (err.message || err)); }
       }
-      // Find all copy buttons pointing to code blocks and add a Test button if code looks callable
-      document.querySelectorAll('a[data-copy]').forEach(function(a){
-        const sel = a.getAttribute('data-copy');
-        if (!sel) return;
-        const codeEl = document.querySelector(sel);
-        if (!codeEl) return;
-        const text = (codeEl.textContent||'').trim();
-        if (!/^javascript:/i.test(text)) return;
-        const testBtn = document.createElement('a');
-        testBtn.className = 'btn alt';
-        testBtn.href = '#';
-        // add icon + label
-        try {
-          testBtn.appendChild(createIconImg());
-        }catch(_){ }
-        testBtn.appendChild(document.createTextNode('🧪 ทดสอบ'));
-        testBtn.addEventListener('click', function(e){ e.preventDefault(); runBookmarkletText(text); });
-        // Insert after the copy button in the same container (usually a <p>)
-        const parent = a.parentElement || a;
-        parent.appendChild(testBtn);
-      });
-      // initial icon refresh for safety
-      refreshAllEnvIcons();
 
-      // Eruda warning modal behavior
-      const warnBtn = document.getElementById('btn-eruda-warning');
-      const warnModal = document.getElementById('eruda-modal');
-      const warnClose = document.getElementById('erudaWarnClose');
-      const warnAgree = document.getElementById('erudaWarnAgree');
-      function openWarn(){ if(warnModal){ warnModal.style.display='flex'; } }
-      function closeWarn(){ if(warnModal){ warnModal.style.display='none'; } }
-      if(warnBtn){ warnBtn.addEventListener('click', openWarn); }
-      if(warnClose){ warnClose.addEventListener('click', closeWarn); }
-      if(warnAgree){ warnAgree.addEventListener('click', closeWarn); }
-      if(warnModal){ warnModal.addEventListener('click', function(e){ if(e.target===warnModal) closeWarn(); }); }
+      document.addEventListener('click', async function(e){
+        const copyBtn = e.target.closest('a[data-copy]');
+        if(copyBtn) {
+            e.preventDefault();
+            const sel = copyBtn.getAttribute('data-copy');
+            const el = sel && document.querySelector(sel);
+            if(el && await copyText(el.textContent)) {
+                showToast('คัดลอกแล้ว');
+            } else {
+                showToast('คัดลอกไม่สำเร็จ');
+            }
+        }
+      });
+
+      const testBtn2 = document.getElementById('btn-test-console2');
+      if (testBtn2) {
+          testBtn2.addEventListener('click', function(e) {
+              e.preventDefault();
+              const codeEl = document.getElementById('bm-console2');
+              if (codeEl) {
+                  runBookmarkletText(codeEl.textContent);
+              }
+          });
+      }
     })();
   </script>
 </body>

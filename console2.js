@@ -12,6 +12,7 @@
   const KEY_SNIPPETS = NS + ':snippets_v1';
   const KEY_LAYOUT = NS + ':layout_v1';
   const KEY_THEME = NS + ':theme_v1';
+  const KEY_ERUDA = NS + ':eruda_on';
 
   // Simple storage abstraction with backup
   const store = {
@@ -32,6 +33,14 @@
     }
   };
 
+  // --- THEME DEFINITIONS (from console.js) ---
+  const THEMES = [
+    {accent:'#00ff41',accent2:'#00cc33',accentText:'#00ffc3',bgPanel:'rgba(0,0,0,.96)',bgInput:'#002200',bgOutput:'#001b12',status:'#00ff83'},
+    {accent:'#00e1ff',accent2:'#0077ff',accentText:'#b8f3ff',bgPanel:'rgba(2,8,23,.96)',bgInput:'#001a33',bgOutput:'#001326',status:'#6dd6ff'},
+    {accent:'#ff9900',accent2:'#ff5500',accentText:'#ffe0b3',bgPanel:'rgba(20,10,0,.96)',bgInput:'#261a00',bgOutput:'#1a1200',status:'#ffcc66'},
+    {accent:'#ff3d7f',accent2:'#a71d5d',accentText:'#ffd1e6',bgPanel:'rgba(23,0,12,.96)',bgInput:'#330016',bgOutput:'#260011',status:'#ff8ab3'}
+  ];
+
   // Shadow DOM root
   const host = document.createElement('div');
   host.id = 'goonee-console2-host';
@@ -44,31 +53,34 @@
   // CSS inside shadow
   const style = document.createElement('style');
   style.textContent = `
-    :host{ all: initial }
+    :host{ all: initial;
+      --accent: #00ff41; --accent2: #00cc33; --accentText: #00ffc3;
+      --bgPanel: rgba(0,0,0,.96); --bgInput: #002200; --bgOutput: #001b12; --status: #00ff83;
+    }
     .gc2-launcher{ position: fixed; right: 16px; bottom: 16px; width: 54px; height: 54px; border-radius: 50%;
-      background: rgba(0,0,0,.9); border: 2px solid #00ff41; box-shadow: 0 8px 24px rgba(0,255,65,.35);
-      display:flex; align-items:center; justify-content:center; color:#00ff41; font: 600 20px/1 system-ui, -apple-system, Segoe UI, Roboto; cursor: pointer; touch-action:none; }
+      background: var(--bgPanel); border: 2px solid var(--accent); box-shadow: 0 8px 24px rgba(0,255,65,.35);
+      display:flex; align-items:center; justify-content:center; color:var(--accent); font: 600 20px/1 system-ui, -apple-system, Segoe UI, Roboto; cursor: pointer; touch-action:none; }
     .gc2-launcher:hover{ transform: translateY(-1px); }
 
     .gc2-panel{ position: fixed; right: 2vw; bottom: 2vh; width: min(96vw, 540px); height: min(72vh, 520px);
-      background: rgba(0,0,0,.96); border: 2px solid #00ff41; border-radius: 10px; color: #d6ffe8;
-      display: none; flex-direction: column; box-shadow: 0 12px 40px rgba(0,255,65,.28); }
+      background: var(--bgPanel); border: 2px solid var(--accent); border-radius: 10px; color: #d6ffe8;
+      display: none; flex-direction: column; box-shadow: 0 12px 40px rgba(0,255,65,.28); resize: both; overflow: auto; min-width: 280px; min-height: 200px; }
     .gc2-header{ display:flex; align-items:center; justify-content:space-between; padding: 8px 10px;
-      background: linear-gradient(90deg,#00ff41,#00cc33); color:#001a0a; font-weight:700; user-select:none; cursor: move; }
+      background: linear-gradient(90deg,var(--accent),var(--accent2)); color:#001a0a; font-weight:700; user-select:none; cursor: move; flex-shrink: 0; }
     .gc2-title{ display:flex; gap:8px; align-items:center; }
     .gc2-actions{ display:flex; gap:6px; align-items:center; }
     .gc2-btn{ background: rgba(0,0,0,.05); border: 1px solid #0a3; color:#001a0a; padding: 4px 8px; border-radius: 6px; font: 600 12px/1 system-ui; cursor:pointer; }
 
-    .gc2-toolbar{ display:flex; gap:6px; flex-wrap:wrap; padding:6px; border-bottom:1px solid #00ff41; background: rgba(0,255,65,.08); }
-    .gc2-tbtn{ background: rgba(0,255,65,.18); border: 1px solid #00ff41; color:#00ffc3; padding: 4px 8px; border-radius: 6px; font: 600 12px/1 system-ui; cursor:pointer; }
+    .gc2-toolbar{ display:flex; gap:6px; flex-wrap:wrap; padding:6px; border-bottom:1px solid var(--accent); background: rgba(0,255,65,.08); flex-shrink: 0; }
+    .gc2-tbtn{ background: rgba(0,255,65,.18); border: 1px solid var(--accent); color:var(--accentText); padding: 4px 8px; border-radius: 6px; font: 600 12px/1 system-ui; cursor:pointer; }
 
-    .gc2-body{ flex:1; display:grid; grid-template-rows: 1fr auto 1fr; gap:6px; padding:6px; }
-    .gc2-label{ color:#61ffa7; font: 600 12px/1 system-ui; }
-    .gc2-text{ width:100%; min-height: 120px; max-height: 220px; box-sizing: border-box; resize: vertical;
-      background: #001b12; border: 1px solid #00ff41; border-radius: 6px; color:#d6ffe8; padding:8px; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .gc2-output{ width:100%; min-height: 80px; max-height: 160px; white-space: pre-wrap; overflow:auto; background:#00120c; border:1px solid #00ff41; border-radius:6px; color:#aaffd6; padding:8px; font: 12px/1.4 ui-monospace, monospace; }
+    .gc2-body{ flex:1; display:flex; flex-direction:column; gap:6px; padding:6px; overflow: auto; }
+    .gc2-label{ color:#61ffa7; font: 600 12px/1 system-ui; flex-shrink: 0; }
+    .gc2-text{ width:100%; flex: 1; box-sizing: border-box; resize: none;
+      background: var(--bgInput); border: 1px solid var(--accent); border-radius: 6px; color:#d6ffe8; padding:8px; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .gc2-output{ width:100%; flex: 1; white-space: pre-wrap; overflow:auto; background:var(--bgOutput); border:1px solid var(--accent); border-radius:6px; color:#aaffd6; padding:8px; font: 12px/1.4 ui-monospace, monospace; }
 
-    .gc2-footer{ padding:6px 8px; border-top:1px solid #00ff41; color:#00ff83; font: 12px/1.2 system-ui; display:flex; justify-content:space-between; align-items:center; }
+    .gc2-footer{ padding:6px 8px; border-top:1px solid var(--accent); color:var(--status); font: 12px/1.2 system-ui; display:flex; justify-content:space-between; align-items:center; flex-shrink: 0; }
     .gc2-badge{ background:#062; color:#9cffb0; border:1px solid #0a4; padding:2px 6px; border-radius:999px; font: 600 10px/1 system-ui; }
 
     @media (max-width: 720px){ .gc2-panel{ left: 2vw; right: 2vw; width: 96vw; height: 70vh; } }
@@ -98,22 +110,20 @@
       <button class="gc2-tbtn" id="gc2Del">🗑 Delete</button>
       <button class="gc2-tbtn" id="gc2Export">📤 Export</button>
       <button class="gc2-tbtn" id="gc2Import">📥 Import</button>
+      <button class="gc2-tbtn" id="gc2Theme">🎨 Theme</button>
+       <button class="gc2-tbtn" id="gc2SaveLayout">💾 Save Layout</button>
+       <button class="gc2-tbtn" id="gc2LoadLayout">⤴️ Load Layout</button>
+      <button class="gc2-tbtn" id="gc2Eruda">🧪 Eruda</button>
       <button class="gc2-tbtn" id="gc2SwKill">🧹 SW Kill</button>
       <select class="gc2-tbtn" id="gc2Select" title="Saved snippets"></select>
     </div>
     <div class="gc2-body">
-      <div>
         <div class="gc2-label">📋 Code</div>
         <textarea class="gc2-text" id="gc2Code" placeholder="javascript:(()=>{ alert('Hello from Goonee!') })()"></textarea>
-      </div>
-      <div>
         <div class="gc2-label">🧾 Output</div>
         <pre class="gc2-output" id="gc2Out"></pre>
-      </div>
-      <div>
         <div class="gc2-label">💡 Tips</div>
-        <div class="gc2-output" style="min-height:60px" id="gc2Tips">Ctrl+~ to toggle • Drag header to move • Mobile friendly</div>
-      </div>
+        <div class="gc2-output" style="min-height:40px; flex-grow: 0;" id="gc2Tips">Ctrl+~ to toggle • Drag header to move • Resize from corners</div>
     </div>
     <div class="gc2-footer">
       <div id="gc2Status">Ready</div>
@@ -162,7 +172,7 @@
   function closePanel(){ panel.style.display = 'none'; launcher.style.display = 'flex'; setStatus('Minimized'); }
   launcher.addEventListener('click', openPanel);
   $('#gc2Min')?.addEventListener('click', closePanel);
-  $('#gc2Close')?.addEventListener('click', closePanel);
+  $('#gc2Close')?.addEventListener('click', ()=>{ host.remove(); WIN.__GOONEE_CONSOLE2__ = false; });
 
   // Move panel via header (within viewport)
   (function dragPanel(){
@@ -182,11 +192,51 @@
       const nl = Math.min(Math.max(0, drag.l + dx), window.innerWidth - 80);
       const nt = Math.min(Math.max(0, drag.t + dy), window.innerHeight - 80);
       panel.style.right = 'auto'; panel.style.bottom = 'auto';
-      panel.style.left = nl + 'px'; panel.style.top = nt + 'px';
+      panel.style.left = nl + 'px';
+      panel.style.top = nt + 'px';
     });
     const stop=()=>{ drag.on=false; };
     header.addEventListener('pointerup', stop); header.addEventListener('pointercancel', stop);
   })();
+
+  // --- THEME LOGIC ---
+  function applyTheme(theme) {
+    if (!theme) return;
+    host.style.setProperty('--accent', theme.accent);
+    host.style.setProperty('--accent2', theme.accent2);
+    host.style.setProperty('--accentText', theme.accentText);
+    host.style.setProperty('--bgPanel', theme.bgPanel);
+    host.style.setProperty('--bgInput', theme.bgInput);
+    host.style.setProperty('--bgOutput', theme.bgOutput);
+    host.style.setProperty('--status', theme.status);
+  }
+  $('#gc2Theme')?.addEventListener('click', ()=>{
+    const currentTheme = store.read(KEY_THEME) || THEMES[0];
+    const currentIndex = THEMES.findIndex(t => t.accent === currentTheme.accent);
+    const nextIndex = (currentIndex + 1) % THEMES.length;
+    const newTheme = THEMES[nextIndex];
+    applyTheme(newTheme);
+    store.write(KEY_THEME, newTheme);
+    setStatus('Theme changed');
+  });
+  
+  // --- LAYOUT PERSISTENCE ---
+  $('#gc2SaveLayout')?.addEventListener('click', ()=>{
+      const r = panel.getBoundingClientRect();
+      const layout = { left: panel.style.left, top: panel.style.top, width: r.width + 'px', height: r.height + 'px' };
+      store.write(KEY_LAYOUT, layout);
+      setStatus('Layout saved');
+  });
+  $('#gc2LoadLayout')?.addEventListener('click', ()=>{
+      const layout = store.read(KEY_LAYOUT);
+      if (layout) {
+          panel.style.left = layout.left;
+          panel.style.top = layout.top;
+          panel.style.width = layout.width;
+          panel.style.height = layout.height;
+          setStatus('Layout loaded');
+      }
+  });
 
   // Snippets model
   function readSnips(){ return store.read(KEY_SNIPPETS, []); }
@@ -261,6 +311,28 @@
     inp.click();
   });
 
+  // --- ERUDA INTEGRATION ---
+  const ERUDA_URL = (WIN && WIN.ERUDA_URL) || 'https://cdn.jsdelivr.net/npm/eruda@3/eruda.min.js';
+  function isErudaLoaded(){ return typeof WIN.eruda !== 'undefined'; }
+  async function loadEruda(){
+    if (isErudaLoaded()) return;
+    return new Promise((resolve, reject)=>{
+        const s=document.createElement('script'); s.src=ERUDA_URL; s.async=true;
+        s.onload=()=> resolve(); s.onerror=()=> reject(new Error('Failed to load Eruda'));
+        document.documentElement.appendChild(s);
+    });
+  }
+  $('#gc2Eruda')?.addEventListener('click', async ()=>{
+      try {
+          setStatus('Loading Eruda…');
+          await loadEruda();
+          WIN.eruda.init();
+          const visible = WIN.eruda._devTools._isShow;
+          if (visible) { WIN.eruda.hide(); store.write(KEY_ERUDA, false); setStatus('Eruda hidden'); }
+          else { WIN.eruda.show(); store.write(KEY_ERUDA, true); setStatus('Eruda shown'); }
+      } catch(err) { setStatus('Eruda failed to load'); }
+  });
+
   $('#gc2SwKill')?.addEventListener('click', async ()=>{
     try{
       if (!('serviceWorker' in navigator)){ setStatus('No SW support'); return; }
@@ -291,7 +363,40 @@
     };
   } catch(_) { /* ignore */ }
 
-  // Initial populate
-  refreshSelect();
-  setStatus('Ready • Tap ⚡');
+  // --- INITIALIZATION ---
+  function init() {
+    // Apply saved theme
+    const savedTheme = store.read(KEY_THEME);
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    }
+    
+    // Apply saved layout
+    const savedLayout = store.read(KEY_LAYOUT);
+    if (savedLayout) {
+        panel.style.left = savedLayout.left;
+        panel.style.top = savedLayout.top;
+        panel.style.width = savedLayout.width;
+        panel.style.height = savedLayout.height;
+    }
+
+    // Populate snippets dropdown
+    refreshSelect();
+
+    // Load autosaved code into textarea if present
+    const snippets = readSnips();
+    if (snippets.length > 0 && snippets[0].__autosave) {
+        const codeEl = /** @type {HTMLTextAreaElement|null} */($('#gc2Code'));
+        if (codeEl) codeEl.value = snippets[0].code || '';
+    }
+    
+    // Restore Eruda if it was on
+    if (store.read(KEY_ERUDA)) {
+        $('#gc2Eruda')?.click();
+    }
+    
+    setStatus('Ready • Tap ⚡');
+  }
+
+  init();
 })();

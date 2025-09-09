@@ -16,14 +16,14 @@
   };
 
   const THEMES = [
-    { name: 'Matrix', accent: '#00ff41', accent2: '#00cc33', accentText: '#00ffc3', bgPanel: 'rgba(0,0,0,.96)', bgInput: '#002200', bgOutput: '#001b12', status: '#00ff83' },
-    { name: 'Cyan', accent: '#00e1ff', accent2: '#0077ff', accentText: '#b8f3ff', bgPanel: 'rgba(2,8,23,.96)', bgInput: '#001a33', bgOutput: '#001326', status: '#6dd6ff' },
-    { name: 'Flame', accent: '#ff9900', accent2: '#ff5500', accentText: '#ffe0b3', bgPanel: 'rgba(20,10,0,.96)', bgInput: '#261a00', bgOutput: '#1a1200', status: '#ffcc66' },
-    { name: 'Pink', accent: '#ff3d7f', accent2: '#a71d5d', accentText: '#ffd1e6', bgPanel: 'rgba(23,0,12,.96)', bgInput: '#330016', bgOutput: '#260011', status: '#ff8ab3' }
+    { name: 'Matrix', accent: '#00ff40d7', accent2: '#00ec3bc9', accentText: '#001affff', bgPanel: 'rgba(0, 0, 0, 0.47)', bgInput: '#002200c2', bgOutput: '#025a3db6', status: '#00ff83' },
+    { name: 'Cyan', accent: '#00e1ffcb', accent2: '#0077ffdc', accentText: '#ff0000ff', bgPanel: 'rgba(2, 8, 23, 0.63)', bgInput: '#013566b7', bgOutput: '#03305cb4', status: '#6dd6ff' },
+    { name: 'Flame', accent: '#ff9900c2', accent2: '#ff5500be', accentText: '#ff0000ff', bgPanel: 'rgba(20, 10, 0, 0.56)', bgInput: '#4d3501', bgOutput: '#4e3700b6', status: '#ffcc66' },
+    { name: 'Pink', accent: '#ff3d7ecb', accent2: '#b8095bd5', accentText: '#ff0073ff', bgPanel: 'rgba(23, 0, 12, 0.57)', bgInput: '#810038b7', bgOutput: '#470120b6', status: '#ff8ab3' }
   ];
 
   const host = document.createElement('div');
-  Object.assign(host.style, { all: 'initial', position: 'fixed', zIndex: '2147483647', inset: 'auto 16px 16px auto' });
+  Object.assign(host.style, { all: 'initial', position: 'fixed', zIndex: '2147483647', inset: 'auto 30px 30px auto' });
   const root = host.attachShadow({ mode: 'open' });
 
   const style = document.createElement('style');
@@ -45,14 +45,27 @@
     .gc2-footer { padding:6px 10px; border-top:1px solid var(--accent); color:var(--status); font:12px/1.2 system-ui; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; background:rgba(0,0,0,.2); }
     .gc2-badge { background:#062; color:#9cffb0; border:1px solid #0a4; padding:2px 6px; border-radius:999px; font:600 10px/1 system-ui; }
     @media (max-width:720px) { .gc2-panel{left:2vw;right:2vw;width:96vw;height:70vh;} }
+      /* เพิ่ม resizer ขนาดใหญ่เพื่อกดง่ายขึ้น */
+    .gc2-resizer {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      right: 6px;
+      bottom: 6px;
+      border-radius:6px;
+      cursor: se-resize;
+      background: linear-gradient(135deg, rgba(255,255,255,.04), transparent);
+      z-index: 10;
+      touch-action: none;
+    }
   `;
 
   const launcher = document.createElement('div');
   launcher.className = 'gc2-launcher';
   launcher.title = 'Goonee Console';
   launcher.innerHTML = '⚡️';
-  launcher.style.right = '16px';
-  launcher.style.bottom = '16px';
+  launcher.style.right = '30px';
+  launcher.style.bottom = '30px';
 
   const panel = document.createElement('div');
   panel.className = 'gc2-panel';
@@ -125,8 +138,48 @@
     };
     trigger.addEventListener('pointerdown', onPointerDown);
   };
+ // ...existing code...
   makeDraggable(launcher, launcher);
   makeDraggable($('#gc2Header'), panel);
+
+  // เพิ่ม resizer (พื้นที่จับขยายใหญ่ขึ้น) และ logic การลากเปลี่ยนขนาด
+  const resizer = document.createElement('div');
+  resizer.className = 'gc2-resizer';
+  panel.appendChild(resizer);
+
+  (function(){
+    let activePointerId = -1, sx = 0, sy = 0, sw = 0, sh = 0;
+    const onPointerDown = e => {
+      e.preventDefault();
+      activePointerId = e.pointerId;
+      sx = e.clientX; sy = e.clientY;
+      const r = panel.getBoundingClientRect();
+      sw = r.width; sh = r.height;
+      try { resizer.setPointerCapture(activePointerId); } catch(e){}
+      WIN.addEventListener('pointermove', onPointerMove, { passive: false });
+      WIN.addEventListener('pointerup', onPointerUp, { once: true });
+      WIN.addEventListener('pointercancel', onPointerUp, { once: true });
+    };
+    const onPointerMove = e => {
+      if (e.pointerId !== activePointerId) return;
+      e.preventDefault();
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      const left = parseFloat(panel.style.left) || panel.getBoundingClientRect().left;
+      const maxW = Math.max(200, Math.min(WIN.innerWidth - left, Math.round(sw + dx)));
+      const maxH = Math.max(150, Math.min(WIN.innerHeight - (parseFloat(panel.style.top)||panel.getBoundingClientRect().top), Math.round(sh + dy)));
+      panel.style.width = maxW + 'px';
+      panel.style.height = maxH + 'px';
+      panel.style.right = 'auto';
+      panel.style.bottom = 'auto';
+    };
+    const onPointerUp = e => {
+      if (e.pointerId !== activePointerId) return;
+      activePointerId = -1;
+      try { resizer.releasePointerCapture(e.pointerId); } catch(e){}
+      WIN.removeEventListener('pointermove', onPointerMove);
+    };
+    resizer.addEventListener('pointerdown', onPointerDown);
+  })();
 
   const applyTheme = t => {
       if (!t) return;

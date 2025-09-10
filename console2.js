@@ -143,10 +143,10 @@ makeDraggable($('#gc2Header'), panel);
 
 // เพิ่ม resizer 4 มุม
 const corners = [
-  { name: 'se', style: { right: '6px', bottom: '6px', cursor: 'se-resize' }, dx: 1, dy: 1 },
-  { name: 'sw', style: { left: '6px', bottom: '6px', cursor: 'sw-resize' }, dx: -1, dy: 1 },
+  { name: 'se', style: { right: '10px', bottom: '10px', cursor: 'se-resize' }, dx: 1, dy: 1 },
+  { name: 'sw', style: { left: '10px', bottom: '10px', cursor: 'sw-resize' }, dx: -1, dy: 1 },
   { name: 'ne', style: { right: '2px', top: '2px', cursor: 'ne-resize' }, dx: 1, dy: -1 },
-  { name: 'nw', style: { left: '6px', top: '6px', cursor: 'nw-resize' }, dx: -1, dy: -1 }
+  { name: 'nw', style: { left: '10px', top: '10px', cursor: 'nw-resize' }, dx: -1, dy: -1 }
 ];
 corners.forEach(corner => {
   const resizer = document.createElement('div');

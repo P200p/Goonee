@@ -56,33 +56,6 @@
   touch-action: none;
 
 
-/* มุมล่างขวา */
-.gc2-resizer.br {
-  right: 6px;
-  bottom: 6px;
-  cursor: se-resize;
-
-
-/* มุมล่างซ้าย */
-.gc2-resizer.bl {
-  left: 6px;
-  bottom: 6px;
-  cursor: sw-resize;
-
-
-/* มุมบนขวา */
-.gc2-resizer.tr {
-  right: 6px;
-  top: 6px;
-  cursor: ne-resize;
-
-
-/* มุมบนซ้าย */
-.gc2-resizer.tl {
-  left: 6px;
-  top: 6px;
-  cursor: nw-resize;
-}
 
 
   const launcher = document.createElement('div');

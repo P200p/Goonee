@@ -138,14 +138,71 @@
     };
     trigger.addEventListener('pointerdown', onPointerDown);
   };
- // ...existing code...
-  makeDraggable(launcher, launcher);
-  makeDraggable($('#gc2Header'), panel);
+makeDraggable(launcher, launcher);
+makeDraggable($('#gc2Header'), panel);
 
-  // เพิ่ม resizer (พื้นที่จับขยายใหญ่ขึ้น) และ logic การลากเปลี่ยนขนาด
+// เพิ่ม resizer 4 มุม
+const corners = [
+  { name: 'se', style: { right: '6px', bottom: '6px', cursor: 'se-resize' }, dx: 1, dy: 1 },
+  { name: 'sw', style: { left: '6px', bottom: '6px', cursor: 'sw-resize' }, dx: -1, dy: 1 },
+  { name: 'ne', style: { right: '2px', top: '2px', cursor: 'ne-resize' }, dx: 1, dy: -1 },
+  { name: 'nw', style: { left: '6px', top: '6px', cursor: 'nw-resize' }, dx: -1, dy: -1 }
+];
+corners.forEach(corner => {
   const resizer = document.createElement('div');
-  resizer.className = 'gc2-resizer';
+  resizer.className = 'gc2-resizer gc2-resizer-' + corner.name;
+  Object.assign(resizer.style, {
+    position: 'absolute',
+    width: '28px',
+    height: '28px',
+    borderRadius: '6px',
+    background: 'linear-gradient(135deg, rgba(255,255,255,.04), transparent)',
+    zIndex: 10,
+    touchAction: 'none',
+    ...corner.style
+  });
   panel.appendChild(resizer);
+
+  let activePointerId = -1, sx = 0, sy = 0, sw = 0, sh = 0, left0 = 0, top0 = 0;
+  resizer.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    activePointerId = e.pointerId;
+    sx = e.clientX; sy = e.clientY;
+    const r = panel.getBoundingClientRect();
+    sw = r.width; sh = r.height;
+    left0 = parseFloat(panel.style.left) || r.left;
+    top0 = parseFloat(panel.style.top) || r.top;
+    try { resizer.setPointerCapture(activePointerId); } catch(e){}
+    WIN.addEventListener('pointermove', onPointerMove, { passive: false });
+    WIN.addEventListener('pointerup', onPointerUp, { once: true });
+    WIN.addEventListener('pointercancel', onPointerUp, { once: true });
+  });
+  function onPointerMove(e) {
+    if (e.pointerId !== activePointerId) return;
+    e.preventDefault();
+    const dx = (e.clientX - sx) * corner.dx;
+    const dy = (e.clientY - sy) * corner.dy;
+    let newW = Math.max(200, sw + dx);
+    let newH = Math.max(150, sh + dy);
+    let newLeft = left0, newTop = top0;
+    if (corner.dx < 0) newLeft = left0 - dx;
+    if (corner.dy < 0) newTop = top0 - dy;
+    Object.assign(panel.style, {
+      width: newW + 'px',
+      height: newH + 'px',
+      left: newLeft + 'px',
+      top: newTop + 'px',
+      right: 'auto',
+      bottom: 'auto'
+    });
+  }
+  function onPointerUp(e) {
+    if (e.pointerId !== activePointerId) return;
+    activePointerId = -1;
+    try { resizer.releasePointerCapture(e.pointerId); } catch(e){}
+    WIN.removeEventListener('pointermove', onPointerMove);
+  }
+});
 
   (function(){
     let activePointerId = -1, sx = 0, sy = 0, sw = 0, sh = 0;

@@ -63,6 +63,61 @@
       <p><a class="btn" href="#" data-copy="#bm-theme">คัดลอกโค้ด</a></p>
     </div>
 
+    <div class="card">
+      <h2>เครื่องมือจากโปรเจค (เพิ่มเติม)</h2>
+      <p class="note">รายการสคริปต์ที่อยู่ในโปรเจค — คัดลอก bookmarklet หรือทดสอบบนหน้านี้</p>
+
+      <h3>• Console (console.js)</h3>
+      <pre><code id="bm-console">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/console.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+      <p>
+        <a class="btn" href="#" data-copy="#bm-console">คัดลอกโค้ด</a>
+        <a class="btn alt" href="#" data-run="#bm-console">ทดสอบ</a>
+      </p>
+
+      <h3>• Console2 (console2.js)</h3>
+      <pre><code id="bm-console2-local">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/console2.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+      <p>
+        <a class="btn" href="#" data-copy="#bm-console2-local">คัดลอกโค้ด</a>
+        <a class="btn alt" href="#" data-run="#bm-console2-local">ทดสอบ</a>
+      </p>
+
+      <h3>• Loader (loader.js)</h3>
+      <pre><code id="bm-loader">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/loader.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+      <p>
+        <a class="btn" href="#" data-copy="#bm-loader">คัดลอกโค้ด</a>
+        <a class="btn alt" href="#" data-run="#bm-loader">ทดสอบ</a>
+      </p>
+
+      <h3>• Main (main.js)</h3>
+      <pre><code id="bm-main">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/main.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+      <p>
+        <a class="btn" href="#" data-copy="#bm-main">คัดลอกโค้ด</a>
+        <a class="btn alt" href="#" data-run="#bm-main">ทดสอบ</a>
+      </p>
+
+      <h3>• Service / util (sw.js)</h3>
+      <pre><code id="bm-sw">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sw.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+      <p>
+        <a class="btn" href="#" data-copy="#bm-sw">คัดลอกโค้ด</a>
+        <a class="btn alt" href="#" data-run="#bm-sw">ทดสอบ</a>
+      </p>
+
+      <h3>• Tools (sharktool/tool.js)</h3>
+      <pre><code id="bm-toollib">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/tool.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+      <p>
+        <a class="btn" href="#" data-copy="#bm-toollib">คัดลอกโค้ด</a>
+        <a class="btn alt" href="#" data-run="#bm-toollib">ทดสอบ</a>
+      </p>
+
+      <h3>• Monitor (sharktool/monitor.js)</h3>
+      <pre><code id="bm-monitor2">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/monitor.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+      <p>
+        <a class="btn" href="#" data-copy="#bm-monitor2">คัดลอกโค้ด</a>
+        <a class="btn alt" href="#" data-run="#bm-monitor2">ทดสอบ</a>
+      </p>
+
+    </div>
+
     <p><a class='btn' href='https://goonee.netlify.app'>← กลับหน้า Home</a></p>
   </div>
 
@@ -129,6 +184,34 @@
               }
           });
       }
+
+      // handler for buttons with data-run (execute bookmarklet snippet)
+      document.addEventListener('click', function(e){
+        const runBtn = e.target.closest('[data-run]');
+        if (!runBtn) return;
+        e.preventDefault();
+        const sel = runBtn.getAttribute('data-run');
+        const el = sel && document.querySelector(sel);
+        if (el) runBookmarkletText(el.textContent);
+      });
+
+      // Random theme application on each page load
+      (function(){
+        // simple theme variants: each is a map of CSS variables to apply to body
+        const themes = [
+          { '--bg': '#0b1020', '--accent': '#00e5ff', '--muted': '#d7fffd' },
+          { '--bg': '#07120b', '--accent': '#00ff41', '--muted': '#bfffd8' },
+          { '--bg': '#12040f', '--accent': '#ff7edb', '--muted': '#ffd7f0' },
+          { '--bg': '#07112a', '--accent': '#8ad1ff', '--muted': '#dff4ff' }
+        ];
+        try{
+          const pick = themes[Math.floor(Math.random()*themes.length)];
+          const root = document.documentElement;
+          Object.keys(pick).forEach(k=> root.style.setProperty(k, pick[k]));
+          // also apply into inline body background fallback
+          if (pick['--bg']) document.body.style.backgroundColor = pick['--bg'];
+        }catch(e){/* ignore */}
+      })();
     })();
   </script>
 </body>

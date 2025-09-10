@@ -47,18 +47,43 @@
     @media (max-width:720px) { .gc2-panel{left:2vw;right:2vw;width:96vw;height:70vh;} }
       /* เพิ่ม resizer ขนาดใหญ่เพื่อกดง่ายขึ้น */
     .gc2-resizer {
-      position: absolute;
-      width: 28px;
-      height: 28px;
-      right: 6px;
-      bottom: 6px;
-      border-radius:6px;
-      cursor: se-resize;
-      background: linear-gradient(135deg, rgba(255,255,255,.04), transparent);
-      z-index: 10;
-      touch-action: none;
-    }
-  `;
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(255,255,255,.04), transparent);
+  z-index: 10;
+  touch-action: none;
+}
+
+/* มุมล่างขวา */
+.gc2-resizer.br {
+  right: 6px;
+  bottom: 6px;
+  cursor: se-resize;
+}
+
+/* มุมล่างซ้าย */
+.gc2-resizer.bl {
+  left: 6px;
+  bottom: 6px;
+  cursor: sw-resize;
+}
+
+/* มุมบนขวา */
+.gc2-resizer.tr {
+  right: 6px;
+  top: 6px;
+  cursor: ne-resize;
+}
+
+/* มุมบนซ้าย */
+.gc2-resizer.tl {
+  left: 6px;
+  top: 6px;
+  cursor: nw-resize;
+}
+
 
   const launcher = document.createElement('div');
   launcher.className = 'gc2-launcher';
@@ -83,7 +108,11 @@
     <div class="gc2-body">
       <div class="gc2-label">📋 โค้ด (Javascript)</div><textarea class="gc2-text" id="gc2Code" placeholder="javascript:alert('Hello from Goonee!')"></textarea>
       <div class="gc2-label">🧾 ผลลัพธ์</div><pre class="gc2-output" id="gc2Out"></pre>
-    </div>
+    </div> <div class="gc2-resizer tl"></div>
+<div class="gc2-resizer tr"></div>
+<div class="gc2-resizer bl"></div>
+<div class="gc2-resizer br"></div>
+
     <div class="gc2-footer"><div id="gc2Status">พร้อมใช้งาน</div><div id="gc2ThemeName" class="gc2-badge">Matrix</div></div>
   `;
 

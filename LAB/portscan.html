@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thai Ethical Hacking Labs — Network Security: Simulated Port Scan</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --panel:#131a2a;
+    --muted:#8aa0c6;
+    --fg:#e8efff;
+    --accent:#4ad395;
+    --accent-2:#5db0ff;
+    --warn:#ffcc66;
+    --danger:#ff6b6b;
+    --ok:#66e3a1;
+    --card:#0f1424;
+    --code:#0a0f1f;
+    --chip:#1b2440;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", "Noto Sans", Arial, sans-serif;
+    background: linear-gradient(180deg, #080c18, var(--bg));
+    color: var(--fg);
+  }
+  header{
+    border-bottom:1px solid #1f2b47;
+    background: radial-gradient(1000px 500px at 80% -20%, rgba(93,176,255,0.08), transparent 60%), var(--panel);
+    position: sticky; top:0; z-index: 20;
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:16px}
+  .brand{display:flex; align-items:center; gap:12px}
+  .badge{
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Noto Sans Mono", monospace;
+    color:var(--accent);
+    background: #0f1c16;
+    border:1px solid #254b3a;
+    padding:4px 8px; border-radius:6px; font-size:.85rem;
+  }
+  h1{font-size:1.35rem; margin:0 0 4px}
+  .sub{color:var(--muted); font-size:.95rem}
+  main .wrap{padding-block:24px}
+  .grid{
+    display:grid; gap:16px;
+    grid-template-columns: 1.2fr .8fr;
+  }
+  @media (max-width: 980px){
+    .grid{grid-template-columns: 1fr}
+  }
+  .card{
+    background: linear-gradient(180deg, rgba(93,176,255,0.06), transparent 25%), var(--card);
+    border:1px solid #1f2b47; border-radius:12px; padding:16px;
+  }
+  .title{display:flex; align-items:center; gap:10px; margin-bottom:10px}
+  .title h2{margin:0; font-size:1.1rem}
+  .sep{height:1px; background:#1f2b47; margin:12px 0}
+  label{font-weight:600; font-size:.95rem}
+  input, select, button, textarea{
+    background: #0d1426; color:var(--fg);
+    border:1px solid #243154; border-radius:10px;
+    padding:10px 12px; font-size:1rem;
+    outline:none;
+  }
+  input:focus, select:focus, textarea:focus{border-color:#3567c7; box-shadow:0 0 0 3px rgba(93,176,255,.18)}
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .row > *{flex:1}
+  .btn{
+    background: linear-gradient(180deg, #2a7fff, #1663e6);
+    border: none; color:white; font-weight:700;
+    cursor:pointer; transition: transform .04s ease;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.secondary{
+    background: #17213b; color:#b8c7ea; border:1px solid #293a67;
+    font-weight:600;
+  }
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{
+    background:var(--chip); color:#b9c7ea; border:1px solid #2a3a69;
+    padding:6px 10px; border-radius:999px; font-size:.85rem
+  }
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Mono", monospace; font-size:.95rem}
+  pre, code{
+    background: var(--code);
+    border:1px solid #1d2a4b;
+    color:#cfe2ff;
+    border-radius:10px; padding:12px; overflow:auto;
+  }
+  pre{margin:0}
+  .log{
+    height:240px; overflow:auto; padding:12px; background:var(--code);
+    border:1px solid #1d2a4b; border-radius:10px; line-height:1.45
+  }
+  .log .ok{color:var(--ok)}
+  .log .warn{color:var(--warn)}
+  .log .bad{color:var(--danger)}
+  .muted{color:var(--muted)}
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:6px 10px; background:#13203d; border:1px solid #253c73; border-radius:999px;
+    color:#b7c7f0; font-size:.86rem
+  }
+  .kpi{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap:10px
+  }
+  .kpi .card{padding:12px}
+  .kpi h3{margin:0; font-size:.95rem; color:#bcd1f6}
+  .kpi .num{font-size:1.4rem; font-weight:800; margin-top:6px}
+  .hl{color:var(--accent)}
+  .steps{display:flex; flex-direction:column; gap:10px}
+  .step{background:#0e172d; border:1px dashed #2b3c6b; border-radius:10px; padding:12px}
+  .step .head{display:flex; justify-content:space-between; align-items:center}
+  .tip{
+    background:#0e1b2f; border:1px solid #20345f; padding:12px; border-radius:10px; color:#cfe0ff
+  }
+  footer{margin-top:18px; color:#92a7cf}
+  .ethics{
+    display:flex; flex-direction:column; gap:10px
+  }
+  .ethics .ok{color:var(--ok); font-weight:700}
+  .ethics .bad{color:var(--danger); font-weight:700}
+  .toast{
+    position:fixed; right:16px; bottom:16px; background:#0f1c25; border:1px solid #264a7d;
+    padding:10px 12px; border-radius:10px; color:#bcd3f7; box-shadow:0 6px 20px rgba(0,0,0,.35);
+    display:none
+  }
+  .score{
+    font-weight:800; color:var(--accent)
+  }
+  .banner{
+    display:flex; gap:12px; align-items:center; background:#0f1a32; border:1px solid #243b71; border-radius:12px; padding:12px
+  }
+  .lock{filter: drop-shadow(0 0 8px rgba(74,211,149,.25))}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <svg class="lock" width="28" height="28" viewBox="0 0 24 24" fill="#4ad395" aria-hidden="true">
+        <path d="M17 8V7a5 5 0 1 0-10 0v1H5a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-2zm-8 0V7a3 3 0 1 1 6 0v1H9zm3 5a2 2 0 0 0-1 3.732V18a1 1 0 1 0 2 0v-1.268A2 2 0 0 0 12 13z"/>
+      </svg>
+      <div>
+        <h1>Thai Ethical Hacking Labs — Network Security</h1>
+        <div class="sub">แล็บจำลอง: ฝึกคิดเชิงป้องกันด้วยการ “อ่านผลสแกนพอร์ต” อย่างปลอดภัย</div>
+      </div>
+      <span class="badge">root@hacklab:~$ ethical_only</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="banner card">
+      <div>
+        <div class="pill">โหมด: Simulation-only</div>
+        <div class="muted" style="margin-top:6px">
+          แบบฝึกหัดนี้ไม่ส่งคำสั่งใดๆ ออกสู่เครือข่ายจริง ทุกอย่างคือข้อมูลจำลองเพื่อการศึกษาเชิงป้องกัน
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <section class="card">
+        <div class="title">
+          <h2>Console จำลองการสแกนพอร์ต</h2>
+          <span class="pill mono">target: virtual-host</span>
+        </div>
+
+        <div class="row" style="margin-bottom:10px">
+          <div>
+            <label for="profile">โปรไฟล์การสแกนจำลอง</label>
+            <select id="profile" aria-label="scan profile">
+              <option value="web">Web service footprint</option>
+              <option value="db">Database exposure check</option>
+              <option value="iot">IoT surface check</option>
+              <option value="mixed">Mixed enterprise</option>
+            </select>
+          </div>
+          <div>
+            <label for="threat">ระดับความเสี่ยงของสถานการณ์</label>
+            <select id="threat" aria-label="threat tier">
+              <option value="low">Low (สภาพแวดล้อมแข็งแรง)</option>
+              <option value="med">Medium</option>
+              <option value="high">High (ตั้งใจฝึกความผิดปกติ)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-bottom:10px">
+          <button id="btnScan" class="btn">เริ่มสแกนจำลอง</button>
+          <button id="btnClear" class="btn secondary">ล้างคอนโซล</button>
+          <button id="btnExplain" class="btn secondary">อธิบายผลลัพธ์</button>
+        </div>
+
+        <div class="chips" style="margin-bottom:10px">
+          <span class="chip mono">TCP/UDP insight</span>
+          <span class="chip mono">Service banner parsing</span>
+          <span class="chip mono">Version & misconfig hints</span>
+        </div>
+
+        <div class="log mono" id="log" aria-live="polite"></div>
+
+        <div class="sep"></div>
+
+        <div class="kpi">
+          <div class="card">
+            <h3>พอร์ตที่เปิด</h3>
+            <div class="num" id="kOpen">0</div>
+          </div>
+          <div class="card">
+            <h3>ข้อบ่งชี้เสี่ยง</h3>
+            <div class="num" id="kRisk">0</div>
+          </div>
+          <div class="card">
+            <h3>คะแนนป้องกัน</h3>
+            <div class="num score" id="kScore">0</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="title">
+          <h2>ภารกิจวันนี้</h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="head"><strong>1) แยกประเภทบริการ</strong><span class="pill">+10 คะแนน</span></div>
+            <div class="muted">ดูจากหมายเลขพอร์ตและแบนเนอร์ จำแนกว่าเป็น Web, DB, หรือ IoT</div>
+          </div>
+          <div class="step">
+            <div class="head"><strong>2) ชี้ misconfiguration</strong><span class="pill">+20 คะแนน</span></div>
+            <div class="muted">ระบุสิ่งที่ “ไม่ควรเปิดเผย” ต่ออินเทอร์เน็ต เช่น admin interface, test endpoint</div>
+          </div>
+          <div class="step">
+            <div class="head"><strong>3) เสนอวิธีลดความเสี่ยง</strong><span class="pill">+30 คะแนน</span></div>
+            <div class="muted">เสนอ hardening, segmentation, auth, หรือการปิดบริการที่ไม่จำเป็น</div>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="title">
+          <h2>กรอบจริยธรรม</h2>
+        </div>
+        <div class="ethics">
+          <div><span class="ok">ทำ:</span> ฝึกในสภาพแวดล้อมที่ได้รับอนุญาต เขียนรายงานแนะนำการป้องกัน</div>
+          <div><span class="bad">ไม่ทำ:</span> สแกนหรือรุกล้ำระบบจริงโดยไม่มีสิทธิ์</div>
+          <div class="tip">
+            เคล็ดลับ: ตั้งสมมติฐานเหมือนเป็น Blue Team — เป้าหมายคือค้นหาช่องโหว่เพื่อปิดให้เร็วที่สุด
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title">
+        <h2>คำอธิบายผลสแกนและคำแนะนำเชิงป้องกัน</h2>
+      </div>
+      <div id="explain" class="muted">
+        กด “อธิบายผลลัพธ์” หลังจากสแกนจำลองเพื่อดู insight สำหรับการ hardening
+      </div>
+    </section>
+
+    <footer class="wrap">
+      © 2025 Thai Ethical Hacking Labs — เพื่อการศึกษาเชิงป้องกันเท่านั้น
+    </footer>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const logEl = document.getElementById('log');
+  const kOpen = document.getElementById('kOpen');
+  const kRisk = document.getElementById('kRisk');
+  const kScore = document.getElementById('kScore');
+  const profile = document.getElementById('profile');
+  const threat = document.getElementById('threat');
+  const explain = document.getElementById('explain');
+  const toast = document.getElementById('toast');
+
+  const rnd = (min, max)=> Math.floor(Math.random()*(max-min+1))+min;
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+
+  const PORTS = {
+    web: [
+      {p:80,  s:'http',      b:['nginx','apache','caddy']},
+      {p:443, s:'https',     b:['nginx tls','apache tls','traefik']},
+      {p:8080,s:'http-alt',  b:['jetty','tomcat','proxy']},
+      {p:8443,s:'https-alt', b:['tomcat tls','spring boot tls']},
+      {p:21,  s:'ftp',       b:['vsftpd','proftpd']},
+      {p:22,  s:'ssh',       b:['OpenSSH','Dropbear']},
+      {p:3306,s:'mysql',     b:['MySQL','MariaDB']},
+      {p:5432,s:'postgres',  b:['PostgreSQL']},
+      {p:9200,s:'elasticsearch', b:['ES cluster']}
+    ],
+    db: [
+      {p:1433,s:'mssql',     b:['Microsoft SQL Server']},
+      {p:1521,s:'oracle',    b:['Oracle TNS']},
+      {p:27017,s:'mongodb',  b:['MongoDB']},
+      {p:6379,s:'redis',     b:['Redis']},
+      {p:11211,s:'memcached',b:['Memcached']},
+      {p:3306,s:'mysql',     b:['MySQL']},
+      {p:5432,s:'postgres',  b:['PostgreSQL']}
+    ],
+    iot: [
+      {p:1883,s:'mqtt',      b:['Mosquitto']},
+      {p:8883,s:'mqtts',     b:['Mosquitto TLS']},
+      {p:554, s:'rtsp',      b:['IP Camera RTSP']},
+      {p:1900,s:'ssdp',      b:['UPnP/SSDP']},
+      {p:5353,s:'mdns',      b:['mDNS/Bonjour']},
+      {p:23,  s:'telnet',    b:['BusyBox telnetd']},
+      {p:8081,s:'http-api',  b:['Device Admin UI']}
+    ],
+    mixed: []
+  };
+  // build mixed
+  PORTS.mixed = PORTS.web.slice(0,5).concat(PORTS.db.slice(0,3)).concat(PORTS.iot.slice(0,3));
+
+  function toastShow(msg){
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    setTimeout(()=> toast.style.display = 'none', 2500);
+  }
+
+  function resetKPI(){
+    kOpen.textContent='0';
+    kRisk.textContent='0';
+    kScore.textContent='0';
+  }
+
+  function write(line, cls){
+    const span = document.createElement('div');
+    if(cls) span.className = cls;
+    span.textContent = line;
+    logEl.appendChild(span);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function clearLog(){
+    logEl.innerHTML='';
+    explain.innerHTML = 'กด “อธิบายผลลัพธ์” หลังจากสแกนจำลองเพื่อดู insight สำหรับการ hardening';
+    resetKPI();
+  }
+
+  function simulateScan(){
+    clearLog();
+    const prof = profile.value;
+    const tier = threat.value;
+
+    write('== Simulation start ==','muted');
+    write('[info] target: virtual-host (sandboxed)', 'muted');
+
+    const base = PORTS[prof].slice();
+    const count = tier === 'low' ? rnd(4,6) : tier==='med' ? rnd(6,9) : rnd(9,12);
+
+    const chosen = [];
+    const used = new Set();
+    while(chosen.length < count){
+      const c = pick(base);
+      const key = c.p + ':' + c.s;
+      if(!used.has(key)){ used.add(key); chosen.push(c); }
+      if(chosen.length < count && Math.random()<0.18){
+        // random ephemeral/service
+        chosen.push({p:rnd(10000, 49151), s:'custom', b:['internal']});
+      }
+    }
+
+    const findings = [];
+    let open=0, risks=0, score=0;
+
+    chosen.sort((a,b)=>a.p-b.p).forEach(item=>{
+      open++;
+      const banner = pick(item.b);
+      const latency = rnd(8, 80);
+      const v = Math.random();
+
+      let flags = [];
+      let risk = 0;
+
+      // Heuristics to create defensive hints (no exploitation guidance)
+      if(['ftp','telnet','redis','mongodb','elasticsearch','memcached','mysql','postgres','mssql'].includes(item.s) && Math.random()<0.5){
+        flags.push('service exposed to WAN?');
+        risk += 2;
+      }
+      if(['http','http-alt','http-api'].includes(item.s) && Math.random()<0.45){
+        flags.push('admin UI visible?');
+        risk += 2;
+      }
+      if(['mqtt','mqtts'].includes(item.s) && Math.random()<0.4){
+        flags.push('anonymous/weak auth?');
+        risk += 2;
+      }
+      if(['ssh','https','https-alt'].includes(item.s) && Math.random()<0.25){
+        flags.push('legacy cipher?');
+        risk += 1;
+      }
+      if(item.p===9200 && Math.random()<0.6){
+        flags.push('cluster info leakage?');
+        risk += 2;
+      }
+      if(item.s==='custom' && Math.random()<0.5){
+        flags.push('unknown service — review ACL');
+        risk += 1;
+      }
+
+      const sevClass = risk>=3 ? 'bad' : risk===2 ? 'warn' : 'ok';
+      if(risk>0) risks += 1;
+
+      // Defensive score: reward recognition of issues
+      score += Math.max(0, 3 - risk);
+
+      const line = `[open] ${String(item.p).padStart(5)} /tcp  ${item.s.padEnd(10)}  banner="${banner}"  rtt=${latency}ms` +
+                   (flags.length ? `  → hints: ${flags.join(', ')}` : '');
+      write(line, sevClass);
+      findings.push({port:item.p, svc:item.s, banner, flags, risk});
+    });
+
+    // Summaries
+    write('','muted');
+    write(`summary: open=${open}, indicative_risks=${risks}, defensive_score=${score}`, 'muted');
+
+    kOpen.textContent = String(open);
+    kRisk.textContent = String(risks);
+    kScore.textContent = String(score);
+
+    // Save to explain panel
+    lastFindings = findings;
+    toastShow('สแกนจำลองเสร็จแล้ว');
+  }
+
+  let lastFindings = [];
+
+  function explainNow(){
+    if(!lastFindings.length){
+      toastShow('ยังไม่มีผลลัพธ์ ให้สแกนจำลองก่อน');
+      return;
+    }
+    const groups = {
+      web: [],
+      db: [],
+      iot: [],
+      other: []
+    };
+
+    lastFindings.forEach(f=>{
+      if(['http','https','http-alt','https-alt','http-api'].includes(f.svc)) groups.web.push(f);
+      else if(['mysql','postgres','mssql','mongodb','redis','memcached','elasticsearch','oracle'].includes(f.svc)) groups.db.push(f);
+      else if(['mqtt','mqtts','rtsp','ssdp','mdns','telnet'].includes(f.svc)) groups.iot.push(f);
+      else groups.other.push(f);
+    });
+
+    function secList(items, title, advice){
+      if(!items.length) return '';
+      const lis = items.map(i=>{
+        const tag = i.flags.length ? `<span class="pill">${i.flags.join(', ')}</span>` : '';
+        return `<li><span class="mono">${i.port}/${i.svc}</span> — ${i.banner} ${tag}</li>`;
+      }).join('');
+      return `
+        <h4 style="margin:12px 0 6px">${title}</h4>
+        <ul style="margin:0 0 8px 18px; padding:0">${lis}</ul>
+        <div class="tip">${advice}</div>
+      `;
+    }
+
+    const html = `
+      ${secList(groups.web, 'บริการ Web',
+        'พิจารณาปิดเส้นทาง admin/public ที่ไม่จำเป็น เปิด auth/2FA, ใช้ TLS สมัยใหม่, และตั้ง rate limit/WAF')}
+      ${secList(groups.db, 'บริการฐานข้อมูล',
+        'อย่า expose DB ต่ออินเทอร์เน็ต ใช้ firewall/allowlist, network segmentation, และปิด guest/anonymous')}
+      ${secList(groups.iot, 'บริการ IoT/อุปกรณ์',
+        'ปิดบริการ legacy (เช่น Telnet), ใช้ VPN เข้าถึงภายใน, เปลี่ยนรหัสผ่านเริ่มต้น, บังคับ TLS ถ้าเป็นไปได้')}
+      ${secList(groups.other, 'บริการอื่นๆ/กำหนดเอง',
+        'ทำ service inventory, ผูก ACL ให้เฉพาะต้นทางที่จำเป็น, บันทึกและตรวจสอบ log/anomaly')}
+      <div class="sep"></div>
+      <div class="muted">สรุปแนวทาง: principle of least privilege, deny-by-default, และตรวจสอบ misconfiguration อย่างสม่ำเสมอ</div>
+    `;
+    explain.innerHTML = html;
+    toastShow('แสดงคำอธิบายและคำแนะนำเชิงป้องกันแล้ว');
+  }
+
+  document.getElementById('btnScan').addEventListener('click', simulateScan);
+  document.getElementById('btnClear').addEventListener('click', clearLog);
+  document.getElementById('btnExplain').addEventListener('click', explainNow);
+
+  // first tip
+  setTimeout(()=> toastShow('พร้อมเริ่มแล็บ — เลือกโปรไฟล์แล้วกด “เริ่มสแกนจำลอง”'), 600);
+})();
+</script>
+</body>
+</html>

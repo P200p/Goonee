@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Thai Ethical Hacking Labs — Network Forensics Simulator</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121a2c; --fg:#eaf0ff; --muted:#8ea4ca;
+    --card:#0f1628; --line:#1f2b47; --accent:#4ad395; --warn:#ffcc66; --bad:#ff6b6b; --ok:#66e3a1;
+    --code:#0a1122; --chip:#1b2440; --accent2:#5db0ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI","Noto Sans Thai","Noto Sans", Arial, sans-serif; background:linear-gradient(180deg,#080d18,var(--bg)); color:var(--fg)}
+  header{position:sticky; top:0; z-index:50; background:radial-gradient(1200px 600px at 90% -30%, rgba(93,176,255,.10), transparent 60%), var(--panel); border-bottom:1px solid var(--line)}
+  .wrap{max-width:1180px; margin:0 auto; padding:16px}
+  h1{font-size:1.35rem; margin:0 0 4px}
+  .sub{color:var(--muted); font-size:.95rem}
+  .badge{font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; color:var(--accent); background:#0f1c16; border:1px solid #254b3a; padding:4px 8px; border-radius:8px; font-size:.85rem}
+  main .wrap{padding-block:24px}
+  .card{background:linear-gradient(180deg, rgba(93,176,255,.06), transparent 25%), var(--card); border:1px solid var(--line); border-radius:12px; padding:16px}
+  .title{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px}
+  .title h2{margin:0; font-size:1.1rem}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  label{font-weight:700; font-size:.95rem}
+  select, button, input[type="checkbox"], input[type="text"], textarea{background:#0e1528; border:1px solid #243154; color:var(--fg); border-radius:10px; padding:10px 12px; font-size:1rem}
+  textarea{min-height:90px}
+  .btn{background:linear-gradient(180deg,#2a7fff,#1663e6); border:none; color:#fff; font-weight:800; cursor:pointer}
+  .btn.secondary{background:#17213b; color:#b8c7ea; border:1px solid #293a67; font-weight:700}
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{background:var(--chip,#1b2440); color:#b9c7ea; border:1px solid #2a3a69; padding:6px 10px; border-radius:999px; font-size:.85rem}
+  .grid{display:grid; gap:16px; grid-template-columns: 1.2fr .8fr}
+  @media (max-width: 1020px){ .grid{grid-template-columns:1fr} }
+  .log{height:260px; overflow:auto; padding:12px; background:var(--code); border:1px solid #1d2a4b; border-radius:10px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; line-height:1.45}
+  .muted{color:var(--muted)}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  .sep{height:1px; background:var(--line); margin:12px 0}
+  .kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+  .kpi .card{padding:12px}
+  .kpi h3{margin:0; font-size:.95rem; color:#c9d7f7}
+  .kpi .num{font-size:1.4rem; font-weight:800; margin-top:6px}
+  .score{color:var(--accent)}
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; background:#13203d; border:1px solid #253c73; border-radius:999px; color:#b7c7f0; font-size:.86rem}
+  .panel{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+  .box{background:#0f1a32; border:1px solid #263c70; border-radius:10px; padding:10px}
+  .box h3{margin:0 0 6px; font-size:1rem}
+  .list{max-height:200px; overflow:auto; padding:8px; background:#0e1528; border:1px solid #22345a; border-radius:8px}
+  pre{background:var(--code); border:1px solid #1d2a4b; border-radius:10px; padding:12px; overflow:auto}
+  .flow{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+  .pkt{padding:6px 10px; border:1px solid #2a3a69; border-radius:8px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace}
+  .pkt.h{background:#142733; border-color:#2d5f86}
+  .pkt.d{background:#241f14; border-color:#6a5a2e}
+  .pkt.t{background:#142d20; border-color:#2f6a4a}
+  .pkt.s{background:#241a1a; border-color:#6a2e2e}
+  footer{margin-top:16px; color:#92a7cf}
+  .toast{position:fixed; right:16px; bottom:16px; background:#0f1c25; border:1px solid #264a7d; padding:10px 12px; border-radius:10px; color:#bcd3f7; box-shadow:0 6px 20px rgba(0,0,0,.35); display:none}
+  /* Easter egg: Darkroom */
+  .darkroom{filter:grayscale(.1) contrast(1.06) saturate(1.2)}
+  .darknote{position:fixed; left:16px; bottom:16px; background:#141b2c; border:1px dashed #3a4b7a; color:#cfe0ff; padding:8px 10px; border-radius:8px; display:none}
+</style>
+</head>
+<body>
+<header id="hdr">
+  <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+    <div>
+      <h1>Thai Ethical Hacking Labs — Network Forensics Simulator</h1>
+      <div class="sub">แล็บจำลอง: วิเคราะห์ทราฟฟิก/ไทม์ไลน์/อาร์ติแฟกต์/IOC แบบปลอดภัย ไม่แตะระบบจริง</div>
+    </div>
+    <span id="modeBadge" class="badge">mode: analysis-only</span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="card">
+      <div class="title">
+        <h2>สถานการณ์และการตั้งค่า</h2>
+        <div class="row">
+          <button id="btnSim" class="btn">สร้างแคปเจอร์จำลอง</button>
+          <button id="btnExplain" class="btn secondary">อธิบายผล</button>
+          <button id="btnReport" class="btn secondary">Generate report</button>
+          <button id="btnClear" class="btn secondary">ล้าง</button>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:10px">
+        <div>
+          <label for="scenario">เลือกฉาก</label>
+          <select id="scenario">
+            <option value="exfil">สำนักงาน: DNS exfil + HTTPS เบาบาง</option>
+            <option value="malware">เครื่องผู้ใช้: โหลดไฟล์ต้องสงสัย + C2 beacon</option>
+            <option value="insider">ภายใน: SMB แปลก + HTTP POST หลุดข้อมูล</option>
+            <option value="clean">ทราฟฟิกปกติ: อ้างอิงพื้นฐาน</option>
+          </select>
+        </div>
+        <div>
+          <label for="window">ช่วงเวลาจำลอง</label>
+          <select id="window">
+            <option value="15">15 นาที</option>
+            <option value="30">30 นาที</option>
+            <option value="60">60 นาที</option>
+          </select>
+        </div>
+        <div class="chips">
+          <span class="chip">Timeline</span>
+          <span class="chip">IOC extraction</span>
+          <span class="chip">Anomaly scoring</span>
+          <span class="chip">Decode & Hash</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="box">
+          <h3>คอนโซลเหตุการณ์</h3>
+          <div id="log" class="log" aria-live="polite"></div>
+          <div class="sep"></div>
+          <div class="flow" id="flow"></div>
+        </div>
+
+        <div class="box">
+          <h3>ฟิลเตอร์/ค้นหา</h3>
+          <div class="row" style="margin-bottom:8px">
+            <select id="proto">
+              <option value="all">ทั้งหมด</option>
+              <option value="DNS">DNS</option>
+              <option value="HTTP">HTTP</option>
+              <option value="TLS">TLS</option>
+              <option value="SMB">SMB</option>
+            </select>
+            <input type="text" id="search" placeholder="ค้นหา/regex เช่น (^|\\.)example\\.com$"/>
+            <button id="btnFilter" class="btn secondary">ใช้ฟิลเตอร์</button>
+          </div>
+          <div class="list" id="hits"></div>
+          <div class="sep"></div>
+          <h3>อาร์ติแฟกต์ที่สกัดได้</h3>
+          <div class="list" id="art"></div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="kpi">
+        <div class="card"><h3>เซสชันที่พบ</h3><div class="num score" id="kSess">0</div></div>
+        <div class="card"><h3>ความผิดปกติ</h3><div class="num bad" id="kAnom">0</div></div>
+        <div class="card"><h3>อาร์ติแฟกต์</h3><div class="num score" id="kArt">0</div></div>
+        <div class="card"><h3>คะแนนการวิเคราะห์</h3><div class="num score" id="kScore">0</div></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title"><h2>เครื่องมือช่วยนักวิเคราะห์</h2></div>
+      <div class="panel">
+        <div class="box">
+          <h3>Decode/Hash</h3>
+          <label class="muted">ใส่ Base64/Hex/ข้อความ</label>
+          <textarea id="decodeIn" placeholder="ตัวอย่าง: U0VDUkVUPWNhdGNo"></textarea>
+          <div class="row" style="margin-top:6px">
+            <button id="btnB64" class="btn secondary">ถอดรหัส Base64</button>
+            <button id="btnHex" class="btn secondary">ถอดรหัส Hex</button>
+            <button id="btnHash" class="btn secondary">คำนวณ SHA‑256</button>
+          </div>
+          <pre id="decodeOut" class="muted">ผลลัพธ์จะปรากฏที่นี่</pre>
+        </div>
+        <div class="box">
+          <h3>IOC quick add</h3>
+          <label class="muted">เพิ่มโดเมน/IP/แฮชที่น่าสงสัยเพื่อไฮไลต์</label>
+          <div class="row">
+            <input type="text" id="ioc" placeholder="เช่น suspicious.example หรือ 203.0.113.7 หรือ SHA256"/>
+            <button id="btnIOC" class="btn secondary">เพิ่ม/ไฮไลต์</button>
+          </div>
+          <div class="list" id="iocList"></div>
+        </div>
+        <div class="box">
+          <h3>ภารกิจวันนี้</h3>
+          <ul style="margin:0 0 0 18px">
+            <li><strong>แยกประเภท:</strong> ระบุทราฟฟิกปกติ/ผิดปกติและเหตุผล</li>
+            <li><strong>หา IOC:</strong> ดึงโดเมน/IP/URL/UA/Hash ที่เกี่ยวข้อง</li>
+            <li><strong>ไทม์ไลน์:</strong> สร้างเหตุการณ์สำคัญและความเชื่อมโยง</li>
+            <li><strong>ข้อเสนอแนะ:</strong> เสนอการบรรเทา (DNS policy, egress, TLS inspect ตามนโยบาย)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title"><h2>รายงานสรุป (สร้างอัตโนมัติ)</h2></div>
+      <pre id="report" class="muted">กด “Generate report” หลังจากวิเคราะห์</pre>
+    </section>
+
+    <footer class="wrap">© 2025 Thai Ethical Hacking Labs — เพื่อการศึกษาเชิงป้องกันเท่านั้น</footer>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="darknote" id="darknote">Darkroom mode on — โฟกัสหลักฐาน, ลดสิ่งรบกวนสายตา</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const log=$('log'), flow=$('flow'), hits=$('hits'), art=$('art');
+  const kSess=$('kSess'), kAnom=$('kAnom'), kArt=$('kArt'), kScore=$('kScore');
+  const toast=$('toast'), report=$('report');
+
+  const scenario=$('scenario'), windowSel=$('window'), proto=$('proto'), search=$('search');
+  const decodeIn=$('decodeIn'), decodeOut=$('decodeOut');
+  const ioc=$('ioc'), iocList=$('iocList');
+
+  function toastShow(msg){ toast.textContent=msg; toast.style.display='block'; setTimeout(()=> toast.style.display='none', 2200); }
+  function reset(){
+    log.innerHTML=''; flow.innerHTML=''; hits.innerHTML=''; art.innerHTML='';
+    kSess.textContent='0'; kAnom.textContent='0'; kArt.textContent='0'; kScore.textContent='0';
+    report.textContent='กด “Generate report” หลังจากวิเคราะห์'; artifacts.clear(); iocs.clear();
+  }
+  function write(msg, cls){ const d=document.createElement('div'); if(cls) d.className=cls; d.textContent=msg; log.appendChild(d); log.scrollTop=log.scrollHeight; }
+  function pkt(text, cls){ const s=document.createElement('span'); s.className='pkt '+cls; s.textContent=text; flow.appendChild(s); }
+
+  // Data model (simulated)
+  let events = []; // {ts, proto, src, dst, desc, meta, flags}
+  const artifacts = new Map(); // key -> set(values)
+  const iocs = new Set();
+
+  function addArt(type, value){
+    if(!artifacts.has(type)) artifacts.set(type, new Set());
+    artifacts.get(type).add(value);
+  }
+
+  function tsBase(minutes){ const now = Date.now(); const start = now - minutes*60*1000; return t=> new Date(start + t).toISOString(); }
+
+  function sim_exfil(minutes){
+    const t = tsBase(minutes);
+    const baseIP = '10.0.5.23';
+    const gw = '192.0.2.1';
+    const c2 = '203.0.113.7';
+    const doms = ['cdn.example.com','updates.example.com','telemetry.safe.io','suspicious-data.xyz'];
+    const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0';
+    const ja3 = '769,4865-4867-49195,23-24-25,0'; // placeholder
+    const b64 = 'U0VDUkVUPWNhdGNo'; // harmless
+    const enc = '66696c653d7265706f72742e7a6970'; // hex: file=report.zip
+
+    const out = [];
+    // baseline DNS
+    for(let i=0;i<12;i++){
+      const d = doms[i%doms.length];
+      out.push({ts:t(i*60000+5000), proto:'DNS', src:baseIP, dst:gw, desc:`A? ${d}`, meta:{q:d}});
+      addArt('domain', d);
+    }
+    // normal HTTPS
+    for(let i=0;i<6;i++){
+      out.push({ts:t(i*60000+12000), proto:'TLS', src:baseIP, dst:'198.51.100.'+(20+i), desc:`SNI=updates.example.com JA3=${ja3}`, meta:{sni:'updates.example.com', ja3}});
+      addArt('sni','updates.example.com');
+    }
+    // exfil pattern: many small DNS to suspicious-data.xyz with long labels (simulate)
+    for(let i=0;i<14;i++){
+      const label = ('x'.repeat(8)+i.toString(16)) + '.chunk' + i + '.suspicious-data.xyz';
+      out.push({ts:t(i*60000+30000), proto:'DNS', src:baseIP, dst:gw, desc:`TXT? ${label}`, meta:{q:label, txt:true}, flags:{anom:'dns_exfil'}});
+      addArt('domain', 'suspicious-data.xyz');
+    }
+    // beaconing HTTPS to C2 every 90s
+    for(let i=0;i<minutes*60/90;i++){
+      const tms = i*90000+15000;
+      out.push({ts:t(tms), proto:'TLS', src:baseIP, dst:c2, desc:`SNI=c2.suspicious-data.xyz JA3=${ja3}`, meta:{sni:'c2.suspicious-data.xyz', ja3}, flags:{anom:'beaconing'}});
+      addArt('ip', c2); addArt('sni','c2.suspicious-data.xyz');
+    }
+    // small HTTP POST to CDN (looks normal but has b64/hex in payload)
+    out.push({ts:t(5*60000+45000), proto:'HTTP', src:baseIP, dst:'198.51.100.42', desc:`POST /telemetry ua="${ua}"`, meta:{url:'/telemetry', host:'cdn.example.com', ua, body:`id=42&p=${b64}&h=${enc}`}});
+    addArt('url','https://cdn.example.com/telemetry'); addArt('ua', ua);
+
+    return out;
+  }
+
+  function sim_malware(minutes){
+    const t = tsBase(minutes), ip='10.0.6.77';
+    const out = [];
+    // normal DNS/HTTPS to popular domains
+    ['example.com','static.safe.io','fonts.gstatic.com'].forEach((d,i)=>{
+      out.push({ts:t(i*40000+6000), proto:'DNS', src:ip, dst:'192.0.2.1', desc:`A? ${d}`, meta:{q:d}}); addArt('domain', d);
+      out.push({ts:t(i*40000+12000), proto:'TLS', src:ip, dst:'203.0.113.'+(50+i), desc:`SNI=${d} JA3=good`, meta:{sni:d, ja3:'good'}}); addArt('sni', d);
+    });
+    // download suspicious file over HTTP (no TLS)
+    const ua='curl/7.88.1';
+    out.push({ts:t(90000), proto:'HTTP', src:ip, dst:'198.51.100.99', desc:`GET /bin/update.exe ua="${ua}"`, meta:{url:'/bin/update.exe', host:'download.unknown-tld.site', ua}, flags:{anom:'clear_download'}});
+    addArt('url','http://download.unknown-tld.site/bin/update.exe'); addArt('ua', ua); addArt('domain','unknown-tld.site');
+    // beacon to C2 over TLS with uncommon SNI
+    for(let i=0;i<minutes*60/60;i++){
+      const sni='svc-control.east-1.compute.invalid';
+      out.push({ts:t(i*60000+15000), proto:'TLS', src:ip, dst:'203.0.113.200', desc:`SNI=${sni} JA3=rare`, meta:{sni, ja3:'rare'}, flags:{anom:'beaconing'}});
+      addArt('sni', sni); addArt('ip','203.0.113.200');
+    }
+    // DNS queries to randomized subdomains
+    for(let i=0;i<10;i++){
+      const d=`${Math.random().toString(36).slice(2,8)}.telemetry.safe.io`;
+      out.push({ts:t(i*70000+30000), proto:'DNS', src:ip, dst:'192.0.2.1', desc:`A? ${d}`, meta:{q:d}});
+      addArt('domain', d);
+    }
+    return out;
+  }
+
+  function sim_insider(minutes){
+    const t=tsBase(minutes), ip='10.0.8.15';
+    const out=[];
+    // SMB internal access spike
+    for(let i=0;i<6;i++){
+      out.push({ts:t(i*60000+5000), proto:'SMB', src:ip, dst:'10.0.0.20', desc:`SMB READ /HR/payroll.xlsx`, meta:{path:'/HR/payroll.xlsx'}, flags:{anom:'lateral'}});
+    }
+    // HTTP POST data leakage
+    const ua='Mozilla/5.0';
+    out.push({ts:t(120000), proto:'HTTP', src:ip, dst:'198.51.100.10', desc:`POST /upload ua="${ua}"`, meta:{url:'/upload', host:'paste.example.net', ua, body:'name=doc&data=UEsDBAoAAAA...'}, flags:{anom:'exfil_post'}});
+    addArt('url','https://paste.example.net/upload'); addArt('ua', ua);
+    // Normal traffic filler
+    out.push({ts:t(80000), proto:'DNS', src:ip, dst:'192.0.2.1', desc:'A? news.example.com', meta:{q:'news.example.com'}});
+    out.push({ts:t(90000), proto:'TLS', src:ip, dst:'203.0.113.12', desc:'SNI=news.example.com JA3=good', meta:{sni:'news.example.com', ja3:'good'}});
+    addArt('domain','news.example.com'); addArt('sni','news.example.com');
+    return out;
+  }
+
+  function sim_clean(minutes){
+    const t=tsBase(minutes), ip='10.0.3.9', out=[];
+    const doms=['example.com','cdn.example.com','apis.safe.io'];
+    for(let i=0;i<12;i++){
+      const d=doms[i%doms.length];
+      out.push({ts:t(i*30000+6000), proto:'DNS', src:ip, dst:'192.0.2.1', desc:`A? ${d}`, meta:{q:d}});
+      out.push({ts:t(i*30000+12000), proto:'TLS', src:ip, dst:'198.51.100.'+(10+i), desc:`SNI=${d} JA3=good`, meta:{sni:d, ja3:'good'}});
+    }
+    return out;
+  }
+
+  function simulate(){
+    reset();
+    const minutes = Number(windowSel.value);
+    if(scenario.value==='exfil') events = sim_exfil(minutes);
+    else if(scenario.value==='malware') events = sim_malware(minutes);
+    else if(scenario.value==='insider') events = sim_insider(minutes);
+    else events = sim_clean(minutes);
+
+    // Sort and render
+    events.sort((a,b)=> a.ts.localeCompare(b.ts));
+    let sess=0, anom=0;
+    events.forEach(ev=>{
+      const cls = ev.flags?.anom ? (ev.flags.anom==='lateral'?'warn':'bad') : 'muted';
+      write(`[${ev.ts}] ${ev.proto} ${ev.src} → ${ev.dst}  ${ev.desc}`, cls);
+      if(ev.proto==='DNS') pkt('DNS','d'); else if(ev.proto==='HTTP') pkt('HTTP','h'); else if(ev.proto==='TLS') pkt('TLS','t'); else pkt(ev.proto,'s');
+      sess++;
+      if(ev.flags?.anom) anom++;
+      // auto-extract common artifacts
+      const text = ev.desc + ' ' + JSON.stringify(ev.meta||{});
+      (text.match(/\b\d{1,3}(\.\d{1,3}){3}\b/g)||[]).forEach(ip=> addArt('ip', ip));
+      (text.match(/[a-z0-9.-]+\.[a-z]{2,}/gi)||[]).forEach(d=> addArt('domain', d));
+      (text.match(/(GET|POST)\s+[^\s]+/g)||[]).forEach(m=> addArt('url_method', m));
+      (text.match(/ua="([^"]+)"/i)||[]).slice(1).forEach(ua=> addArt('ua', ua));
+      if(ev.meta?.ja3) addArt('ja3', ev.meta.ja3);
+    });
+
+    // Render artifacts
+    renderArtifacts();
+
+    // Basic scoring: sessions + findings − anomalies
+    kSess.textContent = String(sess);
+    kAnom.textContent = String(anom);
+    kArt.textContent = String([...artifacts.values()].reduce((a,s)=>a+s.size,0));
+    const score = Math.max(0, 10 + Math.min(10, artifacts.size*2) - Math.floor(anom/2));
+    kScore.textContent = String(score);
+
+    write('', 'muted');
+    write(`summary: sessions=${sess}, anomalies=${anom}, artifacts=${kArt.textContent}, analysis_score=${score}`, 'muted');
+    toastShow('สร้างแคปเจอร์จำลองแล้ว');
+  }
+
+  function renderArtifacts(){
+    if(!artifacts.size){ art.innerHTML='<div class="muted">ยังไม่มีอาร์ติแฟกต์</div>'; return; }
+    const blocks = [];
+    artifacts.forEach((set, key)=>{
+      const vals = [...set].slice(0,80).map(v=> `<li><strong>${key}:</strong> ${v}</li>`).join('');
+      blocks.push(`<ul style="margin:0 0 8px 18px">${vals}</ul>`);
+    });
+    art.innerHTML = blocks.join('');
+  }
+
+  function applyFilter(){
+    if(!events.length){ toastShow('ยังไม่มีเหตุการณ์'); return; }
+    const p = proto.value;
+    const q = search.value.trim();
+    hits.innerHTML='';
+    let re=null;
+    if(q){
+      try{ re = new RegExp(q, 'i'); }catch(e){ hits.innerHTML='<div class="bad">Regex ไม่ถูกต้อง</div>'; return; }
+    }
+    let count=0;
+    events.forEach(ev=>{
+      if(p!=='all' && ev.proto!==p) return;
+      const line = `[${ev.ts}] ${ev.proto} ${ev.src} → ${ev.dst}  ${ev.desc}`;
+      if(!re || re.test(line) || re.test(JSON.stringify(ev.meta||{}))){
+        const d=document.createElement('div'); d.textContent=line; if(ev.flags?.anom) d.className='bad';
+        hits.appendChild(d); count++;
+      }
+    });
+    if(count===0) hits.innerHTML='<div class="muted">ไม่พบผลลัพธ์</div>';
+  }
+
+  // Tools: decode/hash
+  function b64(){
+    const txt = decodeIn.value.trim();
+    try{ const out = atob(txt); decodeOut.textContent = out; }
+    catch(e){ decodeOut.textContent='ไม่ใช่ Base64 ที่ถูกต้อง'; }
+  }
+  function hex(){
+    const txt = decodeIn.value.trim().replace(/\s+/g,'');
+    if(!/^[0-9a-fA-F]+$/.test(txt) || txt.length%2!==0){ decodeOut.textContent='ไม่ใช่ Hex ที่ถูกต้อง'; return; }
+    const bytes = txt.match(/.{1,2}/g).map(h=> String.fromCharCode(parseInt(h,16))).join('');
+    decodeOut.textContent = bytes;
+  }
+  async function sha256(){
+    const txt = new TextEncoder().encode(decodeIn.value);
+    const buf = await crypto.subtle.digest('SHA-256', txt);
+    const hex = [...new Uint8Array(buf)].map(b=> b.toString(16).padStart(2,'0')).join('');
+    decodeOut.textContent = hex;
+  }
+
+  // IOC tagging
+  function addIOC(){
+    const v = ioc.value.trim(); if(!v) return;
+    iocs.add(v);
+    const li=document.createElement('div'); li.textContent=v; li.className='pill'; iocList.appendChild(li);
+    ioc.value='';
+    // auto highlight in artifacts or log
+    let found=0;
+    [...log.querySelectorAll('div')].forEach(n=>{
+      if(n.textContent.includes(v)){ n.style.outline='1px solid #ffcc66'; found++; }
+    });
+    toastShow(found?`พบ IOC ในคอนโซล ${found} รายการ`:'เพิ่ม IOC แล้ว');
+  }
+
+  function explain(){
+    if(!events.length){ toastShow('ยังไม่มีเหตุการณ์'); return; }
+    const anom = Number(kAnom.textContent);
+    const lines = [];
+    lines.push(`<li><strong>ภาพรวม:</strong> เซสชัน ${kSess.textContent}, ความผิดปกติ ${anom}, อาร์ติแฟกต์ ${kArt.textContent}</li>`);
+    // Heuristic insights
+    const haveDNSExfil = events.some(e=> e.flags?.anom==='dns_exfil');
+    const haveBeacon = events.some(e=> e.flags?.anom==='beaconing');
+    const haveClearDL = events.some(e=> e.flags?.anom==='clear_download');
+    const haveLateral = events.some(e=> e.flags?.anom==='lateral');
+    const havePostExfil = events.some(e=> e.flags?.anom==='exfil_post');
+
+    if(haveDNSExfil) lines.push('<li><strong>ชี้แนะ:</strong> พบรูปแบบ DNS exfil (label ยาว/ถี่) — แนะนำบังคับใช้ egress DNS, ติดตั้ง policy/inspection สำหรับ TXT/long label</li>');
+    if(haveBeacon) lines.push('<li><strong>ชี้แนะ:</strong> มีสัญญาณ beaconing — สร้าง detection ตามคาบเวลา + JA3/JA4 fingerprint</li>');
+    if(haveClearDL) lines.push('<li><strong>ชี้แนะ:</strong> มีการดาวน์โหลดไฟล์ผ่าน HTTP — แนะนำบังคับ HTTPS + ตรวจ hash/เซ็นชื่อ</li>');
+    if(haveLateral) lines.push('<li><strong>ชี้แนะ:</strong> การเข้าถึง SMB ลักษณะ lateral — แนะนำบังคับ ACL/เซกเมนต์เครือข่าย/ปรับบันทึก</li>');
+    if(havePostExfil) lines.push('<li><strong>ชี้แนะ:</strong> HTTP POST อาจมีข้อมูลสำคัญ — ตั้ง DLP/จำกัดเส้นทางออก</li>');
+    if(lines.length===1) lines.push('<li><strong>ชี้แนะ:</strong> ไม่พบความผิดปกติเด่น สร้าง baseline และเฝ้าระวังต่อเนื่อง</li>');
+
+    const html = `
+      <ul style="margin:0 0 8px 18px">
+        ${lines.join('')}
+        <li><strong>ต่อยอด:</strong> นำ IOC (โดเมน/IP/SNI/JA3) ไป cross-check กับ threat intel ภายใน</li>
+      </ul>
+    `;
+    $('hits').innerHTML = html;
+    toastShow('แสดงคำอธิบายผลแล้ว');
+  }
+
+  function genReport(){
+    if(!events.length){ toastShow('ยังไม่มีเหตุการณ์'); return; }
+    // Collect top artifacts
+    const pick = k => artifacts.get(k) ? [...artifacts.get(k)].slice(0,10) : [];
+    const md = [];
+    md.push(`# Network Forensics Report (จำลอง)`);
+    md.push(`- Sessions: ${kSess.textContent}`);
+    md.push(`- Anomalies: ${kAnom.textContent}`);
+    md.push(`- Artifacts: ${kArt.textContent}`);
+    md.push(``);
+    md.push(`## Key artifacts`);
+    ['ip','domain','sni','url','url_method','ua','ja3'].forEach(k=>{
+      const vals = pick(k); if(vals.length) md.push(`- ${k}: ${vals.join(', ')}`);
+    });
+    md.push(``);
+    md.push(`## Observations`);
+    const obs = [];
+    if(events.some(e=> e.flags?.anom==='dns_exfil')) obs.push('พบรูปแบบที่สอดคล้องกับ DNS exfiltration');
+    if(events.some(e=> e.flags?.anom==='beaconing')) obs.push('มีสัญญาณ beaconing เป็นคาบเวลา');
+    if(events.some(e=> e.flags?.anom==='clear_download')) obs.push('ดาวน์โหลดไฟล์ผ่าน HTTP (ไม่เข้ารหัส)');
+    if(events.some(e=> e.flags?.anom==='lateral')) obs.push('การเข้าถึง SMB ลักษณะ lateral movement');
+    if(events.some(e=> e.flags?.anom==='exfil_post')) obs.push('HTTP POST อาจบรรจุข้อมูลสำคัญ');
+    md.push(obs.length? `- ${obs.join('\n- ')}` : '- ไม่พบความผิดปกติเด่น');
+    md.push(``);
+    md.push(`## Recommendations`);
+    md.push(`- บังคับใช้ egress DNS + policy ตรวจสอบ label/TXT ที่ผิดปกติ`);
+    md.push(`- ตั้งกฎตรวจจับ beaconing (คาบเวลา + JA3/JA4) และจำกัด SNI ไม่ปกติ`);
+    md.push(`- บังคับ HTTPS และตรวจสอบไฟล์ด้วยแฮช/การลงนาม`);
+    md.push(`- แยกเครือข่าย/ACL สำหรับ SMB และบันทึกรายละเอียด`);
+    md.push(`- ใช้ DLP สำหรับทราฟฟิกออก และจำกัดปลายทางที่อนุญาต`);
+    report.textContent = md.join('\n');
+    toastShow('สร้างรายงานแล้ว');
+  }
+
+  // Handlers
+  $('btnSim').addEventListener('click', simulate);
+  $('btnFilter').addEventListener('click', applyFilter);
+  $('btnExplain').addEventListener('click', explain);
+  $('btnReport').addEventListener('click', genReport);
+  $('btnClear').addEventListener('click', ()=>{ reset(); toastShow('ล้างแล้ว'); });
+
+  $('btnB64').addEventListener('click', b64);
+  $('btnHex').addEventListener('click', hex);
+  $('btnHash').addEventListener('click', sha256);
+  $('btnIOC').addEventListener('click', addIOC);
+
+  // Easter egg: type "FORENSICS" to toggle Darkroom mode
+  const hdr=$('hdr'), badge=$('modeBadge'), darknote=$('darknote');
+  const seq = 'forensics'; let buf='';
+  window.addEventListener('keydown', e=>{
+    buf = (buf + e.key.toLowerCase()).slice(-seq.length);
+    if(buf===seq){
+      document.body.classList.toggle('darkroom');
+      const on = document.body.classList.contains('darkroom');
+      badge.textContent = on ? 'mode: analysis-only + Darkroom' : 'mode: analysis-only';
+      darknote.style.display = on ? 'block' : 'none';
+      write(on ? '[easter‑egg] Darkroom mode: ลดสิ่งรบกวนสายตา' : '[easter‑egg] Darkroom off', 'muted');
+      buf='';
+    }
+  });
+
+  // First tip
+  setTimeout(()=> toastShow('เลือกฉาก → สร้างแคปเจอร์ → ฟิลเตอร์/ค้นหา/ถอดรหัส → อธิบายผล/รายงาน'), 700);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Goonee Labs</title>
+    <link rel="stylesheet" href="lab.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>/* minimal safety styles to ensure readable content */
+        .hidden{display:none}
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white">
+    <canvas id="matrix-canvas" class="fixed inset-0 -z-10"></canvas>
+
+    <header class="p-4 flex items-center justify-between">
+        <h1 class="text-2xl font-bold">Goonee Labs</h1>
+        <div class="flex items-center space-x-2">
+            <div id="lab-badge" class="hidden"></div>
+            <button id="badge-btn" class="px-3 py-1 bg-yellow-500 text-black rounded" title="Badges">Badges</button>
+            <!-- Simulate toggle (auto-on for mobile users) -->
+            <button id="simulate-toggle" class="ml-2 px-3 py-1 bg-gray-700 text-gray-200 rounded text-sm" title="Toggle simulate mode">Simulate: Off</button>
+        </div>
+    </header>
+
+    <main class="p-4">
+        <section id="labs-list">
+            <h2 class="text-xl font-semibold mb-2">Labs</h2>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 list-none p-0 m-0">
+                <li class="bg-gray-800 p-4 rounded">
+                    <h3 class="font-bold">Port Scanning</h3>
+                    <p class="text-sm">ใช้ nmap วิเคราะห์พอร์ต</p>
+                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="port-scanning">Start</button>
+                </li>
+                <li class="bg-gray-800 p-4 rounded">
+                    <h3 class="font-bold">SQL Injection</h3>
+                    <p class="text-sm">ค้นหาช่องโหว่ SQL (sandbox)</p>
+                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="sql-injection">Start</button>
+                </li>
+                <li class="bg-gray-800 p-4 rounded">
+                    <h3 class="font-bold">Cross-Site Scripting (XSS)</h3>
+                    <p class="text-sm">การโจมตี XSS และการป้องกัน</p>
+                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="xss">Start</button>
+                </li>
+                <li class="bg-gray-800 p-4 rounded">
+                    <h3 class="font-bold">Cross-Site Request Forgery (CSRF)</h3>
+                    <p class="text-sm">เรียนรู้ CSRF และ mitigation</p>
+                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="csrf">Start</button>
+                </li>
+            </ul>
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold mb-2">ลิงก์ไปยังแล็บแบบหน้าเดี่ยว (Standalone)</h3>
+                <ul class="list-disc list-inside text-sm text-gray-300 space-y-1">
+                    <li><a class="text-blue-400 hover:underline" href="portscan.html">Port Scan Walkthrough</a></li>
+                    <li><a class="text-blue-400 hover:underline" href="ClassicalCiphers.html">Classical Ciphers</a></li>
+                    <li><a class="text-blue-400 hover:underline" href="Man-in-the-Middle.html">Man-in-the-Middle</a></li>
+                    <li><a class="text-blue-400 hover:underline" href="DDoS.html">DDoS</a></li>
+                    <li><a class="text-blue-400 hover:underline" href="FirewallConfig.html">Firewall Config</a></li>
+                    <li><a class="text-blue-400 hover:underline" href="NetworkForensics.html">Network Forensics</a></li>
+                    <li><a class="text-blue-400 hover:underline" href="WirelessSecurity.html">Wireless Security</a></li>
+                    <li><a class="text-blue-400 hover:underline" href="LogAnalysisChallenge.html">Log Analysis Challenge</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <div id="lab-modal" class="fixed inset-0 flex items-center justify-center hidden">
+        <div class="bg-gray-900 border border-gray-700 rounded p-4 w-11/12 max-w-3xl">
+            <div class="flex justify-between items-center">
+                <h2 id="lab-title" class="text-lg font-bold">Lab</h2>
+                <button id="close-modal" class="px-2 py-1 bg-red-600 rounded">Close</button>
+            </div>
+            <div id="lab-content" class="mt-3 text-sm"></div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-4 right-4 space-y-2"></div>
+
+    <footer class="p-4 text-sm text-gray-400">
+        <div id="footer-secret" class="cursor-pointer">ค้นหา Easter Eggs</div>
+    </footer>
+
+    <script>
+        // canonical labData
+        const labData = {
+            'port-scanning': { title: 'Port Scanning', content: 'แนะนำ nmap และการวิเคราะห์พอร์ต\nตัวอย่าง: nmap -sS example.com' },
+            'sql-injection': { title: 'SQL Injection Lab', content: '<p>เรียนรู้ SQL Injection (เฉพาะในสภาพแวดล้อมทดสอบ)</p>' },
+            'xss': { title: 'Cross-Site Scripting (XSS)', content: '<p>โจมตี XSS และวิธีป้องกัน</p>' },
+            'csrf': { title: 'CSRF', content: '<p>เข้าใจ CSRF และ mitigation</p>' }
+        };
+
+        // persistence & UI
+        const STORAGE_KEY = 'goonee.lab.sandbox.v1';
+        let openedLabs = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+        function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(openedLabs))); }
+
+        // simulate mode: mobile-first
+        let simulateMode = false;
+        function isMobile() { return ('ontouchstart' in window) || window.innerWidth < 700; }
+        function setSimulateMode(on){ simulateMode = !!on; const btn = document.getElementById('simulate-toggle'); if(btn) btn.textContent = 'Simulate: ' + (simulateMode ? 'On' : 'Off'); localStorage.setItem('goonee.lab.simulate', simulateMode ? '1' : '0'); }
+        // load saved preference or auto-enable on mobile
+        (function(){ if(localStorage.getItem('goonee.lab.simulate')){ setSimulateMode(!!parseInt(localStorage.getItem('goonee.lab.simulate'))); } else if(isMobile()){ setSimulateMode(true); } })();
+
+        function simulatedOutput(labId){
+            // lightweight simulated responses to show result without running commands
+            const samples = {
+                'port-scanning': `<pre class="bg-black p-3 text-green-400 text-sm">PORT     STATE SERVICE\n22/tcp   open  ssh\n80/tcp   open  http\n443/tcp  open  https</pre>`,
+                'sql-injection': `<div class="p-2 bg-gray-800 text-sm">ตัวอย่างผลลัพธ์: พบช่องโหว่ login -> UNION สุ่มข้อมูลผู้ใช้ (จำลอง)</div>` ,
+                'xss': `<div class="p-2 bg-gray-800 text-sm">ตัวอย่างผลลัพธ์: payload alert('XSS') ถูกเรียก (จำลอง)</div>` ,
+                'csrf': `<div class="p-2 bg-gray-800 text-sm">ตัวอย่างผลลัพธ์: form ถูก submit โดยฝังจากภายนอก (จำลอง)</div>`
+            };
+            return samples[labId] || `<div class="p-2 bg-gray-800 text-sm">ผลลัพธ์จำลองสำหรับ ${labId}</div>`;
+        }
+
+        function showToast(msg, timeout=3000){ const c=document.getElementById('toast-container'); const t=document.createElement('div'); t.className='bg-gray-800 border border-gray-700 p-2 rounded'; t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(), timeout); }
+
+    function openLabModal(id){ const modal=document.getElementById('lab-modal'); const title=document.getElementById('lab-title'); const content=document.getElementById('lab-content'); const data=labData[id]; if(!data){ showToast('ไม่พบ lab: '+id); return;} title.textContent=data.title; if(simulateMode){ content.innerHTML = data.content + '<hr class="my-2"/>' + simulatedOutput(id); showToast('โหมดจำลอง: แสดงผลลัพธ์จำลอง'); } else { content.innerHTML=data.content; } modal.classList.remove('hidden'); document.body.style.overflow='hidden'; openedLabs.add(id); saveState(); checkForBadgeUnlock(); }
+        function closeModal(){ document.getElementById('lab-modal').classList.add('hidden'); document.body.style.overflow='auto'; }
+
+        function checkForBadgeUnlock(){ const required=['sql-injection','xss','csrf']; const badgeEl=document.getElementById('lab-badge'); const allOpened=required.every(r=>openedLabs.has(r)); if(allOpened && !localStorage.getItem('goonee.badge.claimed')){ badgeEl.classList.remove('hidden'); badgeEl.innerHTML='<button onclick="claimBadge()" class="px-2 py-1 bg-green-500 text-black rounded">Claim Badge</button>'; }}
+        function claimBadge(){ localStorage.setItem('goonee.badge.claimed','1'); showToast('Badge claimed!'); document.getElementById('lab-badge').classList.add('hidden'); }
+
+        document.addEventListener('click', (e)=>{ const s=e.target.closest('.start-btn'); if(s) openLabModal(s.dataset.lab); if(e.target.id==='close-modal') closeModal(); if(e.target.id==='footer-secret') revealEasterEgg(); });
+
+    // simulate toggle handler
+    const simBtn = document.getElementById('simulate-toggle'); if(simBtn){ simBtn.addEventListener('click', ()=>{ setSimulateMode(!simulateMode); showToast('Simulate mode: '+(simulateMode?'On':'Off')); }); simBtn.textContent = 'Simulate: ' + (simulateMode ? 'On' : 'Off'); }
+
+        let eggCount=0; function revealEasterEgg(){ eggCount++; showToast('พบ Easter Egg! ('+eggCount+')'); if(eggCount===3){ labData['secret-lab']={title:'Secret Lab', content:'ยินดีด้วย! คุณพบเนื้อหาลับ'}; showToast('ปลดล็อค Secret Lab'); } }
+
+        // lightweight matrix background
+        (function(){ const canvas=document.getElementById('matrix-canvas'); if(!canvas) return; const ctx=canvas.getContext('2d'); function r(){canvas.width=innerWidth; canvas.height=innerHeight;} window.addEventListener('resize', r); r(); const cols=Math.floor(canvas.width/14); const drops=Array(cols).fill(1); function draw(){ ctx.fillStyle='rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#0f0'; ctx.font='14px monospace'; for(let i=0;i<drops.length;i++){ const t=String.fromCharCode(33+Math.random()*94); ctx.fillText(t,i*14,drops[i]*14); if(drops[i]*14>canvas.height&&Math.random()>0.975) drops[i]=0; drops[i]++; } requestAnimationFrame(draw);} draw(); })();
+
+        (function(){ checkForBadgeUnlock(); if(openedLabs.size) showToast('โหลดสถานะ: '+openedLabs.size+' labs'); })();
+    </script>
+
+</body>
+</html>

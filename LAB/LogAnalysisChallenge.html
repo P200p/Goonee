@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Thai Ethical Hacking Labs — Log Analysis Challenge</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121a2c; --fg:#eaf0efff; --muted:#8ea4ca;
+    --card:#0f1628; --line:#1f2b47; --accent:#4ad395; --warn:#ffcc66; --bad:#ff6b6b;
+    --code:#0a1122; --chip:#1b2440;
+  }
+  .hidden{display:none}
+  .code-sample{margin-top:8px;background:#061226;padding:8px;border-radius:6px;color:#bfe7d3;overflow:auto;font-family:ui-monospace,monospace}
+  *{box-sizing:border-box}
+  body{margin:0; font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI","Noto Sans Thai","Noto Sans",Arial,sans-serif;
+    background:linear-gradient(180deg,#080d18,var(--bg)); color:var(--fg);}
+  header{position:sticky; top:0; background:var(--panel); border-bottom:1px solid var(--line); padding:12px 0; z-index:10}
+  .wrap{max-width:900px; margin:0 auto; padding:0 16px}
+  h1{margin:0; font-size:1.4rem}
+  .sub{color:var(--muted); font-size:.95rem; margin-top:4px}
+  main .wrap{padding:24px 0}
+  .card{background:linear-gradient(180deg,rgba(74,211,149,0.06),transparent 25%),var(--card);
+    border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:24px}
+  label{display:block; margin:12px 0 4px; font-weight:600}
+  select,input[type="number"],input[type="text"],button,textarea{width:100%; padding:8px; font-size:1rem;
+    background:#0d1426; border:1px solid #243154; border-radius:8px; color:var(--fg);}
+  textarea{resize:vertical; min-height:100px}
+  .btn{background:linear-gradient(180deg,#2a7fff,#1663e6); border:none; color:#fff;
+    padding:10px; font-weight:700; cursor:pointer; margin-top:12px}
+  .btn.disabled{opacity:.5; cursor:not-allowed}
+  .log{background:var(--code); border:1px solid var(--line); border-radius:8px;
+    padding:12px; font-family:ui-monospace,monospace; line-height:1.4; overflow:auto; max-height:200px}
+  .hint{color:var(--muted); margin-top:8px}
+  .kpi{display:flex; gap:12px; margin-top:16px}
+  .kpi .card{flex:1; background:#0f1a32; border:1px solid #263c70; border-radius:8px; padding:12px; text-align:center}
+  .kpi h3{margin:0; font-size:.9rem; color:#c9d7f7}
+  .num{font-size:1.4rem; font-weight:700; margin-top:4px}
+  .score{color:var(--accent)}
+  .sep{height:1px; background:var(--line); margin:16px 0}
+  .unlocked{background:var(--ok); color:#0b1020; padding:12px; border-radius:8px; text-align:center; margin-top:16px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Log Analysis Challenge</h1>
+  <div class="sub">ถ้าคุณสนใจการแฮ็ก ให้เริ่มจากการเขียนโปรแกรม — การเขียนโปรแกรมสอนการคิดเชิงวิเคราะห์และช่วยให้คุณเข้าใจการป้องกันระบบ</div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="card">
+      <h2>Step 1: ดูบันทึกที่เข้ารหัส</h2>
+      <div class="log" id="encodedLog">
+VGhpcyBpcyBhIHNlY3JldCBsb2cgbWVzc2FnZSBzZWdtZW50ZWQgd2l0aCBWMSBmaXJzdCwg
+dGhlbiBjYXVzZWVyIHNoaWZ0IGJ5IDA4IGFuZCBhcHBseSBWMSBkZWNyeXB0aW9uLi4u
+      </div>
+  <div class="hint">ข้อความถูกเข้ารหัสสองขั้น — ให้มองเป็นแบบฝึกการวิเคราะห์เชิงโปรแกรมมิ่ง: เขียนสคริปต์เพื่อตรวจสอบและถอดรหัส แทนการทำด้วยมือ</div>
+    </section>
+
+    <section class="card">
+      <h2>Step 2: ถอดรหัสด้วย Caesar Cipher</h2>
+      <label>เลือก Shift (0–25)</label>
+  <input type="number" id="caesarShift" value="8" min="0" max="25" placeholder="0-25" title="Shift value (0-25)" />
+  <button id="btnCaesar" class="btn">Decrypt Caesar</button>
+  <textarea id="afterCaesar" readonly placeholder="ผลลัพธ์หลังถอด Caesar"></textarea>
+  <div class="hint">แนะนำ: เขียนสคริปต์ (เช่น JavaScript/Python) เพื่อทดลอง shift หลายค่าแบบอัตโนมัติ — ทักษะนี้เป็นพื้นฐานของการวิเคราะห์ข้อมูล
+  <pre class="code-sample"><code>// JavaScript: brute-force Caesar
+for(let s=0;s<26;s++){ let out=''; for(const c of atob(raw).replace(/\s+/g,'')){ const code=c.charCodeAt(0); if(code>=65&&code<=90) out+=String.fromCharCode((code-65-s+26)%26+65); else if(code>=97&&code<=122) out+=String.fromCharCode((code-97-s+26)%26+97); else out+=c;} console.log(s,out); }</code></pre>
+  </div>
+    </section>
+
+    <section class="card">
+      <h2>Step 3: ถอดรหัสด้วย Vigenère Cipher</h2>
+      <label>ใส่ Keyword</label>
+      <input type="text" id="vigenereKey" placeholder="พิมพ์ keyword"/>
+  <button id="btnVigenere" class="btn">Decrypt Vigenère</button>
+  <textarea id="finalPlain" readonly placeholder="ผลลัพธ์สุดท้าย"></textarea>
+    <div class="hint">แนะนำ: การเขียนโค้ดเพื่อทดสอบ keyword หลาย ๆ ค่า เป็นการฝึกเขียนโปรแกรมและการแก้ปัญหาเชิงตรรกะ — สิ่งนี้มีประโยชน์ทั้งด้านการวิเคราะห์และการป้องกัน
+  <pre class="code-sample"><code># Python: try multiple keys (simple example)
+def decrypt_vig(text,key):
+  out=''
+  j=0
+  for c in text:
+    if c.isalpha():
+      base=ord('A') if c.isupper() else ord('a')
+      ks=ord(key[j%len(key)].upper())-65
+      out+=chr((ord(c)-base-ks)%26+base)
+      j+=1
+    else:
+      out+=c
+  return out
+
+for k in ['key','test','secret']:
+  print(k, decrypt_vig(sample, k))</code></pre>
+    </div>
+    </section>
+
+    <section class="card">
+      <h2>Step 4: ป้อนคำตอบเพื่อปลดล็อค</h2>
+      <label>รหัสปลดล็อค (unlock code)</label>
+      <input type="text" id="unlockInput" placeholder="พิมพ์รหัสที่ได้จากข้อความ"/>
+      <button id="btnUnlock" class="btn disabled">Unlock Lesson</button>
+      <div id="unlockMsg" class="hint"></div>
+    </section>
+
+  <section class="card hidden" id="finalChallengeCard">
+      <h2>Step 5: Final Challenge — ใช้ผลลัพธ์จากหน้า 1–2</h2>
+      <p class="hint">นำข้อความสุดท้ายที่ได้จาก Step 3 (ผลลัพธ์ Vigenère) และค่า shift จาก Step 2 มาสร้างรหัสสุดท้ายตามกติกา:</p>
+      <ol class="hint">
+        <li>เอาอักษรตัวที่ 1 ของคำที่ 1</li>
+        <li>เอาอักษรตัวที่ 2 ของคำที่ 2</li>
+        <li>เอาอักษรตัวที่ 3 ของคำที่ 3</li>
+        <li>ตามด้วยตัวเลข shift ที่ใช้ใน Caesar (เช่น 8)</li>
+      </ol>
+      <label>รหัสปลดล็อคสุดท้าย (final unlock)</label>
+      <input type="text" id="finalChallengeInput" placeholder="ใส่รหัสสุดท้ายตามกติกา"/>
+      <button id="btnFinalChallenge" class="btn disabled">Unlock Final Lesson</button>
+      <div id="finalMsg" class="hint"></div>
+    </section>
+
+    <div class="kpi">
+      <div class="card"><h3>Attempts</h3><div id="kAttempts" class="num">0</div></div>
+      <div class="card"><h3>Progress</h3><div id="kProgress" class="num">0%</div></div>
+      <div class="card"><h3>Score</h3><div id="kScore" class="num score">0</div></div>
+    </div>
+
+      <div id="unlockedBanner" class="unlocked hidden">
+        🎉 ยินดีด้วย! บทเรียนถัดไปถูกปลดล็อคแล้ว — ต่อไปให้ฝึกเขียนโปรแกรมเพื่อพัฒนาทักษะการป้องกันระบบ
+      </div>
+
+  </div>
+</main>
+
+<script>
+(function(){
+  const encLog = document.getElementById('encodedLog').textContent.trim();
+  const caesarShift = document.getElementById('caesarShift');
+  const vigenereKey = document.getElementById('vigenereKey');
+  const afterCaesar = document.getElementById('afterCaesar');
+  const finalPlain = document.getElementById('finalPlain');
+  const unlockInput = document.getElementById('unlockInput');
+  const btnCaesar = document.getElementById('btnCaesar');
+  const btnVigenere = document.getElementById('btnVigenere');
+  const btnUnlock = document.getElementById('btnUnlock');
+  const unlockMsg = document.getElementById('unlockMsg');
+  const kAttempts = document.getElementById('kAttempts');
+  const kProgress = document.getElementById('kProgress');
+  const kScore = document.getElementById('kScore');
+  const unlockedBanner = document.getElementById('unlockedBanner');
+
+  let attempts = 0;
+  let progress = 0;
+  const maxScore = 40; // 10 per step
+  let score = 0;
+  let stage = 0; // 0→after Caesar, 1→after Vigenère
+
+  // Utility: Base64 decode
+  function b64decode(str){
+    try { return atob(str.replace(/\\s+/g,'')); }
+    catch(e){ return ''; }
+  }
+
+  // Caesar decrypt
+  function decryptCaesar(text, shift){
+    return [...text].map(c=>{
+      const code=c.charCodeAt(0);
+      if(code>=65 && code<=90)
+        return String.fromCharCode((code-65-shift+26)%26+65);
+      if(code>=97 && code<=122)
+        return String.fromCharCode((code-97-shift+26)%26+97);
+      return c;
+    }).join('');
+  }
+
+  // Vigenère decrypt
+  function decryptVigenere(text, key){
+    let j=0;
+    return [...text].map(c=>{
+      const code=c.charCodeAt(0);
+      if(/[A-Za-z]/.test(c)){
+        const base = code<91?65:97;
+        const ks = key[j%key.length].toUpperCase().charCodeAt(0)-65;
+        j++;
+        return String.fromCharCode((code-base-ks+26)%26+base);
+      }
+      return c;
+    }).join('');
+  }
+
+  function updateKPIs(){
+    kAttempts.textContent = attempts;
+    kProgress.textContent = `${progress}%`;
+    kScore.textContent = score;
+  }
+
+  btnCaesar.addEventListener('click', ()=>{
+    attempts++; progress = Math.max(progress, 33);
+    const shift = Number(caesarShift.value);
+    const decoded = b64decode(encLog);
+    const step1 = decryptCaesar(decoded, shift);
+    afterCaesar.value = step1;
+    score += 10;
+    stage = 1;
+    updateKPIs();
+  });
+
+  btnVigenere.addEventListener('click', ()=>{
+    if(stage<1) return alert('ถอด Caesar ก่อน');
+    attempts++; progress = Math.max(progress, 66);
+    const key = vigenereKey.value.trim();
+    const step1 = afterCaesar.value;
+    const finalText = decryptVigenere(step1, key);
+    finalPlain.value = finalText;
+    score += 10;
+    stage = 2;
+    updateKPIs();
+    btnUnlock.classList.remove('disabled');
+  });
+
+  btnUnlock.addEventListener('click', ()=>{
+    if(stage<2) return;
+    attempts++;
+    updateKPIs();
+    const answer = unlockInput.value.trim().toLowerCase();
+    // expected unlock code from plaintext: first word of log
+    const expected = finalPlain.value.trim().split(/\\s+/)[0].toLowerCase();
+    if(answer === expected){
+      progress = 75; score += 10; // partial unlock: reveal final challenge
+      updateKPIs();
+      // reveal next step (final challenge)
+      document.getElementById('finalChallengeCard').style.display = 'block';
+      unlockMsg.textContent = '✔ รหัสถูกต้อง — ขั้นตอนถัดไปปลดล็อคแล้ว ใช้ข้อความสุดท้ายและค่า shift เพื่อสร้างรหัสสุดท้าย';
+      // enable final challenge button
+      const btnFinal = document.getElementById('btnFinalChallenge');
+      btnFinal.classList.remove('disabled');
+      btnFinal.disabled = false;
+    } else {
+      unlockMsg.textContent = '✖ รหัสไม่ถูกต้อง ลองใหม่';
+    }
+  });
+
+  // Final challenge logic
+  const btnFinalChallenge = document.getElementById('btnFinalChallenge');
+  const finalChallengeInput = document.getElementById('finalChallengeInput');
+  const finalMsg = document.getElementById('finalMsg');
+
+  btnFinalChallenge.addEventListener('click', ()=>{
+    // require previous steps
+    if(stage<2) return alert('ทำขั้นตอนก่อนหน้าให้ครบ');
+    // build expected code: char1 of word1 + char2 of word2 + char3 of word3 + caesarShift
+    const text = finalPlain.value.trim();
+    const words = text.split(/\s+/);
+    if(words.length < 3){ finalMsg.textContent = 'ข้อความไม่เพียงพอสำหรับปริศนา'; return; }
+    const c1 = (words[0].length >= 1)? words[0][0] : '';
+    const c2 = (words[1].length >= 2)? words[1][1] : '';
+    const c3 = (words[2].length >= 3)? words[2][2] : '';
+    const shiftNum = String(Number(caesarShift.value));
+    const expectedFinal = (c1+c2+c3+shiftNum).toLowerCase();
+
+    const provided = finalChallengeInput.value.trim().toLowerCase();
+    attempts++;
+    if(provided === expectedFinal){
+      progress = 100; score += 10; updateKPIs();
+      unlockedBanner.style.display = 'block';
+      unlockedBanner.textContent = '🎉 ยินดีด้วย! บทเรียนสุดท้ายถูกปลดล็อคแล้ว!';
+      finalMsg.textContent = '✔ รหัสสุดท้ายถูกต้อง';
+      btnFinalChallenge.classList.add('disabled'); btnFinalChallenge.disabled = true;
+    } else {
+      finalMsg.textContent = '✖ รหัสสุดท้ายไม่ถูกต้อง ลองอีกครั้ง';
+    }
+    updateKPIs();
+  });
+
+  // Initialize
+  updateKPIs();
+})();
+</script>
+</body>
+</html>

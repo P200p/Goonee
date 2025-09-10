@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Thai Ethical Hacking Labs — Classical Ciphers</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121a2c; --fg:#eaf0ff; --muted:#8ea4ca;
+    --card:#0f1628; --line:#1f2b47; --accent:#4ad395; --warn:#ffcc66; --bad:#ff6b6b;
+    --code:#0a1122; --chip:#1b2440;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI","Noto Sans Thai","Noto Sans",Arial,sans-serif;
+    background:linear-gradient(180deg,#080d18,var(--bg)); color:var(--fg)}
+  header{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line);padding:12px 0;z-index:10}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+  h1{margin:0;font-size:1.4rem}
+  .sub{color:var(--muted);font-size:.95rem}
+  main .wrap{padding:24px 0}
+  .grid{display:grid;gap:16px;grid-template-columns:1.3fr .7fr}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,rgba(74,211,149,0.06),transparent 25%),var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:16px}
+  .title{margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .title h2{margin:0;font-size:1.1rem}
+  label{display:block;margin:8px 0;font-weight:600}
+  input,select,button,textarea{background:#0d1426;border:1px solid #243154;
+    border-radius:8px;color:var(--fg);padding:8px;font-size:1rem;width:100%;}
+  textarea{resize:vertical}
+  .btn{background:linear-gradient(180deg,#2a7fff,#1663e6);border:none;color:#fff;
+    font-weight:700;padding:8px 12px;cursor:pointer}
+  .btn.secondary{background:#17213b;border:1px solid #293a67;color:#b8c7ea}
+  .log{height:200px;overflow:auto;padding:12px;background:var(--code);
+    border:1px solid var(--line);border-radius:8px;font-family:ui-monospace,monospace;line-height:1.4}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .chip{background:var(--chip);color:#b9c7ea;border:1px solid #2a3a69;
+    padding:4px 8px;border-radius:999px;font-size:.85rem}
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+  .kpi .card{padding:12px;text-align:center}
+  .kpi h3{margin:0;color:#c9d7f7;font-size:.95rem}
+  .num{font-size:1.4rem;font-weight:700;margin-top:4px}
+  .score{color:var(--accent)}
+  .sep{height:1px;background:var(--line);margin:12px 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Thai Ethical Hacking Labs — Classical Ciphers</h1>
+    <div class="sub">เรียนรู้การเข้ารหัสแบบคลาสสิก: Caesar และ Vigenère</div>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+    <div class="chips">
+      <span class="chip">Caesar Cipher</span>
+      <span class="chip">Vigenère Cipher</span>
+      <span class="chip">Encrypt/Decrypt</span>
+      <span class="chip">Challenge</span>
+      <span class="chip">Score</span>
+    </div>
+    <div class="grid">
+      <section class="card">
+        <div class="title"><h2>Interactive</h2></div>
+        <label>ข้อความต้นฉบับ (Plaintext)</label>
+        <textarea id="inputText" placeholder="พิมพ์ข้อความที่นี่"></textarea>
+        <label>เลือก Cipher</label>
+        <select id="cipherType">
+          <option value="caesar">Caesar</option>
+          <option value="vigenere">Vigenère</option>
+        </select>
+        <div class="row" style="display:flex;gap:8px;align-items:center;">
+          <div style="flex:1">
+            <label id="paramLabel">Shift (0–25)</label>
+            <input type="number" id="paramInput" value="3" min="0" max="25"/>
+          </div>
+          <div style="flex:1">
+            <label id="paramLabel2">Keyword</label>
+            <input type="text" id="keywordInput" placeholder="เช่น KEY" disabled/>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button id="btnEncrypt" class="btn">Encrypt</button>
+          <button id="btnDecrypt" class="btn secondary">Decrypt</button>
+        </div>
+        <div class="sep"></div>
+        <label>ผลลัพธ์ (Ciphertext / Plaintext)</label>
+        <textarea id="outputText" readonly></textarea>
+        <div class="kpi">
+          <div class="card"><h3>Tasks Solved</h3><div id="kSolved" class="num score">0</div></div>
+          <div class="card"><h3>Attempts</h3><div id="kAttempts" class="num">0</div></div>
+          <div class="card"><h3>Score</h3><div id="kTotal" class="num score">0</div></div>
+        </div>
+      </section>
+      <aside class="card">
+        <div class="title"><h2>Challenges</h2></div>
+        <ul style="margin:0 0 12px 18px">
+          <li><strong>1)</strong> Decrypt Caesar, shift is random</li>
+          <li><strong>2)</strong> Encrypt given text with Caesar, shift is given</li>
+          <li><strong>3)</strong> Decrypt Vigenère, keyword is random</li>
+          <li><strong>4)</strong> Encrypt given text with Vigenère, keyword is given</li>
+        </ul>
+        <button id="btnNew" class="btn">New Challenge</button>
+        <div class="muted" style="margin-top:8px">
+          กด New Challenge เพื่อสับเปลี่ยนโจทย์แบบสุ่ม
+        </div>
+      </aside>
+    </div>
+    <footer style="margin-top:24px;text-align:center;color:var(--muted)">
+      © 2025 Thai Ethical Hacking Labs — เพื่อการศึกษาเชิงป้องกันเท่านั้น
+    </footer>
+  </div>
+</main>
+
+<script>
+(function(){
+  const inputText = document.getElementById('inputText');
+  const outputText = document.getElementById('outputText');
+  const cipherType = document.getElementById('cipherType');
+  const paramInput = document.getElementById('paramInput');
+  const keywordInput = document.getElementById('keywordInput');
+  const btnEncrypt = document.getElementById('btnEncrypt');
+  const btnDecrypt = document.getElementById('btnDecrypt');
+  const btnNew = document.getElementById('btnNew');
+  const kSolved = document.getElementById('kSolved');
+  const kAttempts = document.getElementById('kAttempts');
+  const kTotal = document.getElementById('kTotal');
+
+  let challenge = null;
+  let solved = 0, attempts = 0;
+
+  function caesar(str, shift){
+    return [...str].map(c=>{
+      const code = c.charCodeAt(0);
+      if(code>=65 && code<=90)
+        return String.fromCharCode((code-65+shift+26)%26+65);
+      if(code>=97 && code<=122)
+        return String.fromCharCode((code-97+shift+26)%26+97);
+      return c;
+    }).join('');
+  }
+
+  function vigenere(str, key, decrypt=false){
+    let j=0;
+    return [...str].map(c=>{
+      const code=c.charCodeAt(0);
+      const k = key[j%key.length];
+      const ks = (k.toUpperCase().charCodeAt(0)-65);
+      if(code>=65 && code<=90){
+        const base=65;
+        const shift = decrypt ? -ks : ks;
+        j++;
+        return String.fromCharCode((code-base+shift+26)%26+base);
+      }
+      if(code>=97 && code<=122){
+        const base=97;
+        const shift = decrypt ? -ks : ks;
+        j++;
+        return String.fromCharCode((code-base+shift+26)%26+base);
+      }
+      return c;
+    }).join('');
+  }
+
+  function updateParams(){
+    if(cipherType.value==='caesar'){
+      paramInput.disabled=false;
+      keywordInput.disabled=true;
+      keywordInput.value='';
+    } else {
+      paramInput.disabled=true;
+      keywordInput.disabled=false;
+      paramInput.value=0;
+    }
+  }
+
+  cipherType.addEventListener('change', updateParams);
+
+  btnEncrypt.onclick = ()=> {
+    attempts++;
+    const text = inputText.value;
+    let out='';
+    if(cipherType.value==='caesar'){
+      out = caesar(text, Number(paramInput.value));
+    } else {
+      out = vigenere(text, keywordInput.value||'KEY');
+    }
+    outputText.value = out;
+    kAttempts.textContent = attempts;
+    checkSolution();
+  };
+
+  btnDecrypt.onclick = ()=> {
+    attempts++;
+    const text = inputText.value;
+    let out='';
+    if(cipherType.value==='caesar'){
+      out = caesar(text, -Number(paramInput.value));
+    } else {
+      out = vigenere(text, keywordInput.value||'KEY', true);
+    }
+    outputText.value = out;
+    kAttempts.textContent = attempts;
+    checkSolution();
+  };
+
+  function newChallenge(){
+    attempts++;
+    const types = ['caesar_dec','caesar_enc','vigenere_dec','vigenere_enc'];
+    const t = types[Math.floor(Math.random()*types.length)];
+    challenge = {type:t};
+    if(t.startsWith('caesar')){
+      const shift = Math.floor(Math.random()*26);
+      const sample = ["AttackAtDawn","HelloWorld","OpenSesame","SecureLab"][Math.floor(Math.random()*4)];
+      if(t==='caesar_dec'){
+        challenge.text = caesar(sample, shift);
+        inputText.value = challenge.text;
+        paramInput.value = shift;
+        cipherType.value='caesar';
+        updateParams();
+      } else {
+        challenge.text = sample;
+        inputText.value = sample;
+        paramInput.value = shift;
+        cipherType.value='caesar';
+        updateParams();
+      }
+    } else {
+      const keys = ["KEY","LOCK","THAI","SAFE"];
+      const kw = keys[Math.floor(Math.random()*keys.length)];
+      const sample = ["DataSecure","NetworkLab","Vigenere","Classical"][Math.floor(Math.random()*4)];
+      if(t==='vigenere_dec'){
+        challenge.text = vigenere(sample,kw);
+        inputText.value = challenge.text;
+      } else {
+        challenge.text = sample;
+        inputText.value = sample;
+      }
+      keywordInput.value = kw;
+      cipherType.value='vigenere';
+      updateParams();
+    }
+    outputText.value='';
+    kAttempts.textContent = attempts;
+  }
+
+  function checkSolution(){
+    if(!challenge) return;
+    const got = outputText.value.trim();
+    let target;
+    switch(challenge.type){
+      case 'caesar_dec':
+        target = caesar(challenge.text, -Number(paramInput.value));
+        break;
+      case 'caesar_enc':
+        target = caesar(challenge.text, Number(paramInput.value));
+        break;
+      case 'vigenere_dec':
+        target = vigenere(challenge.text, keywordInput.value, true);
+        break;
+      case 'vigenere_enc':
+        target = vigenere(challenge.text, keywordInput.value);
+        break;
+    }
+    if(got === target){
+      solved++;
+      kSolved.textContent = solved;
+      kTotal.textContent = solved*10 - attempts;
+      challenge = null;
+      alert('ถูกต้อง! คุณรับ 10 คะแนน');
+    }
+  }
+
+  btnNew.addEventListener('click', ()=>{ newChallenge(); });
+  updateParams();
+
+  // initial challenge
+  newChallenge();
+})();
+</script>
+</body>
+</html>

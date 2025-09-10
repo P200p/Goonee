@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thai Ethical Hacking Labs — MITM Defense Simulator</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121a2c; --fg:#eaf0ff; --muted:#8ea4ca;
+    --card:#0f1628; --line:#223458; --accent:#4ad395; --accent2:#5db0ff; --warn:#ffcc66; --bad:#ff6b6b;
+    --code:#0a1122; --chip:#1b2440; --ok:#66e3a1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans Thai","Noto Sans", Arial, sans-serif; background:linear-gradient(180deg,#080d18,var(--bg)); color:var(--fg)}
+  header{position:sticky; top:0; z-index:50; background:radial-gradient(1200px 600px at 90% -30%, rgba(93,176,255,.10), transparent 60%), var(--panel); border-bottom:1px solid #1f2b47}
+  .wrap{max-width:1120px; margin:0 auto; padding:16px}
+  h1{font-size:1.35rem; margin:0 0 4px}
+  .sub{color:var(--muted); font-size:.95rem}
+  .badge{font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; color:var(--accent); background:#0f1c16; border:1px solid #254b3a; padding:4px 8px; border-radius:8px; font-size:.85rem}
+  main .wrap{padding-block:24px}
+  .grid{display:grid; gap:16px; grid-template-columns: 1.2fr .8fr}
+  @media (max-width: 1000px){ .grid{grid-template-columns:1fr} }
+  .card{background:linear-gradient(180deg, rgba(93,176,255,.06), transparent 25%), var(--card); border:1px solid #1f2b47; border-radius:12px; padding:16px}
+  .title{display:flex; align-items:center; gap:10px; margin-bottom:10px}
+  .title h2{margin:0; font-size:1.1rem}
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; background:#13203d; border:1px solid #253c73; border-radius:999px; color:#b7c7f0; font-size:.86rem}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  label{font-weight:700; font-size:.95rem}
+  select, button, input[type="checkbox"]{background:#0e1528; border:1px solid #243154; color:var(--fg); border-radius:10px; padding:10px 12px; font-size:1rem}
+  select:focus{border-color:#3567c7; box-shadow:0 0 0 3px rgba(93,176,255,.18)}
+  .btn{background:linear-gradient(180deg,#2a7fff,#1663e6); border:none; color:#fff; font-weight:800; cursor:pointer}
+  .btn.secondary{background:#17213b; color:#b8c7ea; border:1px solid #293a67; font-weight:700}
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{background:var(--chip); color:#b9c7ea; border:1px solid #2a3a69; padding:6px 10px; border-radius:999px; font-size:.85rem}
+  .muted{color:var(--muted)}
+  .kpi{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+  .kpi .card{padding:12px}
+  .kpi h3{margin:0; font-size:.95rem; color:#c9d7f7}
+  .kpi .num{font-size:1.4rem; font-weight:800; margin-top:6px}
+  .score{color:var(--accent)}
+  .log{height:230px; overflow:auto; padding:12px; background:var(--code); border:1px solid #1d2a4b; border-radius:10px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; line-height:1.45}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  .sep{height:1px; background:#1f2b47; margin:12px 0}
+  .tip{background:#0e1b2f; border:1px solid #20345f; padding:12px; border-radius:10px; color:#cfe0ff}
+  .topbar{display:flex; gap:10px; align-items:center; justify-content:space-between}
+  .net{
+    background:#0d1426; border:1px solid #243154; border-radius:12px; padding:10px;
+  }
+  .netgrid{
+    display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; align-items:start;
+  }
+  .node{
+    background:#0f1a32; border:1px solid #263c70; border-radius:12px; padding:12px;
+  }
+  .node h3{margin:0 0 6px; font-size:1rem}
+  .badge2{background:#1a2748; border:1px solid #2e477f; padding:4px 8px; border-radius:8px; color:#cfe0ff; font-size:.85rem}
+  .flow{
+    margin-top:8px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; color:#cfe2ff
+  }
+  .flow .pkt{display:inline-block; margin:2px 0; padding:4px 8px; border-radius:6px; border:1px solid #2a3a69}
+  .pkt.http{background:#24172a; border-color:#5a2a5a}
+  .pkt.https{background:#142733; border-color:#2d5f86}
+  .pkt.vpn{background:#142d20; border-color:#2f6a4a}
+  .pkt.block{background:#2b1a1a; border-color:#6a2e2e}
+  .cfg{display:flex; flex-direction:column; gap:8px}
+  .cfg label{display:flex; align-items:center; gap:10px; font-weight:600}
+  .toast{
+    position:fixed; right:16px; bottom:16px; background:#0f1c25; border:1px solid #264a7d;
+    padding:10px 12px; border-radius:10px; color:#bcd3f7; box-shadow:0 6px 20px rgba(0,0,0,.35); display:none
+  }
+  footer{margin-top:16px; color:#92a7cf}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap topbar">
+    <div>
+      <h1>Thai Ethical Hacking Labs — MITM Defense Simulator</h1>
+      <div class="sub">แล็บจำลอง: ทำความเข้าใจ MITM แบบปลอดภัย ผ่านการเปิด–ปิดมาตรการป้องกัน</div>
+    </div>
+    <span class="badge">mode: simulation-only</span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="card">
+      <div class="title">
+        <h2>สถานการณ์และการตั้งค่า</h2>
+      </div>
+
+      <div class="row" style="margin-bottom:10px">
+        <div>
+          <label for="scenario">เลือกสถานการณ์จำลอง</label>
+          <select id="scenario" aria-label="scenario">
+            <option value="cafe">Wi‑Fi สาธารณะ (Open/AP ปกติ)</option>
+            <option value="corp">เครือข่ายองค์กร (LAN ภายใน)</option>
+            <option value="home">เครือข่ายที่บ้าน</option>
+          </select>
+        </div>
+        <div>
+          <label for="traffic">ประเภททราฟฟิก</label>
+          <select id="traffic" aria-label="traffic">
+            <option value="http">HTTP ธรรมดา</option>
+            <option value="https-nohsts">HTTPS (ไม่มี HSTS/pinning)</option>
+            <option value="https">HTTPS + HSTS + pinning</option>
+            <option value="vpn">ผ่าน VPN (tunnel)</option>
+          </select>
+        </div>
+        <div class="row" style="flex:1; justify-content:flex-end">
+          <button id="btnRun" class="btn">เริ่มจำลอง</button>
+          <button id="btnExplain" class="btn secondary">อธิบายผล</button>
+          <button id="btnClear" class="btn secondary">ล้างคอนโซล</button>
+        </div>
+      </div>
+
+      <div class="chips" style="margin-bottom:8px">
+        <span class="chip">ARP spoof detection</span>
+        <span class="chip">TLS/HSTS/pinning awareness</span>
+        <span class="chip">DNSSEC/DoH</span>
+        <span class="chip">WPA2‑Enterprise / DAI / VPN</span>
+      </div>
+
+      <div class="net">
+        <div class="netgrid">
+          <div class="node">
+            <h3>Client</h3>
+            <div class="muted">อุปกรณ์ผู้ใช้ (มือถือ/แล็ปท็อป)</div>
+            <div class="sep"></div>
+            <div class="cfg">
+              <label><input type="checkbox" id="c_httpsOnly" /> ใช้ “บังคับ HTTPS” ในเบราว์เซอร์ (HSTS preload)</label>
+              <label><input type="checkbox" id="c_pin" /> ใช้ certificate pinning (แอป/เบราว์เซอร์ขั้นสูง)</label>
+              <label><input type="checkbox" id="c_doh" /> ใช้ DoH/DoT หรือ DNSSEC</label>
+              <label><input type="checkbox" id="c_vpn" /> ต่อ VPN ก่อนออกเน็ต</label>
+            </div>
+          </div>
+
+          <div class="node">
+            <h3>Attacker (MITM)</h3>
+            <div class="muted">อยู่ในลิงก์เดียวกัน (L2/L3) พยายามสอดแนม/แก้ไขทราฟฟิก</div>
+            <div class="sep"></div>
+            <div class="cfg">
+              <label><input type="checkbox" id="a_arp" /> พยายามสวมรอย ARP (แฮงก์เกตเวย์)</label>
+              <label><input type="checkbox" id="a_dns" /> พยายามเปลี่ยนคำตอบ DNS</label>
+              <label><input type="checkbox" id="a_ssl" /> พยายามลดความปลอดภัย (เช่น บังคับ HTTP)</label>
+              <label><input type="checkbox" id="a_inject" /> พยายามฉีด/แก้ไขเนื้อหา (เช่น สคริปต์)</label>
+            </div>
+          </div>
+
+          <div class="node">
+            <h3>Network/Router</h3>
+            <div class="muted">AP/สวิตช์/เกตเวย์</div>
+            <div class="sep"></div>
+            <div class="cfg">
+              <label><input type="checkbox" id="n_wpae" /> ใช้ WPA2‑Enterprise (802.1X)</label>
+              <label><input type="checkbox" id="n_dai" /> เปิด Dynamic ARP Inspection (DAI)</label>
+              <label><input type="checkbox" id="n_seg" /> แยก VLAN/guest network</label>
+              <label><input type="checkbox" id="n_fw" /> ไฟร์วอลล์บังคับ DoH/DoT และบล็อก plaintext DNS</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="flow" id="flow">
+          <!-- แสดงแพ็กเก็ตจำลอง -->
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="kpi">
+        <div class="card">
+          <h3>ความพยายามโจมตีที่ถูกบล็อก</h3>
+          <div class="num score" id="kBlocked">0</div>
+        </div>
+        <div class="card">
+          <h3>ความพยายามโจมตีที่สำเร็จ</h3>
+          <div class="num bad" id="kSuccess">0</div>
+        </div>
+        <div class="card">
+          <h3>คะแนนป้องกัน</h3>
+          <div class="num score" id="kScore">0</div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="title">
+        <h2>คอนโซลเหตุการณ์</h2>
+      </div>
+      <div id="log" class="log" aria-live="polite"></div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title">
+        <h2>คำอธิบายผลและคำแนะนำเชิงป้องกัน</h2>
+      </div>
+      <div id="explain" class="muted">
+        กด “เริ่มจำลอง” แล้ว “อธิบายผล” เพื่อดูสรุปว่าอะไรป้องกัน MITM ได้ และเพราะอะไร
+      </div>
+    </section>
+
+    <footer class="wrap">© 2025 Thai Ethical Hacking Labs — เพื่อการศึกษาเชิงป้องกันเท่านั้น</footer>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const log = $('log'), flow = $('flow');
+  const kBlocked = $('kBlocked'), kSuccess=$('kSuccess'), kScore=$('kScore');
+  const toast = $('toast');
+
+  const scenario = $('scenario');
+  const traffic = $('traffic');
+
+  const c_httpsOnly = $('c_httpsOnly');
+  const c_pin = $('c_pin');
+  const c_doh = $('c_doh');
+  const c_vpn = $('c_vpn');
+
+  const a_arp = $('a_arp');
+  const a_dns = $('a_dns');
+  const a_ssl = $('a_ssl');
+  const a_inject = $('a_inject');
+
+  const n_wpae = $('n_wpae');
+  const n_dai = $('n_dai');
+  const n_seg = $('n_seg');
+  const n_fw = $('n_fw');
+
+  const rnd = (min,max)=> Math.floor(Math.random()*(max-min+1))+min;
+
+  let lastReport = null;
+
+  function reset(){
+    log.innerHTML = '';
+    flow.innerHTML = '';
+    kBlocked.textContent = '0';
+    kSuccess.textContent = '0';
+    kScore.textContent = '0';
+    lastReport = null;
+  }
+
+  function write(msg, cls){
+    const line = document.createElement('div');
+    if(cls) line.className = cls;
+    line.textContent = msg;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function pkt(label, type){
+    const el = document.createElement('span');
+    el.className = 'pkt ' + type;
+    el.textContent = label;
+    flow.appendChild(el);
+    flow.appendChild(document.createElement('br'));
+  }
+
+  function toastShow(msg){
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    setTimeout(()=> toast.style.display = 'none', 2500);
+  }
+
+  function simulate(){
+    reset();
+
+    const rep = {
+      blocked:0, success:0, score:0, notes:[], outcome:[]
+    };
+
+    // Context weighting
+    const isCafe = scenario.value==='cafe';
+    const isCorp = scenario.value==='corp';
+    const isHome = scenario.value==='home';
+
+    // Baseline protections
+    const useVPN = c_vpn.checked || traffic.value==='vpn';
+    const httpsStrong = (traffic.value==='https') || c_httpsOnly.checked;
+    const hasHSTS = (traffic.value==='https') || c_httpsOnly.checked;
+    const pinning = c_pin.checked;
+    const doh = c_doh.checked;
+    const enforceDNS = n_fw.checked;
+    const wpae = n_wpae.checked;
+    const dai = n_dai.checked;
+    const segment = n_seg.checked;
+
+    // 1) Link establishment
+    if(isCafe && !wpae){
+      write('[link] เชื่อมต่อ Wi‑Fi สาธารณะ (ไม่มี 802.1X)', 'warn');
+    } else if(wpae){
+      write('[link] 802.1X/WPA2‑Enterprise ตรวจสอบตัวตนผู้ใช้ก่อนเข้าเครือข่าย', 'ok');
+      rep.score += 2;
+    } else if(isCorp){
+      write('[link] LAN ภายในองค์กร', 'ok');
+    } else {
+      write('[link] เครือข่ายบ้าน/ส่วนตัว', 'ok');
+    }
+
+    // 2) Attacker attempts ARP spoofing
+    if(a_arp.checked){
+      if(dai){
+        write('[mitm] พยายาม ARP spoof ถูก DAI บล็อก', 'ok');
+        rep.blocked++; rep.score += 2;
+        pkt('ARP spoof (blocked)', 'block');
+      } else if(segment && isCorp){
+        write('[mitm] ARP spoof เสี่ยงลดลงเพราะแยก VLAN/guest network', 'ok');
+        rep.blocked++; rep.score += 1;
+        pkt('ARP spoof (isolated)', 'block');
+      } else if(useVPN){
+        write('[mitm] ARP spoof สำเร็จในการ “อยู่กลางทาง” แต่ payload อยู่ใน VPN tunnel', 'warn');
+        rep.notes.push('มีการสวมรอย ARP ได้ แต่ทราฟฟิกถูกเข้ารหัสใน VPN');
+        pkt('L2 MITM (tunneled)', 'vpn');
+      } else {
+        write('[mitm] ARP spoof สำเร็จ: attacker อยู่ในเส้นทางทราฟฟิก', 'bad');
+        rep.success++; pkt('L2 MITM (active)', 'http');
+      }
+    } else {
+      write('[mitm] ไม่มีความพยายาม ARP spoof', 'muted');
+    }
+
+    // 3) DNS tampering
+    if(a_dns.checked){
+      if(doh || enforceDNS){
+        write('[dns] DNS ปลอมถูกบล็อกด้วย DoH/DoT หรือบังคับใช้ DNS ที่เชื่อถือได้', 'ok');
+        rep.blocked++; rep.score += 2;
+        pkt('DNS (secured)', 'https');
+      } else if(useVPN){
+        write('[dns] DNS ผ่านอุโมงค์ VPN — ปลอดภัยจากการแก้ไขระหว่างทาง', 'ok');
+        rep.blocked++; rep.score += 2;
+        pkt('DNS over VPN', 'vpn');
+      } else {
+        write('[dns] ความพยายามแก้ไข DNS อาจสำเร็จบนเครือข่ายอ่อนแอ', 'bad');
+        rep.success++; pkt('DNS spoof (possible)', 'http');
+      }
+    } else {
+      write('[dns] ไม่พยายามแก้ไข DNS', 'muted');
+    }
+
+    // 4) Traffic type and SSL downgrade/content injection
+    const trafficSel = traffic.value;
+    if(useVPN){
+      pkt('Client ⇄ VPN Gateway (encrypted tunnel)', 'vpn');
+      write('[vpn] มี VPN: ทราฟฟิกถูกเข้ารหัสจากเครื่องถึงเกตเวย์ VPN', 'ok');
+      rep.score += 3;
+    }
+
+    // Determine visibility and modifiability for attacker
+    const canSeeHTTP = (trafficSel==='http') && !useVPN;
+    const canSeeHTTPS = (trafficSel!=='http') && !useVPN; // can see SNI/metadata but not content
+    const canModifyHTTP = canSeeHTTP && (!pinning && !hasHSTS);
+    const canSSLStrip = (trafficSel==='https-nohsts') && a_ssl.checked && !useVPN && !pinning && !hasHSTS;
+    const contentInjectable = (a_inject.checked && (canModifyHTTP || canSSLStrip));
+
+    if(trafficSel==='http'){
+      pkt('HTTP request (plaintext)', 'http');
+      if(canModifyHTTP){
+        write('[traffic] HTTP ไม่เข้ารหัส — attacker อ่าน/แก้ไขได้', 'bad');
+        rep.success += 2; // reading + modification
+      } else {
+        write('[traffic] HTTP แต่มีมาตรการอื่นลดอันตราย (เช่น VPN)', useVPN? 'ok':'warn');
+        rep.score += useVPN? 2:0;
+      }
+    } else if(trafficSel==='https-nohsts'){
+      pkt('HTTPS (no HSTS/pin)', 'https');
+      if(canSSLStrip){
+        write('[tls] ไม่มี HSTS/pinning — พยายามลดความปลอดภัยอาจสำเร็จบนลิงก์อ่อนแอ', 'bad');
+        rep.success += 2; pkt('SSL downgrade (possible)', 'http');
+      } else {
+        write('[tls] ไม่มี HSTS/pinning แต่การลดความปลอดภัยถูกขัดขวาง (เช่น VPN/นโยบายเบราว์เซอร์)', useVPN? 'ok':'warn');
+        rep.score += useVPN? 2:0;
+      }
+    } else if(trafficSel==='https'){
+      pkt('HTTPS + HSTS + Pinning', 'https');
+      write('[tls] HSTS + Pinning — ป้องกันการลดความปลอดภัยและใบรับรองปลอม', 'ok');
+      rep.score += 3;
+    } else if(trafficSel==='vpn'){
+      pkt('App data inside VPN', 'vpn');
+      write('[vpn] การดักฟังที่เลเยอร์ล่างเห็นเพียงอุโมงค์เข้ารหัส ไม่เห็น payload', 'ok');
+      rep.score += 2;
+    }
+
+    if(a_inject.checked){
+      if(contentInjectable){
+        write('[inject] ฉีดเนื้อหาได้เพราะทราฟฟิกไม่เข้ารหัส/ถูกลดความปลอดภัย', 'bad');
+        rep.success++; pkt('Content injection', 'http');
+      } else {
+        write('[inject] การฉีดเนื้อหาถูกบล็อกโดย TLS/VPN/HSTS/pinning', 'ok');
+        rep.blocked++; rep.score += 2; pkt('Injection blocked', 'https');
+      }
+    } else {
+      write('[inject] ไม่มีความพยายามฉีดเนื้อหา', 'muted');
+    }
+
+    // 5) Context bonuses
+    if(segment){
+      write('[net] การแบ่งเครือข่ายลดโอกาสอยู่ลิงก์เดียวกับเหยื่อ', 'ok');
+      rep.score += 1;
+    }
+
+    // Scoring summary
+    const riskPenalty = rep.success * 2;
+    const base = 10;
+    const finalScore = Math.max(0, base + rep.score - riskPenalty);
+
+    $('kBlocked').textContent = String(rep.blocked);
+    $('kSuccess').textContent = String(rep.success);
+    $('kScore').textContent = String(finalScore);
+
+    // Build flow tail
+    pkt('Gateway ⇄ Internet', useVPN? 'vpn' : (trafficSel==='http' ? 'http' : 'https'));
+
+    // Save report
+    rep.finalScore = finalScore;
+    rep.settings = {
+      scenario: scenario.value, traffic: traffic.value,
+      client:{httpsOnly:c_httpsOnly.checked, pin: c_pin.checked, doh:c_doh.checked, vpn:c_vpn.checked},
+      attacker:{arp:a_arp.checked, dns:a_dns.checked, ssl:a_ssl.checked, inject:a_inject.checked},
+      network:{wpae:n_wpae.checked, dai:n_dai.checked, seg:n_seg.checked, fw:n_fw.checked}
+    };
+    lastReport = rep;
+
+    write('', 'muted');
+    write(`summary: blocked=${rep.blocked}, success=${rep.success}, defense_score=${finalScore}`, 'muted');
+
+    toastShow('จำลองเหตุการณ์เสร็จแล้ว');
+  }
+
+  function explain(){
+    if(!lastReport){
+      toastShow('ยังไม่มีผลลัพธ์ ให้กด “เริ่มจำลอง” ก่อน');
+      return;
+    }
+    const r = lastReport;
+    const lines = [];
+
+    function bullet(label, text){
+      return `<li><strong>${label}:</strong> ${text}</li>`;
+    }
+
+    // Defensive insights (ไม่สอนเชิงโจมตี)
+    const clientTips = [
+      c_vpn.checked || traffic.value==='vpn'
+        ? 'เปิด VPN แล้ว: ลดความเสี่ยง MITM บนลิงก์ไม่ปลอดภัย'
+        : 'ควรใช้ VPN บนเครือข่ายสาธารณะ',
+      (traffic.value==='https' || c_httpsOnly.checked)
+        ? 'HSTS/HTTPS บังคับใช้แล้ว: ป้องกันการลดความปลอดภัย'
+        : 'เปิด HSTS preload/HTTPS‑only ในเบราว์เซอร์เมื่อเป็นไปได้',
+      c_pin.checked
+        ? 'Certificate pinning เปิดใช้: ลดความเสี่ยงใบรับรองปลอม'
+        : 'พิจารณาใช้แอป/เบราว์เซอร์ที่รองรับ certificate pinning',
+      c_doh.checked
+        ? 'DoH/DoT หรือ DNSSEC เปิดใช้: ลดโอกาส DNS spoof'
+        : 'เปิดใช้ DoH/DoT หรือเลือก DNS ที่รองรับ DNSSEC'
+    ];
+
+    const netTips = [
+      n_wpae.checked ? 'WPA2‑Enterprise เปิดใช้: ต้องยืนยันตัวตนก่อนเข้าระบบเครือข่าย' : 'สำหรับองค์กร ควรใช้ WPA2‑Enterprise (802.1X)',
+      n_dai.checked ? 'Dynamic ARP Inspection เปิดใช้: บล็อกการสวมรอย ARP' : 'เปิด DAI บนสวิตช์เพื่อกัน ARP spoof',
+      n_seg.checked ? 'มีการแยก VLAN/guest network: ลดการอยู่ในลิงก์เดียว' : 'แยก guest/IoT ออกจากเครือข่ายหลัก',
+      n_fw.checked ? 'ไฟร์วอลล์บังคับใช้ DNS ที่ปลอดภัยแล้ว' : 'บังคับใช้ DoH/DoT และบล็อก plaintext DNS'
+    ];
+
+    const outcome = [
+      r.success===0 ? 'ไม่มีความพยายาม MITM ที่สำเร็จ' : `พบความพยายาม MITM สำเร็จ ${r.success} รายการ`,
+      `ถูกบล็อก ${r.blocked} รายการ`,
+      `คะแนนป้องกัน: ${r.finalScore}`
+    ];
+
+    const html = `
+      <h4 style="margin:6px 0 8px">สรุปผลลัพธ์</h4>
+      <ul style="margin:0 0 10px 18px">
+        ${outcome.map((t,i)=> bullet(['ภาพรวม','บล็อกได้','คะแนน'][i] || 'สรุป', t)).join('')}
+      </ul>
+      <div class="sep"></div>
+      <h4 style="margin:6px 0 8px">คำแนะนำฝั่งผู้ใช้/แอป</h4>
+      <ul style="margin:0 0 10px 18px">
+        ${clientTips.map(t=> bullet('ข้อเสนอแนะ', t)).join('')}
+      </ul>
+      <h4 style="margin:6px 0 8px">คำแนะนำฝั่งเครือข่าย/องค์กร</h4>
+      <ul style="margin:0 0 10px 18px">
+        ${netTips.map(t=> bullet('ข้อเสนอแนะ', t)).join('')}
+      </ul>
+      <div class="tip">แนวคิดสำคัญ: เข้ารหัสตั้งแต่ต้นทางถึงปลายทาง (TLS/VPN), ลดความไว้วางใจบนลิงก์ร่วม (least trust), และยืนยันตัวตน/ความถูกต้องของปลายทางเสมอ (HSTS, pinning, DNS ที่ปลอดภัย)</div>
+    `;
+    $('explain').innerHTML = html;
+    toastShow('แสดงคำอธิบายผลแล้ว');
+  }
+
+  $('btnRun').addEventListener('click', simulate);
+  $('btnExplain').addEventListener('click', explain);
+  $('btnClear').addEventListener('click', ()=>{ reset(); toastShow('ล้างคอนโซลแล้ว'); });
+
+  // Presets for scenario selection
+  function applyScenarioDefaults(){
+    const s = scenario.value;
+    // reset toggles
+    [c_httpsOnly,c_pin,c_doh,c_vpn,a_arp,a_dns,a_ssl,a_inject,n_wpae,n_dai,n_seg,n_fw].forEach(el=> el.checked=false);
+
+    if(s==='cafe'){
+      a_arp.checked = true; a_dns.checked = true; a_ssl.checked = true; a_inject.checked = true;
+      n_seg.checked = false; n_wpae.checked = false;
+      traffic.value = 'https-nohsts';
+    } else if(s==='corp'){
+      n_wpae.checked = true; n_dai.checked = true; n_seg.checked = true; n_fw.checked = true;
+      c_doh.checked = true; c_httpsOnly.checked = true;
+      a_arp.checked = true; a_dns.checked = true;
+      traffic.value = 'https';
+    } else { // home
+      n_seg.checked = true;
+      c_httpsOnly.checked = true;
+      a_arp.checked = true;
+      traffic.value = 'https-nohsts';
+    }
+  }
+
+  scenario.addEventListener('change', applyScenarioDefaults);
+  applyScenarioDefaults();
+
+  // First tip
+  setTimeout(()=> toastShow('เลือกสถานการณ์ แล้วกด “เริ่มจำลอง” เพื่อดูผล MITM/การป้องกัน'), 600);
+})();
+</script>
+</body>
+</html>

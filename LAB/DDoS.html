@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thai Ethical Hacking Labs — DDoS Protection Simulator</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121a2c; --fg:#eaf0ff; --muted:#8ea4ca;
+    --card:#0f1628; --line:#223458; --accent:#4ad395; --accent2:#5db0ff; --warn:#ffcc66; --bad:#ff6b6b;
+    --code:#0a1122; --chip:#1b2440; --ok:#66e3a1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans Thai","Noto Sans", Arial, sans-serif; background:linear-gradient(180deg,#080d18,var(--bg)); color:var(--fg)}
+  header{position:sticky; top:0; z-index:50; background:radial-gradient(1200px 600px at 90% -30%, rgba(93,176,255,.10), transparent 60%), var(--panel); border-bottom:1px solid #1f2b47}
+  .wrap{max-width:1120px; margin:0 auto; padding:16px}
+  h1{font-size:1.35rem; margin:0 0 4px}
+  .sub{color:var(--muted); font-size:.95rem}
+  .badge{font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; color:var(--accent); background:#0f1c16; border:1px solid #254b3a; padding:4px 8px; border-radius:8px; font-size:.85rem}
+  main .wrap{padding-block:24px}
+  .grid{display:grid; gap:16px; grid-template-columns: 1.2fr .8fr}
+  @media (max-width: 1000px){ .grid{grid-template-columns:1fr} }
+  .card{background:linear-gradient(180deg, rgba(93,176,255,.06), transparent 25%), var(--card); border:1px solid #1f2b47; border-radius:12px; padding:16px}
+  .title{display:flex; align-items:center; gap:10px; margin-bottom:10px}
+  .title h2{margin:0; font-size:1.1rem}
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; background:#13203d; border:1px solid #253c73; border-radius:999px; color:#b7c7f0; font-size:.86rem}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  label{font-weight:700; font-size:.95rem}
+  select, button, input[type="checkbox"], input[type="range"]{background:#0e1528; border:1px solid #243154; color:var(--fg); border-radius:10px; padding:10px 12px; font-size:1rem}
+  .btn{background:linear-gradient(180deg,#2a7fff,#1663e6); border:none; color:#fff; font-weight:800; cursor:pointer}
+  .btn.secondary{background:#17213b; color:#b8c7ea; border:1px solid #293a67; font-weight:700}
+  .muted{color:var(--muted)}
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{background:var(--chip); color:#b9c7ea; border:1px solid #2a3a69; padding:6px 10px; border-radius:999px; font-size:.85rem}
+  .kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+  .kpi .card{padding:12px}
+  .kpi h3{margin:0; font-size:.95rem; color:#c9d7f7}
+  .kpi .num{font-size:1.4rem; font-weight:800; margin-top:6px}
+  .score{color:var(--accent)}
+  .warn{color:var(--warn)} .bad{color:var(--bad)} .ok{color:var(--ok)}
+  .log{height:240px; overflow:auto; padding:12px; background:var(--code); border:1px solid #1d2a4b; border-radius:10px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; line-height:1.45}
+  .sep{height:1px; background:#1f2b47; margin:12px 0}
+  .tip{background:#0e1b2f; border:1px solid #20345f; padding:12px; border-radius:10px; color:#cfe0ff}
+  .stack{display:grid; grid-template-columns: repeat(6, 1fr); gap:8px; align-items:stretch}
+  .layer{background:#0f1a32; border:1px solid #263c70; border-radius:10px; padding:8px}
+  .layer h4{margin:0 0 6px; font-size:.9rem; color:#cfe0ff}
+  .layer .on{color:#a6e8c8} .layer .off{color:#ffb3b3}
+  .flow{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+  .pkt{padding:6px 10px; border:1px solid #2a3a69; border-radius:8px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace}
+  .pkt.good{background:#142d20; border-color:#2f6a4a}
+  .pkt.drop{background:#2b1a1a; border-color:#6a2e2e}
+  .pkt.pass{background:#142733; border-color:#2d5f86}
+  .slider{display:flex; align-items:center; gap:10px}
+  .slider input[type="range"]{width:200px}
+  footer{margin-top:16px; color:#92a7cf}
+  .toast{
+    position:fixed; right:16px; bottom:16px; background:#0f1c25; border:1px solid #264a7d;
+    padding:10px 12px; border-radius:10px; color:#bcd3f7; box-shadow:0 6px 20px rgba(0,0,0,.35); display:none
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+    <div>
+      <h1>Thai Ethical Hacking Labs — DDoS Protection Simulator</h1>
+      <div class="sub">แล็บจำลอง: ทดลองเปิด–ปิดการป้องกันหลายชั้น แล้วดูผลการบล็อกทราฟฟิกเกินขนาด</div>
+    </div>
+    <span class="badge">mode: simulation-only</span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="card">
+      <div class="title">
+        <h2>สถานการณ์และการตั้งค่า</h2>
+      </div>
+
+      <div class="row" style="margin-bottom:10px">
+        <div>
+          <label for="scenario">เลือกสถานการณ์จำลอง</label>
+          <select id="scenario" aria-label="scenario">
+            <option value="edge">มี CDN/Anycast ด้านหน้า</option>
+            <option value="direct">ต่ออินเทอร์เน็ตโดยตรง</option>
+            <option value="hybrid">ไฮบริด: CDN + ต้นทางหลาย Region</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="attack">รูปแบบทราฟฟิกที่ท้าทาย</label>
+          <select id="attack" aria-label="attack">
+            <option value="volumetric">Volumetric (เน้นแบนด์วิดท์)</option>
+            <option value="syn">Protocol-level (SYN/connection bursts)</option>
+            <option value="http-get">Application (HTTP GET/headers heavy)</option>
+            <option value="slow">Application (ช้า/ลากการเชื่อมต่อ)</option>
+            <option value="mixed">ผสมหลายรูปแบบ</option>
+          </select>
+        </div>
+
+        <div class="slider">
+          <label><strong>ความเข้มข้น:</strong></label>
+          <input type="range" id="intensity" min="1" max="10" value="6" />
+          <span id="intensityVal" class="pill">6/10</span>
+        </div>
+
+        <div class="row" style="margin-left:auto">
+          <button id="btnRun" class="btn">เริ่มจำลอง</button>
+          <button id="btnExplain" class="btn secondary">อธิบายผล</button>
+          <button id="btnClear" class="btn secondary">ล้างคอนโซล</button>
+        </div>
+      </div>
+
+      <div class="chips" style="margin-bottom:8px">
+        <span class="chip">Anycast/CDN</span>
+        <span class="chip">WAF/Rate limit</span>
+        <span class="chip">SYN cookies/conn tracking</span>
+        <span class="chip">Autoscale/Queue/Cache</span>
+        <span class="chip">Challenge/Bot mgmt</span>
+        <span class="chip">Geo/ACL/Scrubbing</span>
+      </div>
+
+      <div class="stack" style="margin-bottom:8px">
+        <div class="layer">
+          <h4>Edge/Anycast</h4>
+          <label><input type="checkbox" id="l_anycast" /> Anycast + PoP หลายภูมิภาค</label><br/>
+          <label><input type="checkbox" id="l_scrub" /> ศูนย์ Scrubbing/Filtering ที่ขอบเครือข่าย</label>
+        </div>
+        <div class="layer">
+          <h4>DNS/Geo</h4>
+          <label><input type="checkbox" id="l_geo" /> บังคับ Geo/RPKI/ACL ระดับต้นน้ำ</label><br/>
+          <label><input type="checkbox" id="l_rateEdge" /> Rate limit/Token bucket ที่ Edge</label>
+        </div>
+        <div class="layer">
+          <h4>WAF/Apps</h4>
+          <label><input type="checkbox" id="l_waf" /> WAF + Header validation</label><br/>
+          <label><input type="checkbox" id="l_challenge" /> Challenge/JS/โทเคนยืนยันตัวตน</label><br/>
+          <label><input type="checkbox" id="l_bot" /> Bot management (พฤติกรรม/ลายนิ้วมือ)</label>
+        </div>
+        <div class="layer">
+          <h4>Transport</h4>
+          <label><input type="checkbox" id="l_syn" /> SYN cookies + backlog tuning</label><br/>
+          <label><input type="checkbox" id="l_conntrack" /> Connection tracking/timeout เหมาะสม</label>
+        </div>
+        <div class="layer">
+          <h4>Capacity</h4>
+          <label><input type="checkbox" id="l_auto" /> Autoscale/Horizontal scale</label><br/>
+          <label><input type="checkbox" id="l_queue" /> Queue/Circuit breaker</label><br/>
+          <label><input type="checkbox" id="l_cache" /> Cache/Static offload</label>
+        </div>
+        <div class="layer">
+          <h4>Origin/Rules</h4>
+          <label><input type="checkbox" id="l_acl" /> ACL ระบุเส้นทาง/ไอพีที่เชื่อถือได้</label><br/>
+          <label><input type="checkbox" id="l_obs" /> Observability/Alert อัตโนมัติ</label>
+        </div>
+      </div>
+
+      <div class="flow" id="flow"></div>
+
+      <div class="sep"></div>
+
+      <div class="kpi">
+        <div class="card">
+          <h3>ทราฟฟิกที่ถูกบล็อก</h3>
+          <div class="num score" id="kBlocked">0</div>
+        </div>
+        <div class="card">
+          <h3>ทราฟฟิกที่รอดผ่าน</h3>
+          <div class="num bad" id="kPassed">0</div>
+        </div>
+        <div class="card">
+          <h3>ความพร้อมใช้งาน (ประมาณการ)</h3>
+          <div class="num" id="kAvail">0%</div>
+        </div>
+        <div class="card">
+          <h3>คะแนนป้องกัน</h3>
+          <div class="num score" id="kScore">0</div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="title">
+        <h2>คอนโซลเหตุการณ์</h2>
+      </div>
+      <div id="log" class="log" aria-live="polite"></div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title">
+        <h2>คำอธิบายผลและคำแนะนำเชิงป้องกัน</h2>
+      </div>
+      <div id="explain" class="muted">
+        กด “เริ่มจำลอง” แล้ว “อธิบายผล” เพื่อดูว่าแต่ละมาตรการช่วยบรรเทา DDoS อย่างไร
+      </div>
+    </section>
+
+    <footer class="wrap">© 2025 Thai Ethical Hacking Labs — เพื่อการศึกษาเชิงป้องกันเท่านั้น</footer>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const log = $('log'), flow = $('flow');
+  const kBlocked=$('kBlocked'), kPassed=$('kPassed'), kAvail=$('kAvail'), kScore=$('kScore');
+  const scenario=$('scenario'), attack=$('attack'), intensity=$('intensity'), intensityVal=$('intensityVal');
+
+  const layers = {
+    anycast:$('l_anycast'), scrub:$('l_scrub'),
+    geo:$('l_geo'), rateEdge:$('l_rateEdge'),
+    waf:$('l_waf'), challenge:$('l_challenge'), bot:$('l_bot'),
+    syn:$('l_syn'), conntrack:$('l_conntrack'),
+    auto:$('l_auto'), queue:$('l_queue'), cache:$('l_cache'),
+    acl:$('l_acl'), obs:$('l_obs')
+  };
+
+  const toast = $('toast');
+
+  function toastShow(msg){ toast.textContent=msg; toast.style.display='block'; setTimeout(()=> toast.style.display='none', 2200); }
+  function reset(){
+    log.innerHTML=''; flow.innerHTML='';
+    kBlocked.textContent='0'; kPassed.textContent='0'; kAvail.textContent='0%'; kScore.textContent='0';
+    lastReport=null;
+  }
+  function write(msg, cls){ const d=document.createElement('div'); if(cls) d.className=cls; d.textContent=msg; log.appendChild(d); log.scrollTop=log.scrollHeight; }
+  function pkt(text, cls){ const s=document.createElement('span'); s.className='pkt '+cls; s.textContent=text; flow.appendChild(s); }
+
+  intensity.addEventListener('input', ()=> intensityVal.textContent = intensity.value + '/10');
+
+  let lastReport=null;
+
+  function simulate(){
+    reset();
+    const I = Number(intensity.value); // 1..10
+    const mode = attack.value;
+    const scene = scenario.value;
+
+    // Baseline “capacity & distribution” score
+    let capacity = 0;
+    let distribution = 0;
+    let appShield = 0;
+    let transport = 0;
+    let governance = 0;
+
+    if(layers.anycast.checked){ distribution += 3; capacity += 2; write('[edge] Anycast กระจายโหลดไปยังหลาย PoP', 'ok'); pkt('Edge anycast', 'good'); }
+    if(layers.scrub.checked){ distribution += 2; capacity += 3; write('[edge] มีศูนย์กรองทราฟฟิก (scrubbing center)', 'ok'); pkt('Scrubbing', 'good'); }
+    if(layers.geo.checked){ governance += 2; write('[dns] ใช้ Geo/ACL ลดทราฟฟิกไม่เกี่ยวข้อง', 'ok'); pkt('Geo/ACL', 'good'); }
+    if(layers.rateEdge.checked){ appShield += 2; write('[edge] Edge rate limit คุม bursts ตั้งแต่ต้นน้ำ', 'ok'); pkt('Rate limit@edge', 'good'); }
+
+    if(layers.waf.checked){ appShield += 2; write('[app] WAF ตรวจ pattern/headers ผิดปกติ', 'ok'); pkt('WAF', 'good'); }
+    if(layers.challenge.checked){ appShield += 2; governance += 1; write('[app] Challenge/โทเคน กันทราฟฟิกอัตโนมัติ', 'ok'); pkt('Challenge', 'good'); }
+    if(layers.bot.checked){ appShield += 2; write('[app] Bot management แยกมนุษย์/บอทจากพฤติกรรม', 'ok'); pkt('Bot mgmt', 'good'); }
+
+    if(layers.syn.checked){ transport += 3; write('[net] SYN cookies/backlog tuning ป้องกันการจองคิวเกิน', 'ok'); pkt('SYN cookies', 'good'); }
+    if(layers.conntrack.checked){ transport += 2; write('[net] Connection tracking/timeout เหมาะสม', 'ok'); pkt('Conn tracking', 'good'); }
+
+    if(layers.auto.checked){ capacity += 2; write('[infra] Autoscale รองรับปริมาณที่เพิ่มขึ้น', 'ok'); pkt('Autoscale', 'good'); }
+    if(layers.queue.checked){ appShield += 1; capacity += 1; write('[infra] Queue/Circuit breaker ป้องกันล้มทั้งขบวน', 'ok'); pkt('Queue', 'good'); }
+    if(layers.cache.checked){ appShield += 2; capacity += 1; write('[infra] Cache/Static offload ลดภาระต้นทาง', 'ok'); pkt('Cache', 'good'); }
+
+    if(layers.acl.checked){ governance += 2; write('[origin] ACL ให้สิทธิ์ต้นทาง/เส้นทางที่เชื่อถือได้เท่านั้น', 'ok'); pkt('Origin ACL', 'good'); }
+    if(layers.obs.checked){ governance += 1; write('[ops] สังเกตการณ์/แจ้งเตือนอัตโนมัติ ช่วยตัดสินใจเร็ว', 'ok'); pkt('Observability', 'good'); }
+
+    // Scenario baseline
+    if(scene==='direct'){ write('[scene] ต่ออินเทอร์เน็ตโดยตรง — พึ่งชั้นต้นทางมากขึ้น', 'warn'); }
+    if(scene==='edge'){ write('[scene] มี CDN/Anycast ด้านหน้า — บรรเทา volumetric ได้ดีขึ้น', 'ok'); }
+    if(scene==='hybrid'){ write('[scene] Hybrid multi-region + CDN — มี resiliency ระดับหนึ่ง', 'ok'); }
+
+    // Attack model weights (ไม่ลงรายละเอียดเชิงโจมตี)
+    const weights = {
+      volumetric: {bw:3, proto:1, app:1},
+      syn:        {bw:1, proto:3, app:1},
+      'http-get': {bw:1, proto:1, app:3},
+      slow:       {bw:1, proto:2, app:2},
+      mixed:      {bw:2, proto:2, app:2}
+    }[mode];
+
+    // Compute mitigation effectiveness per vector
+    const eff_bw   = distribution + capacity + (layers.rateEdge.checked?1:0) + (layers.scrub.checked?1:0);
+    const eff_proto= transport + distribution;
+    const eff_app  = appShield + distribution + (layers.cache.checked?1:0) + (layers.queue.checked?1:0);
+
+    // Pressure based on intensity
+    const press_bw    = weights.bw    * I;
+    const press_proto = weights.proto * I;
+    const press_app   = weights.app   * I;
+
+    // Blocked vs Passed estimation
+    function clamp(x,min,max){ return Math.max(min, Math.min(max,x)); }
+
+    const block_bw    = clamp(Math.round(eff_bw   * 2.2), 0, press_bw);
+    const block_proto = clamp(Math.round(eff_proto* 2.0), 0, press_proto);
+    const block_app   = clamp(Math.round(eff_app  * 1.8), 0, press_app);
+
+    const passed_bw    = Math.max(0, press_bw    - block_bw);
+    const passed_proto = Math.max(0, press_proto - block_proto);
+    const passed_app   = Math.max(0, press_app   - block_app);
+
+    // Log per vector
+    write(`[calc] ปัจจัยป้องกัน: bw=${eff_bw}, proto=${eff_proto}, app=${eff_app}`, 'muted');
+    write(`[calc] แรงกดดัน: bw=${press_bw}, proto=${press_proto}, app=${press_app}`, 'muted');
+
+    // Visual flow
+    for(let i=0;i<block_bw;i++) pkt('drop:bw','drop');
+    for(let i=0;i<block_proto;i++) pkt('drop:proto','drop');
+    for(let i=0;i<block_app;i++) pkt('drop:app','drop');
+
+    for(let i=0;i<passed_bw;i++) pkt('pass:bw','pass');
+    for(let i=0;i<passed_proto;i++) pkt('pass:proto','pass');
+    for(let i=0;i<passed_app;i++) pkt('pass:app','pass');
+
+    const blocked = block_bw + block_proto + block_app;
+    const passed  = passed_bw + passed_proto + passed_app;
+
+    // Availability rough estimate
+    // Start from 100, subtract impact of passed (weighted), add resilience from queue/auto/anycast/cache
+    let avail = 100 - clamp(Math.round((passed_bw*6 + passed_proto*5 + passed_app*4) / (I*3) * 10), 0, 90);
+    avail += (layers.queue.checked?4:0) + (layers.auto.checked?4:0) + (layers.anycast.checked?3:0) + (layers.cache.checked?3:0);
+    avail = clamp(avail, 0, 100);
+
+    // Defense score
+    const score = clamp(
+      (eff_bw + eff_proto + eff_app) + (avail>=95?6: avail>=90?4: avail>=80?2:0) - Math.round(passed/2),
+      0, 100
+    );
+
+    $('kBlocked').textContent = String(blocked);
+    $('kPassed').textContent  = String(passed);
+    $('kAvail').textContent   = String(avail) + '%';
+    $('kScore').textContent   = String(score);
+
+    // Narrative logs
+    function narr(vec, pb, bb){
+      const ratio = pb===0 ? 1 : (bb/(pb+bb));
+      const cls = ratio>0.7 ? 'ok' : ratio>0.4 ? 'warn' : 'bad';
+      write(`[result] ${vec}: บล็อกได้ ${bb}, รอดผ่าน ${pb}`, cls);
+    }
+    narr('Volumetric/แบนด์วิดท์', passed_bw, block_bw);
+    narr('Protocol/การตั้งค่าการเชื่อมต่อ', passed_proto, block_proto);
+    narr('Application/เลเยอร์ 7', passed_app, block_app);
+
+    // Save report
+    lastReport = {
+      scene, mode, I,
+      eff:{bw:eff_bw, proto:eff_proto, app:eff_app},
+      press:{bw:press_bw, proto:press_proto, app:press_app},
+      blocked, passed, avail, score,
+      toggles: Object.fromEntries(Object.entries(layers).map(([k,el])=>[k,el.checked]))
+    };
+
+    write('', 'muted');
+    write(`summary: blocked=${blocked}, passed=${passed}, availability=${avail}%, defense_score=${score}`, 'muted');
+    toastShow('จำลองเหตุการณ์เสร็จแล้ว');
+  }
+
+  function explain(){
+    if(!lastReport){ toastShow('ยังไม่มีผลลัพธ์ ให้กด “เริ่มจำลอง” ก่อน'); return; }
+    const r = lastReport;
+    const tips = [];
+
+    // Edge & distribution
+    if(r.toggles.anycast || r.toggles.scrub){
+      tips.push('กระจายทราฟฟิกไปหลายศูนย์ให้มากที่สุด และกรองตั้งแต่ขอบเครือข่าย ลดภาระต้นทาง');
+    } else {
+      tips.push('พิจารณาใช้โครงสร้างหน้าบ้าน (CDN/Anycast + scrubbing) เพื่อบรรเทาการโจมตีที่กินแบนด์วิดท์');
+    }
+
+    // Protocol/Transport
+    if(r.toggles.syn && r.toggles.conntrack){
+      tips.push('ตั้งค่า SYN cookies/timeout เหมาะสม ป้องกันการจองคิวเกินและค้างการเชื่อมต่อ');
+    } else {
+      tips.push('ปรับจูนเลเยอร์ขนส่ง: SYN cookies, backlog, timeout ของการเชื่อมต่อให้เหมาะกับโหลดจริง');
+    }
+
+    // App layer
+    if(r.toggles.waf && r.toggles.challenge && r.toggles.bot){
+      tips.push('รวม WAF + challenge/โทเคน + bot management เพื่อคัดกรองคำขอผิดปกติ');
+    } else {
+      tips.push('เพิ่มการคัดกรองเลเยอร์ 7: WAF, header validation, challenge, และการจัดการบอท');
+    }
+
+    // Capacity & resilience
+    if(r.toggles.auto && r.toggles.queue && r.toggles.cache){
+      tips.push('ยืดหยุ่นต่อสภาวะพีคด้วย autoscale, queue, และ cache เพื่อลดการประมวลผลซ้ำ');
+    } else {
+      tips.push('เตรียมแผนยืดหยุ่น: autoscale, queue/circuit breaker, และ cache เพื่อรักษาความพร้อมใช้งาน');
+    }
+
+    // Governance
+    if(r.toggles.geo && r.toggles.acl){
+      tips.push('ใช้ Geo/ACL จำกัดขอบเขตทราฟฟิก พร้อมกับการตรวจสิทธิ์เส้นทางที่น่าเชื่อถือ');
+    } else {
+      tips.push('กำหนด ACL/Geo/เส้นทางที่ได้รับอนุญาต เพื่อลดผิวโจมตีและค่าใช้จ่ายการกรอง');
+    }
+
+    if(r.toggles.obs){
+      tips.push('มี observability/alert: ตรวจจับเร็ว ตัดสินใจไว ช่วยกดผลกระทบอย่างมีนัยสำคัญ');
+    } else {
+      tips.push('เพิ่มการเฝ้าระวัง/แจ้งเตือนเพื่อ pivot แผนป้องกันตามพฤติกรรมการโจมตีจริง');
+    }
+
+    const html = `
+      <h4 style="margin:6px 0 8px">สรุปผล</h4>
+      <ul style="margin:0 0 8px 18px">
+        <li><strong>รูปแบบ:</strong> ${r.mode}, <strong>ความเข้มข้น:</strong> ${r.I}/10, <strong>ฉาก:</strong> ${r.scene}</li>
+        <li><strong>บล็อกได้:</strong> ${r.blocked}, <strong>รอดผ่าน:</strong> ${r.passed}</li>
+        <li><strong>ความพร้อมใช้งาน:</strong> ${r.avail}%</li>
+        <li><strong>คะแนนป้องกัน:</strong> ${r.score}</li>
+      </ul>
+      <div class="sep"></div>
+      <h4 style="margin:6px 0 8px">คำแนะนำเชิงป้องกันที่นำไปใช้ได้</h4>
+      <ul style="margin:0 0 10px 18px">
+        ${tips.map(t=> `<li><strong>ข้อเสนอแนะ:</strong> ${t}</li>`).join('')}
+      </ul>
+      <div class="tip">หลักการ: กรองให้เร็ว (filter early), กระจายให้กว้าง (distribute broadly), ดูดซับให้ได้ (absorb capacity), และรักษาแอปให้ยืดหยุ่น (resilient by design)</div>
+    `;
+    $('explain').innerHTML = html;
+    toastShow('แสดงคำอธิบายผลแล้ว');
+  }
+
+  function setPreset(){
+    // Reset all toggles
+    Object.values(layers).forEach(el=> el.checked=false);
+
+    if(scenario.value==='edge'){
+      layers.anycast.checked = true;
+      layers.scrub.checked = true;
+      layers.rateEdge.checked = true;
+      layers.waf.checked = true;
+      layers.challenge.checked = true;
+      layers.cache.checked = true;
+      layers.queue.checked = true;
+      layers.obs.checked = true;
+      attack.value = 'volumetric';
+      intensity.value = 6; intensity.dispatchEvent(new Event('input'));
+    } else if(scenario.value==='direct'){
+      layers.syn.checked = true;
+      layers.conntrack.checked = true;
+      layers.acl.checked = true;
+      layers.waf.checked = true;
+      attack.value = 'syn';
+      intensity.value = 7; intensity.dispatchEvent(new Event('input'));
+    } else { // hybrid
+      layers.anycast.checked = true;
+      layers.scrub.checked = true;
+      layers.waf.checked = true;
+      layers.bot.checked = true;
+      layers.challenge.checked = true;
+      layers.rateEdge.checked = true;
+      layers.auto.checked = true;
+      layers.queue.checked = true;
+      layers.cache.checked = true;
+      layers.syn.checked = true;
+      layers.conntrack.checked = true;
+      layers.geo.checked = true;
+      layers.acl.checked = true;
+      layers.obs.checked = true;
+      attack.value = 'mixed';
+      intensity.value = 6; intensity.dispatchEvent(new Event('input'));
+    }
+  }
+
+  $('btnRun').addEventListener('click', simulate);
+  $('btnExplain').addEventListener('click', explain);
+  $('btnClear').addEventListener('click', ()=>{ reset(); toastShow('ล้างคอนโซลแล้ว'); });
+
+  scenario.addEventListener('change', setPreset);
+  setPreset();
+  setTimeout(()=> toastShow('เลือกฉาก + มาตรการ แล้วกด “เริ่มจำลอง”'), 600);
+})();
+</script>
+</body>
+</html>

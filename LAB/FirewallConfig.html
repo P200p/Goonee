@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thai Ethical Hacking Labs — Firewall Config Simulator (with Easter Egg)</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121a2c; --fg:#eaf0ff; --muted:#8ea4ca;
+    --card:#0f1628; --line:#1f2b47; --accent:#4ad395; --warn:#ffcc66; --bad:#ff6b6b; --ok:#66e3a1;
+    --code:#0a1122; --chip:#1b2440; --blue:#5db0ff; --pink:#ff83d6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans Thai","Noto Sans", Arial, sans-serif; background:linear-gradient(180deg,#080d18,var(--bg)); color:var(--fg)}
+  header{position:sticky; top:0; z-index:50; background:radial-gradient(1200px 600px at 90% -30%, rgba(93,176,255,.10), transparent 60%), var(--panel); border-bottom:1px solid var(--line)}
+  .wrap{max-width:1140px; margin:0 auto; padding:16px}
+  h1{font-size:1.35rem; margin:0 0 4px}
+  .sub{color:var(--muted); font-size:.95rem}
+  .badge{font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; color:var(--accent); background:#0f1c16; border:1px solid #254b3a; padding:4px 8px; border-radius:8px; font-size:.85rem}
+  main .wrap{padding-block:24px}
+  .card{background:linear-gradient(180deg, rgba(93,176,255,.06), transparent 25%), var(--card); border:1px solid var(--line); border-radius:12px; padding:16px}
+  .title{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px}
+  .title h2{margin:0; font-size:1.1rem}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  label{font-weight:700; font-size:.95rem}
+  select, button, input[type="checkbox"], input[type="text"], input[type="number"]{background:#0e1528; border:1px solid #243154; color:var(--fg); border-radius:10px; padding:10px 12px; font-size:1rem}
+  .btn{background:linear-gradient(180deg,#2a7fff,#1663e6); border:none; color:#fff; font-weight:800; cursor:pointer}
+  .btn.secondary{background:#17213b; color:#b8c7ea; border:1px solid #293a67; font-weight:700}
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{background:var(--chip); color:#b9c7ea; border:1px solid #2a3a69; padding:6px 10px; border-radius:999px; font-size:.85rem}
+  .grid{display:grid; gap:16px; grid-template-columns: 1.15fr .85fr}
+  @media (max-width: 1000px){ .grid{grid-template-columns:1fr} }
+  .muted{color:var(--muted)}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  .kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+  .kpi .card{padding:12px}
+  .kpi h3{margin:0; font-size:.95rem; color:#c9d7f7}
+  .kpi .num{font-size:1.4rem; font-weight:800; margin-top:6px}
+  .score{color:var(--accent)}
+  .sep{height:1px; background:var(--line); margin:12px 0}
+  .box{background:#0f1a32; border:1px solid #263c70; border-radius:10px; padding:10px}
+  .box h3{margin:0 0 6px; font-size:1rem}
+  .cfg{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .cfg label{display:flex; align-items:center; gap:10px}
+  .cfg .full{grid-column:1/-1}
+  .log{height:240px; overflow:auto; padding:12px; background:var(--code); border:1px solid #1d2a4b; border-radius:10px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; line-height:1.45}
+  .flow{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+  .pkt{padding:6px 10px; border:1px solid #2a3a69; border-radius:8px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace}
+  .pkt.drop{background:#2b1a1a; border-color:#6a2e2e}
+  .pkt.pass{background:#142733; border-color:#2d5f86}
+  .pkt.good{background:#142d20; border-color:#2f6a4a}
+  pre{background:var(--code); border:1px solid #1d2a4b; border-radius:10px; padding:12px; overflow:auto}
+  footer{margin-top:16px; color:#92a7cf}
+  .toast{position:fixed; right:16px; bottom:16px; background:#0f1c25; border:1px solid #264a7d; padding:10px 12px; border-radius:10px; color:#bcd3f7; box-shadow:0 6px 20px rgba(0,0,0,.35); display:none}
+
+  /* Easter egg visuals */
+  .nyan{
+    position:fixed; left:-240px; top:70px; width:220px; height:120px; z-index:999;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="220" height="120"><rect width="220" height="120" fill="none"/><text x="20" y="70" font-size="28" font-family="Segoe UI Emoji">🐱‍💻🔥</text></svg>') no-repeat center/contain;
+    filter: drop-shadow(0 6px 20px rgba(255,131,214,.35));
+    animation: fly 8s linear infinite;
+    display:none;
+  }
+  @keyframes fly{
+    0%{ transform: translateX(0); opacity:.0 }
+    10%{ opacity:1 }
+    90%{ opacity:1 }
+    100%{ transform: translateX(calc(100vw + 260px)); opacity:0 }
+  }
+  .rainbow{
+    background: linear-gradient(90deg, #ff004c, #ff8a00, #ffe600, #00e676, #00b0ff, #bb86fc);
+    background-size: 600% 600%;
+    animation: hue 12s ease infinite;
+  }
+  @keyframes hue{ 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+</style>
+</head>
+<body>
+<header id="hdr">
+  <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+    <div>
+      <h1>Thai Ethical Hacking Labs — Firewall Config Simulator</h1>
+      <div class="sub">แล็บจำลอง: ออกแบบไฟร์วอลล์อย่างปลอดภัย (default‑deny, allowlist, rate‑limit, NAT, logging)</div>
+    </div>
+    <span id="modeBadge" class="badge">mode: simulation-only</span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="card">
+      <div class="title">
+        <h2>สถานการณ์และการตั้งค่า</h2>
+        <div class="row">
+          <button id="btnRun" class="btn">เริ่มจำลอง</button>
+          <button id="btnExplain" class="btn secondary">อธิบายผล</button>
+          <button id="btnGen" class="btn secondary">Generate config</button>
+          <button id="btnClear" class="btn secondary">ล้างคอนโซล</button>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:10px">
+        <div>
+          <label for="scenario">โปรไฟล์โฮสต์</label>
+          <select id="scenario">
+            <option value="server">Server (WAN-facing)</option>
+            <option value="workstation">Workstation</option>
+            <option value="gateway">Gateway/NAT router</option>
+          </select>
+        </div>
+        <div>
+          <label for="platform">แพลตฟอร์ม config</label>
+          <select id="platform">
+            <option value="nft">Linux nftables</option>
+            <option value="ufw">Linux UFW</option>
+            <option value="win">Windows Defender Firewall</option>
+          </select>
+        </div>
+        <div class="chips">
+          <span class="chip">Default deny</span>
+          <span class="chip">Stateful/ESTABLISHED</span>
+          <span class="chip">Allowlist services</span>
+          <span class="chip">Rate limiting</span>
+          <span class="chip">Logging</span>
+          <span class="chip">NAT/Port forward</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="box">
+          <h3>นโยบายหลัก</h3>
+          <div class="cfg">
+            <label><input type="checkbox" id="p_in_drop" checked/> Default INPUT: drop</label>
+            <label><input type="checkbox" id="p_fwd_drop" checked/> Default FORWARD: drop</label>
+            <label><input type="checkbox" id="p_out_acc" checked/> Default OUTPUT: accept</label>
+            <label><input type="checkbox" id="p_est" checked/> อนุญาต ESTABLISHED,RELATED</label>
+
+            <label><input type="checkbox" id="s_ssh"/> Allow SSH (22/tcp)</label>
+            <label><input type="checkbox" id="s_http"/> Allow HTTP (80/tcp)</label>
+            <label><input type="checkbox" id="s_https"/> Allow HTTPS (443/tcp)</label>
+            <label><input type="checkbox" id="s_dns"/> Allow DNS (53/udp out)</label>
+            <label><input type="checkbox" id="s_ntp"/> Allow NTP (123/udp out)</label>
+            <label><input type="checkbox" id="s_icmp"/> Allow ICMP (ping with limit)</label>
+
+            <label class="full"><input type="checkbox" id="s_admin_net"/> จำกัด SSH จากไอพี/ซับเน็ตที่ระบุ</label>
+            <div><label class="muted">Admin CIDR</label><input type="text" id="admin_cidr" placeholder="เช่น 203.0.113.0/24" /></div>
+            <div><label class="muted">SSH rate (pps)</label><input type="number" id="ssh_rate" value="5" min="1" max="60"/></div>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>โซน/เส้นทาง & NAT</h3>
+          <div class="cfg">
+            <label><input type="checkbox" id="z_lan" /> มี LAN interface</label>
+            <label><input type="checkbox" id="z_dmz" /> มี DMZ interface</label>
+            <div><label class="muted">WAN iface</label><input type="text" id="if_wan" placeholder="เช่น eth0"/></div>
+            <div><label class="muted">LAN iface</label><input type="text" id="if_lan" placeholder="เช่น eth1"/></div>
+            <label><input type="checkbox" id="nat_masq" /> NAT Masquerade ออก WAN</label>
+            <label><input type="checkbox" id="pf_http" /> Port forward 80→8080 (ไป DMZ)</label>
+            <div><label class="muted">DMZ host</label><input type="text" id="dmz_host" placeholder="เช่น 10.0.0.10"/></div>
+
+            <label class="full"><input type="checkbox" id="log_drops" /> Log แพ็กเก็ต drop (throttle)</label>
+            <label class="full"><input type="checkbox" id="sh_ping" /> ป้องกัน ping flood: limit echo‑request</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="box">
+        <h3>ความท้าทายทราฟฟิก (จำลอง)</h3>
+        <div class="cfg">
+          <label><input type="checkbox" id="t_scan" /> สแกนพอร์ตสุ่มจากอินเทอร์เน็ต</label>
+          <label><input type="checkbox" id="t_ssh_burst" /> เชื่อมต่อ SSH รัวๆ</label>
+          <label><input type="checkbox" id="t_http_req" /> คำขอ HTTP ปกติถึงเว็บเซิร์ฟเวอร์</label>
+          <label><input type="checkbox" id="t_https_req" /> คำขอ HTTPS ปกติถึงเว็บเซิร์ฟเวอร์</label>
+          <label><input type="checkbox" id="t_ping" /> ping ต่อเนื่องถึงโฮสต์</label>
+          <label><input type="checkbox" id="t_dns_out" /> โฮสต์ต้อง query DNS ออกนอก</label>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="kpi">
+        <div class="card"><h3>แพ็กเก็ตที่ถูกบล็อก</h3><div class="num score" id="kBlocked">0</div></div>
+        <div class="card"><h3>แพ็กเก็ตที่ผ่าน</h3><div class="num bad" id="kPassed">0</div></div>
+        <div class="card"><h3>ความแน่นหนาเชิงนโยบาย</h3><div class="num score" id="kScore">0</div></div>
+        <div class="card"><h3>ระดับผิวโจมตี</h3><div class="num" id="kSurface">ต่ำ</div></div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="title"><h2>คอนโซลเหตุการณ์</h2></div>
+      <div id="log" class="log" aria-live="polite"></div>
+
+      <div class="sep"></div>
+      <div class="title"><h2>แผนภาพทราฟฟิก</h2></div>
+      <div id="flow" class="flow"></div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title"><h2>สคริปต์ตั้งต้นที่สร้างอัตโนมัติ</h2></div>
+      <pre id="gen" class="mono muted">กด “Generate config” หลังจากตั้งค่า</pre>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title"><h2>คำอธิบายผลและคำแนะนำเชิงป้องกัน</h2></div>
+      <div id="explain" class="muted">กด “เริ่มจำลอง” แล้ว “อธิบายผล” เพื่อดูอินไซต์เชิงป้องกัน</div>
+    </section>
+
+    <footer class="wrap">© 2025 Thai Ethical Hacking Labs — เพื่อการศึกษาเชิงป้องกันเท่านั้น</footer>
+  </div>
+</main>
+
+<div class="nyan" id="nyan"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const log = $('log'), flow = $('flow'), gen = $('gen'), explain = $('explain'), toast=$('toast');
+  const kBlocked=$('kBlocked'), kPassed=$('kPassed'), kScore=$('kScore'), kSurface=$('kSurface');
+
+  const inputs = {
+    scenario:$('scenario'), platform:$('platform'),
+    p_in_drop:$('p_in_drop'), p_fwd_drop:$('p_fwd_drop'), p_out_acc:$('p_out_acc'), p_est:$('p_est'),
+    s_ssh:$('s_ssh'), s_http:$('s_http'), s_https:$('s_https'), s_dns:$('s_dns'), s_ntp:$('s_ntp'), s_icmp:$('s_icmp'),
+    s_admin_net:$('s_admin_net'), admin_cidr:$('admin_cidr'), ssh_rate:$('ssh_rate'),
+    z_lan:$('z_lan'), z_dmz:$('z_dmz'), if_wan:$('if_wan'), if_lan:$('if_lan'),
+    nat_masq:$('nat_masq'), pf_http:$('pf_http'), dmz_host:$('dmz_host'),
+    log_drops:$('log_drops'), sh_ping:$('sh_ping'),
+    t_scan:$('t_scan'), t_ssh_burst:$('t_ssh_burst'), t_http_req:$('t_http_req'), t_https_req:$('t_https_req'), t_ping:$('t_ping'), t_dns_out:$('t_dns_out')
+  };
+
+  function write(msg, cls){ const d=document.createElement('div'); if(cls) d.className=cls; d.textContent=msg; log.appendChild(d); log.scrollTop=log.scrollHeight; }
+  function pkt(text, cls){ const s=document.createElement('span'); s.className='pkt '+cls; s.textContent=text; flow.appendChild(s); }
+  function reset(){
+    log.innerHTML=''; flow.innerHTML=''; kBlocked.textContent='0'; kPassed.textContent='0'; kScore.textContent='0'; kSurface.textContent='ต่ำ'; explain.innerHTML='กด “เริ่มจำลอง” แล้ว “อธิบายผล” เพื่อดูอินไซต์เชิงป้องกัน';
+  }
+  function toastShow(msg){ toast.textContent=msg; toast.style.display='block'; setTimeout(()=> toast.style.display='none', 2200); }
+
+  function scorePolicy(){
+    let score = 0;
+    if(inputs.p_in_drop.checked) score+=3;
+    if(inputs.p_fwd_drop.checked) score+=3;
+    if(inputs.p_est.checked) score+=2;
+    if(inputs.s_ssh.checked) score+=0; // allowlist doesn't add score by itself
+    if(inputs.s_admin_net.checked && inputs.admin_cidr.value.trim()) score+=3; // narrowing SSH
+    if(inputs.s_dns.checked) score+=1;
+    if(inputs.s_ntp.checked) score+=1;
+    if(inputs.s_icmp.checked && inputs.sh_ping.checked) score+=1;
+    if(inputs.nat_masq.checked) score+=0;
+    if(inputs.log_drops.checked) score+=1;
+    if(inputs.z_dmz.checked && inputs.pf_http.checked && inputs.dmz_host.value.trim()) score+=1; // proper PF to DMZ
+    return Math.max(0, score);
+  }
+
+  function surfaceLevel(){
+    let open = 0;
+    if(inputs.s_ssh.checked) open++;
+    if(inputs.s_http.checked) open++;
+    if(inputs.s_https.checked) open++;
+    // Lower surface if SSH pinned + rate
+    if(inputs.s_ssh.checked && inputs.s_admin_net.checked && inputs.admin_cidr.value.trim()) open -= 0.5;
+    if(open<=0) return 'ต่ำ';
+    if(open<=1.5) return 'ปานกลาง';
+    return 'สูง';
+  }
+
+  function simulate(){
+    reset();
+    const rep = {blocked:0, passed:0, notes:[]};
+
+    // Baseline
+    if(inputs.p_in_drop.checked) write('[policy] Default INPUT: drop', 'ok'); else write('[policy] INPUT: not drop — ผิวโจมตีสูงขึ้น', 'warn');
+    if(inputs.p_fwd_drop.checked) write('[policy] Default FORWARD: drop', 'ok');
+    if(inputs.p_out_acc.checked) write('[policy] Default OUTPUT: accept (เหมาะสำหรับโฮสต์ทั่วไป)', 'muted');
+    if(inputs.p_est.checked) write('[state] อนุญาต ESTABLISHED, RELATED (stateful)', 'ok');
+
+    // Services
+    if(inputs.s_ssh.checked){
+      if(inputs.s_admin_net.checked && inputs.admin_cidr.value.trim()){
+        write(`[svc] SSH เปิดใช้ เฉพาะ ${inputs.admin_cidr.value} + rate ${inputs.ssh_rate.value}/s`, 'ok');
+      } else {
+        write('[svc] SSH เปิดใช้กับ WAN ทั้งหมด — แนะนำจำกัด CIDR', 'warn');
+      }
+    }
+    if(inputs.s_http.checked) write('[svc] HTTP เปิดใช้ (80/tcp)', 'muted');
+    if(inputs.s_https.checked) write('[svc] HTTPS เปิดใช้ (443/tcp)', 'muted');
+    if(inputs.s_dns.checked) write('[svc] DNS outbound เปิดใช้ (53/udp)', 'muted');
+    if(inputs.s_ntp.checked) write('[svc] NTP outbound เปิดใช้ (123/udp)', 'muted');
+    if(inputs.s_icmp.checked) write('[svc] อนุญาต ICMP (ping) พร้อม limit หากเปิดใช้งาน', 'muted');
+
+    // Zones & NAT
+    const wan = inputs.if_wan.value.trim() || 'eth0';
+    const lan = inputs.if_lan.value.trim() || 'eth1';
+    if(inputs.z_lan.checked) write(`[zone] มี LAN iface: ${lan}`, 'muted');
+    if(inputs.z_dmz.checked) write('[zone] มี DMZ: บริการสาธารณะแยกออกจาก LAN', 'ok');
+    if(inputs.nat_masq.checked) write(`[nat] Masquerade ออก WAN (${wan})`, 'ok');
+    if(inputs.pf_http.checked && inputs.dmz_host.value.trim()){
+      write(`[pf] Port forward 80→8080 ไปยัง ${inputs.dmz_host.value}`, 'ok');
+    }
+
+    if(inputs.log_drops.checked) write('[log] เปิด log สำหรับแพ็กเก็ต drop (throttle)', 'ok');
+    if(inputs.sh_ping.checked) write('[shield] จำกัด echo-request ป้องกัน ping flood', 'ok');
+
+    // Traffic simulation
+    function allow(condTrue, labelPass, labelDrop){
+      if(condTrue){ rep.passed++; pkt(labelPass,'pass'); }
+      else { rep.blocked++; pkt(labelDrop,'drop'); }
+    }
+
+    if(inputs.t_scan.checked){
+      const dropScan = inputs.p_in_drop.checked && !inputs.s_http.checked && !inputs.s_https.checked && !inputs.s_ssh.checked;
+      allow(!dropScan, 'scan→open', 'scan→drop');
+      write(dropScan ? '[threat] สแกนพอร์ตส่วนใหญ่โดน Default‑deny' : '[threat] มีพอร์ตเปิดที่ค้นพบได้', dropScan?'ok':'warn');
+    }
+
+    if(inputs.t_ssh_burst.checked){
+      let passSSH = inputs.s_ssh.checked;
+      if(passSSH && inputs.s_admin_net.checked && inputs.admin_cidr.value.trim()) passSSH = false; // assume attacker not in admin range
+      if(passSSH && Number(inputs.ssh_rate.value)>0) { // rate limiting applied
+        write('[protect] SSH มี rate‑limit: บล็อก bursts ส่วนเกิน', 'ok');
+        rep.blocked++; pkt('ssh:rate‑drop','drop');
+        passSSH = false;
+      }
+      allow(passSSH, 'ssh:pass', 'ssh:blocked');
+      write(passSSH ? '[threat] SSH bursts บางส่วนอาจผ่าน — ตรวจสอบให้จำกัด CIDR' : '[protect] SSH ถูกจำกัด/บล็อก', passSSH?'warn':'ok');
+    }
+
+    if(inputs.t_http_req.checked){
+      const pass = inputs.s_http.checked || inputs.pf_http.checked;
+      allow(pass, 'http:pass', 'http:drop');
+    }
+    if(inputs.t_https_req.checked){
+      const pass = inputs.s_https.checked;
+      allow(pass, 'https:pass', 'https:drop');
+    }
+    if(inputs.t_ping.checked){
+      const pass = inputs.s_icmp.checked;
+      if(pass && inputs.sh_ping.checked){ pkt('icmp:limit','good'); write('[shield] จำกัดอัตรา ICMP ลดโอกาส flood', 'ok'); }
+      allow(pass, 'icmp:echo','icmp:drop');
+    }
+    if(inputs.t_dns_out.checked){
+      const pass = inputs.s_dns.checked;
+      allow(pass, 'dns:out','dns:blocked');
+    }
+
+    // Summaries
+    kBlocked.textContent = String(rep.blocked);
+    kPassed.textContent  = String(rep.passed);
+    const policyScore = scorePolicy();
+    kScore.textContent   = String(policyScore);
+    kSurface.textContent = surfaceLevel();
+
+    write('', 'muted');
+    write(`summary: blocked=${rep.blocked}, passed=${rep.passed}, policy_score=${policyScore}, surface=${kSurface.textContent}`, 'muted');
+
+    toastShow('จำลองเหตุการณ์เสร็จแล้ว');
+  }
+
+  function generateConfig(){
+    const plat = inputs.platform.value;
+    const wan = inputs.if_wan.value.trim() || 'eth0';
+    const lan = inputs.if_lan.value.trim() || 'eth1';
+    const admin = (inputs.s_admin_net.checked && inputs.admin_cidr.value.trim()) ? inputs.admin_cidr.value.trim() : null;
+    const sshRate = Number(inputs.ssh_rate.value||'5');
+
+    if(plat==='nft'){
+      const lines = [];
+      lines.push('flush ruleset');
+      lines.push('table inet filter {');
+      lines.push('  set admin { type ipv4_addr; flags interval; elements = { '+(admin?admin:'203.0.113.0/24')+' } }');
+      lines.push('  chain input { type filter hook input priority 0; policy '+(inputs.p_in_drop.checked?'drop':'accept')+';');
+      lines.push('    ct state established,related accept');
+      if(inputs.s_icmp.checked) lines.push('    icmp type echo-request limit rate 10/second accept');
+      if(inputs.s_dns.checked) lines.push('    udp dport 53 accept');
+      if(inputs.s_ntp.checked) lines.push('    udp dport 123 accept');
+      if(inputs.s_https.checked) lines.push('    tcp dport 443 accept');
+      if(inputs.s_http.checked) lines.push('    tcp dport 80 accept');
+      if(inputs.s_ssh.checked){
+        if(admin){
+          lines.push('    ip saddr @admin tcp dport 22 limit rate '+sshRate+'/second accept');
+        } else {
+          lines.push('    tcp dport 22 limit rate '+sshRate+'/second accept');
+        }
+      }
+      if(inputs.log_drops.checked) lines.push('    limit rate 10/second log prefix "DROP "');
+      lines.push('  }');
+      lines.push('  chain output { type filter hook output priority 0; policy '+(inputs.p_out_acc.checked?'accept':'drop')+'; }');
+      lines.push('  chain forward { type filter hook forward priority 0; policy '+(inputs.p_fwd_drop.checked?'drop':'accept')+'; }');
+      lines.push('}');
+      if(inputs.nat_masq.checked || inputs.pf_http.checked){
+        lines.push('table inet nat {');
+        lines.push('  chain prerouting { type nat hook prerouting priority -100; }');
+        lines.push('  chain postrouting { type nat hook postrouting priority 100;');
+        if(inputs.nat_masq.checked) lines.push('    oifname "'+wan+'" masquerade');
+        lines.push('  }');
+        if(inputs.pf_http.checked && inputs.dmz_host.value.trim()){
+          lines.push('  chain dnat { type nat hook prerouting priority -90;');
+          lines.push('    tcp dport 80 dnat to '+inputs.dmz_host.value+':8080');
+          lines.push('  }');
+        }
+        lines.push('}');
+      }
+      gen.textContent = lines.join('\n');
+    } else if(plat==='ufw'){
+      const lines = [];
+      lines.push('ufw default deny incoming');
+      lines.push('ufw default deny routed');
+      lines.push('ufw default allow outgoing');
+      if(inputs.s_https.checked) lines.push('ufw allow 443/tcp');
+      if(inputs.s_http.checked)  lines.push('ufw allow 80/tcp');
+      if(inputs.s_ssh.checked){
+        lines.push(admin ? ('ufw allow from '+admin+' to any port 22 proto tcp') : 'ufw allow 22/tcp');
+      }
+      if(inputs.s_icmp.checked) lines.push('# ICMP rate‑limit via sysctl/iptables (แนะนำ)');
+      if(inputs.s_dns.checked)  lines.push('ufw allow out 53/udp');
+      if(inputs.s_ntp.checked)  lines.push('ufw allow out 123/udp');
+      if(inputs.nat_masq.checked) {
+        lines.push('# เปิด NAT/MASQUERADE ใน /etc/ufw/sysctl.conf และ before.rules');
+        lines.push('# *nat\n# :POSTROUTING ACCEPT [0:0]\n# -A POSTROUTING -o '+wan+' -j MASQUERADE');
+      }
+      if(inputs.pf_http.checked && inputs.dmz_host.value.trim()){
+        lines.push('# DNAT 80→8080 ไป '+inputs.dmz_host.value+' ตั้งใน before.rules');
+      }
+      gen.textContent = lines.join('\n');
+    } else { // win
+      const lines = [];
+      lines.push('New-NetFirewallRule -DisplayName "Default-Deny-In" -Direction Inbound -Action Block -Profile Any');
+      if(inputs.s_https.checked) lines.push('New-NetFirewallRule -DisplayName "Allow HTTPS" -Direction Inbound -Protocol TCP -LocalPort 443 -Action Allow');
+      if(inputs.s_http.checked)  lines.push('New-NetFirewallRule -DisplayName "Allow HTTP" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow');
+      if(inputs.s_ssh.checked){
+        lines.push('New-NetFirewallRule -DisplayName "Allow SSH" -Direction Inbound -Protocol TCP -LocalPort 22 -Action Allow');
+        if(admin){
+          lines.push('New-NetFirewallRule -DisplayName "Allow SSH Admin CIDR" -Direction Inbound -Protocol TCP -LocalPort 22 -RemoteAddress '+admin+' -Action Allow');
+        }
+      }
+      lines.push('# แนะนำ: ตั้ง ICMP rate ผ่าน QoS/หรือปิด Echo ตามนโยบาย');
+      lines.push('# NAT/Port forwarding บน Windows ใช้ RRAS หรือ NAT features');
+      gen.textContent = lines.join('\n');
+    }
+    toastShow('สร้างสคริปต์ตั้งต้นแล้ว');
+  }
+
+  function explainNow(){
+    const items = [];
+    items.push('<li><strong>Default‑deny:</strong> ปิดช่องทางที่ไม่จำเป็นทั้งหมดก่อน แล้วเปิดเฉพาะที่ต้องใช้</li>');
+    items.push('<li><strong>Stateful:</strong> อนุญาต ESTABLISHED/RELATED ลดการเขียนกฎซ้ำซ้อน</li>');
+    items.push('<li><strong>Allowlist:</strong> เปิด SSH/HTTP(S) เท่าที่จำเป็น และตรึง SSH ด้วย CIDR + rate‑limit</li>');
+    items.push('<li><strong>Logging:</strong> เปิด log แบบ throttle เพื่อตรวจจับความผิดปกติโดยไม่ท่วมดิสก์</li>');
+    items.push('<li><strong>NAT/DMZ:</strong> หากต้องเปิดพอร์ตสู่สาธารณะ ให้ดีดบริการไป DMZ และแยกจาก LAN</li>');
+    items.push('<li><strong>ICMP hygiene:</strong> อนุญาต ping แบบจำกัดอัตรา ช่วยทั้งตรวจสอบและกัน flood</li>');
+    items.push('<li><strong>Review สม่ำเสมอ:</strong> ทบทวนกฎหน้า production และทดสอบ staging ก่อนเผยแพร่</li>');
+    explain.innerHTML = '<ul style="margin:0 0 8px 18px">'+items.join('')+'</ul>' +
+      '<div class="sep"></div><div class="muted">หลักการ: เปิดให้น้อยที่สุด (least privilege), ตรวจสอบได้ (observable), และยืดหยุ่นต่อเหตุการณ์ (resilient)</div>';
+    toastShow('แสดงคำอธิบายผลแล้ว');
+  }
+
+  // Handlers
+  $('btnRun').addEventListener('click', simulate);
+  $('btnGen').addEventListener('click', generateConfig);
+  $('btnExplain').addEventListener('click', explainNow);
+  $('btnClear').addEventListener('click', ()=>{ reset(); gen.textContent='กด “Generate config” หลังจากตั้งค่า'; toastShow('ล้างคอนโซลแล้ว'); });
+
+  // Presets per scenario
+  function setPreset(){
+    // reset service toggles
+    ['s_ssh','s_http','s_https','s_dns','s_ntp','s_icmp','s_admin_net','z_lan','z_dmz','nat_masq','pf_http','log_drops','sh_ping','t_scan','t_ssh_burst','t_http_req','t_https_req','t_ping','t_dns_out']
+    .forEach(k=> inputs[k].checked=false);
+    inputs.admin_cidr.value=''; inputs.dmz_host.value=''; inputs.if_wan.value='eth0'; inputs.if_lan.value='eth1'; inputs.ssh_rate.value='5';
+
+    if(inputs.scenario.value==='server'){
+      inputs.s_ssh.checked=true; inputs.s_admin_net.checked=true; inputs.admin_cidr.value='203.0.113.0/24';
+      inputs.s_https.checked=true; inputs.s_dns.checked=true; inputs.s_ntp.checked=true; inputs.s_icmp.checked=true; inputs.sh_ping.checked=true; inputs.log_drops.checked=true;
+      inputs.z_dmz.checked=true; inputs.pf_http.checked=true; inputs.dmz_host.value='10.0.0.10';
+      inputs.t_scan.checked=true; inputs.t_ssh_burst.checked=true; inputs.t_https_req.checked=true; inputs.t_ping.checked=true;
+    } else if(inputs.scenario.value==='workstation'){
+      inputs.s_dns.checked=true; inputs.s_ntp.checked=true; inputs.s_icmp.checked=true; inputs.sh_ping.checked=true; inputs.log_drops.checked=true;
+      inputs.t_dns_out.checked=true; inputs.t_ping.checked=true;
+    } else { // gateway
+      inputs.z_lan.checked=true; inputs.nat_masq.checked=true; inputs.s_dns.checked=true; inputs.s_ntp.checked=true; inputs.s_icmp.checked=true; inputs.sh_ping.checked=true; inputs.log_drops.checked=true;
+      inputs.t_scan.checked=true; inputs.t_dns_out.checked=true; inputs.t_ping.checked=true;
+    }
+  }
+  inputs.scenario.addEventListener('change', setPreset);
+  setPreset();
+
+  // Easter egg: Konami code → rainbow header + flying hacker cat + secret chip
+  const nyan = $('nyan'); const hdr = $('hdr'); const badge = $('modeBadge');
+  const K = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let buf = [];
+  window.addEventListener('keydown', e=>{
+    buf.push(e.key); if(buf.length>K.length) buf.shift();
+    if(K.every((k,i)=> buf[i]===k)){
+      hdr.classList.toggle('rainbow');
+      nyan.style.display = 'block';
+      badge.textContent = 'mode: simulation-only + 🐱‍💻';
+      write('[easter‑egg] Hacker cat โผล่มาแว้บๆ — config ที่ดีไม่ต้องซีเรียสเสมอไป 😉', 'muted');
+      toastShow('Easter egg unlocked!');
+      setTimeout(()=>{ nyan.style.display='none'; }, 9000);
+      buf = [];
+    }
+  });
+  // Hidden click easter egg: triple-click title to spawn a flaming shield packet
+  let clicks=0; document.querySelector('h1').addEventListener('click', ()=>{
+    clicks++; if(clicks>=3){ pkt('🛡️+3','good'); write('[easter‑egg] Flaming shield ได้บัฟป้องกันเชิงใจ', 'ok'); clicks=0; }
+    setTimeout(()=> clicks=0, 800);
+  });
+
+  // First tip
+  setTimeout(()=> toastShow('ตั้งค่านโยบาย แล้วกด “เริ่มจำลอง” — ลองตรึง SSH ด้วย CIDR ดู'), 700);
+})();
+</script>
+</body>
+</html>

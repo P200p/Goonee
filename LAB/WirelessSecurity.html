@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thai Ethical Hacking Labs — Wireless Security Simulator</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121a2c; --fg:#eaf0ff; --muted:#8ea4ca;
+    --card:#0f1628; --line:#1f2b47; --accent:#4ad395; --warn:#ffcc66; --bad:#ff6b6b; --ok:#66e3a1;
+    --code:#0a1122; --chip:#1b2440;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans Thai","Noto Sans", Arial, sans-serif; background:linear-gradient(180deg,#080d18,var(--bg)); color:var(--fg)}
+  header{position:sticky; top:0; z-index:50; background:radial-gradient(1200px 600px at 90% -30%, rgba(93,176,255,.10), transparent 60%), var(--panel); border-bottom:1px solid var(--line)}
+  .wrap{max-width:1120px; margin:0 auto; padding:16px}
+  h1{font-size:1.35rem; margin:0 0 4px}
+  .sub{color:var(--muted); font-size:.95rem}
+  .badge{font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; color:var(--accent); background:#0f1c16; border:1px solid #254b3a; padding:4px 8px; border-radius:8px; font-size:.85rem}
+  main .wrap{padding-block:24px}
+  .card{background:linear-gradient(180deg, rgba(93,176,255,.06), transparent 25%), var(--card); border:1px solid var(--line); border-radius:12px; padding:16px}
+  .title{display:flex; align-items:center; gap:10px; margin-bottom:10px}
+  .title h2{margin:0; font-size:1.1rem}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  label{font-weight:700; font-size:.95rem}
+  select, button, input[type="checkbox"], input[type="range"]{background:#0e1528; border:1px solid #243154; color:var(--fg); border-radius:10px; padding:10px 12px; font-size:1rem}
+  .btn{background:linear-gradient(180deg,#2a7fff,#1663e6); border:none; color:#fff; font-weight:800; cursor:pointer}
+  .btn.secondary{background:#17213b; color:#b8c7ea; border:1px solid #293a67; font-weight:700}
+  .chips{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px}
+  .chip{background:var(--chip,#1b2440); color:#b9c7ea; border:1px solid #2a3a69; padding:6px 10px; border-radius:999px; font-size:.85rem}
+  .grid{display:grid; gap:16px; grid-template-columns: 1.1fr .9fr}
+  @media (max-width: 1000px){ .grid{grid-template-columns:1fr} }
+  .kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+  .kpi .card{padding:12px}
+  .kpi h3{margin:0; font-size:.95rem; color:#c9d7f7}
+  .kpi .num{font-size:1.4rem; font-weight:800; margin-top:6px}
+  .score{color:var(--accent)}
+  .muted{color:var(--muted)}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  .sep{height:1px; background:var(--line); margin:12px 0}
+  .panel{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+  .box{background:#0f1a32; border:1px solid #263c70; border-radius:10px; padding:10px}
+  .box h3{margin:0 0 6px; font-size:1rem}
+  .cfg{display:flex; flex-direction:column; gap:8px}
+  .note{background:#0e1b2f; border:1px solid #20345f; padding:10px; border-radius:10px; color:#cfe0ff}
+  .log{height:240px; overflow:auto; padding:12px; background:var(--code); border:1px solid #1d2a4b; border-radius:10px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; line-height:1.45}
+  .flow{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+  .pkt{padding:6px 10px; border:1px solid #2a3a69; border-radius:8px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace}
+  .pkt.block{background:#2b1a1a; border-color:#6a2e2e}
+  .pkt.pass{background:#142733; border-color:#2d5f86}
+  .pkt.good{background:#142d20; border-color:#2f6a4a}
+  footer{margin-top:16px; color:#92a7cf}
+  .toast{position:fixed; right:16px; bottom:16px; background:#0f1c25; border:1px solid #264a7d; padding:10px 12px; border-radius:10px; color:#bcd3f7; box-shadow:0 6px 20px rgba(0,0,0,.35); display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+    <div>
+      <h1>Thai Ethical Hacking Labs — Wireless Security Simulator</h1>
+      <div class="sub">แล็บจำลอง: ปรับตั้งค่า Wi‑Fi ฝั่ง Client/Access Point/เครือข่าย แล้วดูผลการป้องกันภัย Wi‑Fi</div>
+    </div>
+    <span class="badge">mode: simulation-only</span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="card">
+      <div class="title"><h2>สถานการณ์และการตั้งค่า</h2></div>
+
+      <div class="row" style="margin-bottom:10px">
+        <div>
+          <label for="scenario">เลือกฉาก</label>
+          <select id="scenario">
+            <option value="home">บ้าน/คอนโด</option>
+            <option value="cafe">ร้านกาแฟ/สาธารณะ</option>
+            <option value="enterprise">องค์กร/มหาวิทยาลัย</option>
+          </select>
+        </div>
+        <div>
+          <label for="band">ย่านความถี่</label>
+          <select id="band">
+            <option value="24">2.4 GHz</option>
+            <option value="5">5 GHz</option>
+            <option value="6">6 GHz (Wi‑Fi 6E/7)</option>
+          </select>
+        </div>
+        <div class="row" style="margin-left:auto">
+          <button id="btnRun" class="btn">เริ่มจำลอง</button>
+          <button id="btnExplain" class="btn secondary">อธิบายผล</button>
+          <button id="btnClear" class="btn secondary">ล้างคอนโซล</button>
+        </div>
+      </div>
+
+      <div class="chips">
+        <span class="chip">WPA3/SAE</span>
+        <span class="chip">802.11w PMF</span>
+        <span class="chip">802.1X/EAP‑TLS</span>
+        <span class="chip">Client isolation</span>
+        <span class="chip">Guest VLAN</span>
+        <span class="chip">DAI/DHCP snooping</span>
+        <span class="chip">WIDS/WIPS</span>
+        <span class="chip">Channel hygiene</span>
+      </div>
+
+      <div class="panel">
+        <div class="box">
+          <h3>Client</h3>
+          <div class="cfg">
+            <label><input type="checkbox" id="c_vpn" /> ใช้ VPN เมื่ออยู่นอกบ้าน/องค์กร</label>
+            <label><input type="checkbox" id="c_forget" /> ล้างรายการ SSID ที่เคยจำ/ปิด auto-join</label>
+            <label><input type="checkbox" id="c_mfp" /> รองรับ PMF/802.11w</label>
+            <label><input type="checkbox" id="c_cert" /> ตรวจสอบใบรับรอง EAP‑TLS/เซิร์ฟเวอร์ RADIUS</label>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Access point/SSID</h3>
+          <div class="cfg">
+            <label><input type="checkbox" id="a_wpa3" /> เปิด WPA3‑Personal (SAE) หรือ Transition WPA2/WPA3</label>
+            <label><input type="checkbox" id="a_11x" /> ใช้ 802.1X/EAP‑TLS (Enterprise)</label>
+            <label><input type="checkbox" id="a_pmf" /> เปิด PMF/802.11w (Protected Mgmt Frames)</label>
+            <label><input type="checkbox" id="a_isolation" /> Client isolation/AP isolation</label>
+            <label><input type="checkbox" id="a_guest" /> สร้าง Guest SSID + VLAN แยก</label>
+            <label><input type="checkbox" id="a_wpsOff" /> ปิด WPS</label>
+            <label><input type="checkbox" id="a_tkipOff" /> ปิด WEP/TKIP (ใช้ CCMP/AES)</label>
+            <label><input type="checkbox" id="a_hidden" /> ซ่อน SSID (ลดสัญญาณรบกวน, ไม่ใช่การป้องกันแท้)</label>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Network/Infra</h3>
+          <div class="cfg">
+            <label><input type="checkbox" id="n_dhcp" /> DHCP snooping</label>
+            <label><input type="checkbox" id="n_dai" /> Dynamic ARP Inspection</label>
+            <label><input type="checkbox" id="n_wids" /> WIDS/WIPS ตรวจจับ Rogue AP/Evil twin</label>
+            <label><input type="checkbox" id="n_roam" /> 802.11k/v/r (โรมมิ่งฉลาด ลดดีออธ)</label>
+            <label><input type="checkbox" id="n_auto" /> Channel auto/DFS + ลดกำลังส่งเครื่องรบกวน</label>
+            <label><input type="checkbox" id="n_radius" /> ใช้ RADIUS ที่เชื่อถือได้/ใบรับรองถูกต้อง</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="box">
+        <h3>ความพยายามโจมตี (จำลอง)</h3>
+        <div class="cfg">
+          <label><input type="checkbox" id="t_deauth" /> ส่ง deauth/disassoc (ตัดการเชื่อมต่อ)</label>
+          <label><input type="checkbox" id="t_evil" /> ตั้ง Evil twin/SSID ปลอมเพื่อหลอกเชื่อม</label>
+          <label><input type="checkbox" id="t_psk" /> เดาสุ่มรหัสผ่าน/ลองเชื่อมต่อจำนวนมาก</label>
+          <label><input type="checkbox" id="t_wps" /> พยายามใช้ WPS</label>
+          <label><input type="checkbox" id="t_l2" /> พยายาม L2 MITM บน WLAN เดียวกัน</label>
+          <label><input type="checkbox" id="t_dns" /> พยายามแก้ไข DNS ภายในโครงข่ายท้องถิ่น</label>
+          <label><input type="checkbox" id="t_noise" /> สัญญาณรบกวน/แชนเนลไม่สะอาด (โหลดสูง)</label>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="kpi">
+        <div class="card"><h3>พยายามโจมตีถูกบล็อก</h3><div class="num score" id="kBlocked">0</div></div>
+        <div class="card"><h3>พยายามโจมตีสำเร็จ</h3><div class="num bad" id="kSuccess">0</div></div>
+        <div class="card"><h3>ความเสี่ยงผู้ใช้</h3><div class="num" id="kRisk">ต่ำ</div></div>
+        <div class="card"><h3>คะแนนสุขอนามัยเครือข่าย</h3><div class="num score" id="kScore">0</div></div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="title"><h2>คอนโซลเหตุการณ์</h2></div>
+      <div id="log" class="log" aria-live="polite"></div>
+
+      <div class="sep"></div>
+      <div class="title"><h2>แผนภาพทราฟฟิก</h2></div>
+      <div id="flow" class="flow"></div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title"><h2>คำอธิบายผลและคำแนะนำเชิงป้องกัน</h2></div>
+      <div id="explain" class="muted">กด “เริ่มจำลอง” แล้ว “อธิบายผล” เพื่อดูอินไซต์เชิงป้องกัน</div>
+    </section>
+
+    <footer class="wrap">© 2025 Thai Ethical Hacking Labs — เพื่อการศึกษาเชิงป้องกันเท่านั้น</footer>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const log = $('log'), flow = $('flow');
+  const kBlocked=$('kBlocked'), kSuccess=$('kSuccess'), kRisk=$('kRisk'), kScore=$('kScore');
+  const scenario=$('scenario'), band=$('band');
+  const toast = $('toast');
+
+  // Client
+  const c = {
+    vpn: $('c_vpn'), forget:$('c_forget'), mfp:$('c_mfp'), cert:$('c_cert')
+  };
+  // AP/SSID
+  const a = {
+    wpa3:$('a_wpa3'), x11:$('a_11x'), pmf:$('a_pmf'), iso:$('a_isolation'), guest:$('a_guest'),
+    wpsOff:$('a_wpsOff'), tkipOff:$('a_tkipOff'), hidden:$('a_hidden')
+  };
+  // Network
+  const n = {
+    dhcp:$('n_dhcp'), dai:$('n_dai'), wids:$('n_wids'), roam:$('n_roam'), auto:$('n_auto'), radius:$('n_radius')
+  };
+  // Threats
+  const t = {
+    deauth:$('t_deauth'), evil:$('t_evil'), psk:$('t_psk'), wps:$('t_wps'), l2:$('t_l2'), dns:$('t_dns'), noise:$('t_noise')
+  };
+
+  function toastShow(msg){ toast.textContent=msg; toast.style.display='block'; setTimeout(()=> toast.style.display='none', 2200); }
+  function reset(){ log.innerHTML=''; flow.innerHTML=''; kBlocked.textContent='0'; kSuccess.textContent='0'; kRisk.textContent='ต่ำ'; kScore.textContent='0'; lastReport=null; }
+  function write(msg, cls){ const d=document.createElement('div'); if(cls) d.className=cls; d.textContent=msg; log.appendChild(d); log.scrollTop=log.scrollHeight; }
+  function pkt(text, cls){ const s=document.createElement('span'); s.className='pkt '+cls; s.textContent=text; flow.appendChild(s); }
+
+  let lastReport = null;
+
+  function simulate(){
+    reset();
+    const rep = { blocked:0, success:0, score:0, notes:[], effects:[] };
+
+    // Scene baseline
+    if(scenario.value==='cafe'){
+      write('[scene] เครือข่ายสาธารณะ: ความเสี่ยงสูงขึ้น ต้องพึ่งพา PMF/การแยกโซน/VPN', 'warn');
+      rep.score -= 1;
+    } else if(scenario.value==='enterprise'){
+      write('[scene] โครงสร้างองค์กร: มีศักยภาพใช้ 802.1X/EAP‑TLS, WIDS/WIPS, DAI/DHCP snooping', 'ok');
+      rep.score += 2;
+    } else {
+      write('[scene] เครือข่ายบ้าน: ควรใช้ WPA3/ปิด WPS/ปิด TKIP/WEP', 'muted');
+    }
+
+    // Band hygiene
+    if(band.value==='6'){
+      write('[rf] 6 GHz: สะอาดกว่า, ไม่มี legacy clients, ลดรบกวนได้ดี', 'ok'); rep.score += 2; pkt('6 GHz clean', 'good');
+    } else if(band.value==='5'){
+      write('[rf] 5 GHz: สมดุล, เลี่ยงช่องที่ชนกัน, ใช้ DFS อย่างระวัง', 'ok'); rep.score += 1; pkt('5 GHz', 'good');
+    } else {
+      write('[rf] 2.4 GHz: แถวนี้หนาแน่นและชนกันง่าย', 'warn'); pkt('2.4 GHz busy', 'pass');
+    }
+
+    // AP/SSID protections
+    const enterpriseAuth = a.x11.checked && n.radius.checked;
+    const strongPersonal = a.wpa3.checked && a.tkipOff.checked && a.wpsOff.checked;
+
+    if(enterpriseAuth){
+      write('[auth] 802.1X/EAP‑TLS + RADIUS: ตรวจสอบตัวตนด้วยใบรับรอง', 'ok'); rep.score += 3;
+    }
+    if(a.wpa3.checked){
+      write('[auth] WPA3‑SAE: ป้องกันการเดารหัสผ่านจาก handshake แบบดั้งเดิม', 'ok'); rep.score += 2;
+    }
+    if(a.tkipOff.checked){
+      write('[crypto] ปิด WEP/TKIP ใช้ CCMP/AES เท่านั้น', 'ok'); rep.score += 1;
+    }
+    if(a.wpsOff.checked){
+      write('[setup] ปิด WPS: ลดผิวโจมตีจาก PIN ที่คาดเดาได้', 'ok'); rep.score += 2;
+    }
+    if(a.pmf.checked && c.mfp.checked){
+      write('[mgt] PMF/802.11w: ป้องกัน deauth/disassoc ปลอม', 'ok'); rep.score += 3;
+    } else if(a.pmf.checked || c.mfp.checked){
+      write('[mgt] เปิด PMF ฝั่งเดียว: บางอุปกรณ์ยังได้ประโยชน์, แนะนำเปิดทั้งสองฝั่ง', 'warn'); rep.score += 1;
+    }
+    if(a.iso.checked){
+      write('[l2] Client isolation: ป้องกัน L2 MITM/สแกนภายใน WLAN เดียวกัน', 'ok'); rep.score += 2;
+    }
+    if(a.guest.checked){
+      write('[seg] Guest VLAN/SSID แยก: จำกัดสิทธิ์ผู้มาเยือนและ IoT', 'ok'); rep.score += 2;
+    }
+    if(n.dhcp.checked && n.dai.checked){
+      write('[l2] DHCP snooping + DAI: กัน DHCP/ARP ปลอม', 'ok'); rep.score += 2;
+    }
+    if(n.wids.checked){
+      write('[detect] WIDS/WIPS: ตรวจจับ/บรรเทา Rogue AP & Evil twin', 'ok'); rep.score += 2;
+    }
+    if(n.auto.checked){
+      write('[rf] Auto channel/DFS + ปรับกำลังส่ง: ลดการชนช่อง/รบกวน', 'ok'); rep.score += 1;
+    }
+    if(c.forget.checked){
+      write('[client] ล้าง SSID ที่จำ/ปิด auto‑join: ลดโอกาสโดน Evil twin หลอก', 'ok'); rep.score += 1;
+    }
+    if(c.vpn.checked){
+      write('[client] ใช้ VPN: ป้องกันการสอดส่องเนื้อหาบนลิงก์สาธารณะ', 'ok'); rep.score += 2;
+      pkt('VPN tunnel', 'good');
+    }
+    if(c.cert.checked && enterpriseAuth){
+      write('[client] ตรวจใบรับรอง RADIUS/EAP‑TLS: กันการหลอกเข้าสู่ระบบปลอม', 'ok'); rep.score += 2;
+    }
+
+    // Threat simulations
+    // 1) deauth/disassoc
+    if(t.deauth.checked){
+      if(a.pmf.checked && c.mfp.checked){
+        write('[threat] deauth/disassoc ถูก PMF บล็อก', 'ok'); rep.blocked++; pkt('deauth blocked', 'block');
+      } else if(a.pmf.checked || c.mfp.checked){
+        write('[threat] deauth ถูกบรรเทาบางส่วน (PMF ฝั่งเดียว)', 'warn'); rep.blocked++; pkt('deauth partially blocked', 'block');
+      } else {
+        write('[threat] deauth อาจสำเร็จ: การเชื่อมต่อสะดุด', 'bad'); rep.success++; pkt('deauth pass', 'pass');
+      }
+    } else {
+      write('[threat] ไม่มีการพยายาม deauth', 'muted');
+    }
+
+    // 2) Evil twin
+    if(t.evil.checked){
+      if(n.wids.checked && c.forget.checked){
+        write('[threat] Evil twin ถูกตรวจจับ/ผู้ใช้ไม่ auto‑join', 'ok'); rep.blocked+=2; pkt('evil twin detected', 'block');
+      } else if(enterpriseAuth && c.cert.checked){
+        write('[threat] 802.1X/EAP‑TLS + ตรวจใบรับรอง กันเข้าสู่ระบบปลอม', 'ok'); rep.blocked+=2; pkt('eap‑tls verify', 'good');
+      } else {
+        write('[threat] เสี่ยงต่อ Evil twin หากผู้ใช้ auto‑join/ไม่ตรวจใบรับรอง', 'bad'); rep.success++; pkt('evil twin risk', 'pass');
+      }
+    } else {
+      write('[threat] ไม่มีการพยายาม Evil twin', 'muted');
+    }
+
+    // 3) PSK guessing/flood
+    if(t.psk.checked){
+      if(a.wpa3.checked){
+        write('[threat] WPA3‑SAE ลดโอกาสเดา PSK จาก handshake แบบเดิม', 'ok'); rep.blocked++; pkt('sae mitigate', 'block');
+      } else {
+        write('[threat] หากรหัสผ่านอ่อน เสี่ยงถูกเดาสุ่ม/ลองเชื่อมถี่', 'warn'); rep.success++; pkt('psk attempts', 'pass');
+      }
+    } else {
+      write('[threat] ไม่มีการเดา PSK จำนวนมาก', 'muted');
+    }
+
+    // 4) WPS abuse
+    if(t.wps.checked){
+      if(a.wpsOff.checked){
+        write('[threat] WPS ถูกปิด — ความพยายามล้มเหลว', 'ok'); rep.blocked++; pkt('wps off', 'block');
+      } else {
+        write('[threat] เปิด WPS: เพิ่มความเสี่ยงด้านการยืนยันตัวตน', 'bad'); rep.success++; pkt('wps risk', 'pass');
+      }
+    } else {
+      write('[threat] ไม่พยายามใช้ WPS', 'muted');
+    }
+
+    // 5) L2 MITM ภายใน WLAN
+    if(t.l2.checked){
+      if(a.iso.checked){
+        write('[threat] Client isolation กันการ L2 MITM/สแกนภายใน', 'ok'); rep.blocked++; pkt('isolation block', 'block');
+      } else if(c.vpn.checked){
+        write('[threat] L2 MITM ได้ตำแหน่งกลางทาง แต่ payload อยู่ใน VPN', 'warn'); rep.blocked++; pkt('mitm tunneled', 'good');
+      } else if(n.dai.checked){
+        write('[threat] DAI กันการสวมรอย ARP หลายรูปแบบ', 'ok'); rep.blocked++; pkt('dai block', 'block');
+      } else {
+        write('[threat] เสี่ยง L2 MITM ใน WLAN เดียวกัน', 'bad'); rep.success++; pkt('l2 pass', 'pass');
+      }
+    } else {
+      write('[threat] ไม่มีความพยายาม L2 MITM', 'muted');
+    }
+
+    // 6) DNS tamper ใน LAN
+    if(t.dns.checked){
+      if(n.dhcp.checked && n.dai.checked){
+        write('[threat] DHCP snooping + DAI กัน DNS ปลอมที่พึ่งพา DHCP/ARP', 'ok'); rep.blocked++; pkt('dns protected', 'block');
+      } else if(c.vpn.checked){
+        write('[threat] DNS ผ่าน VPN/DoH ของปลายทาง — ปลอดภัยจากการแก้ไขระหว่างทาง', 'ok'); rep.blocked++; pkt('dns tunneled', 'good');
+      } else {
+        write('[threat] DNS ภายในอาจถูกแก้ไขได้หากไม่มีการป้องกัน', 'bad'); rep.success++; pkt('dns risk', 'pass');
+      }
+    } else {
+      write('[threat] ไม่พยายามแก้ไข DNS', 'muted');
+    }
+
+    // 7) สัญญาณรบกวน/ช่องไม่สะอาด
+    if(t.noise.checked){
+      if(n.auto.checked){
+        write('[rf] ระบบเปลี่ยนช่องอัตโนมัติ/ปรับกำลังส่ง ลดผลกระทบสัญญาณรบกวน', 'ok'); rep.blocked++; pkt('rf heal', 'good');
+      } else {
+        write('[rf] แชนเนลชน/สัญญาณรบกวนสูง: ส่งผลต่อประสิทธิภาพ/เสถียรภาพ', 'warn'); rep.success++; pkt('rf noisy', 'pass');
+      }
+    }
+
+    // Scoring & risk
+    const base = 10;
+    const finalScore = Math.max(0, base + rep.score + (a.iso.checked?1:0) + (a.guest.checked?1:0) + (n.wids.checked?1:0) - rep.success*2);
+    const riskLevel = rep.success===0 ? 'ต่ำ' : rep.success<=2 ? 'ปานกลาง' : 'สูง';
+
+    kBlocked.textContent = String(rep.blocked);
+    kSuccess.textContent = String(rep.success);
+    kScore.textContent = String(finalScore);
+    kRisk.textContent = riskLevel;
+
+    write('', 'muted');
+    write(`summary: blocked=${rep.blocked}, success=${rep.success}, risk=${riskLevel}, hygiene_score=${finalScore}`, 'muted');
+
+    lastReport = {
+      scenario: scenario.value, band: band.value,
+      toggles: {c, a, n, t: Object.fromEntries(Object.entries(t).map(([k,el])=>[k,el.checked]))},
+      blocked: rep.blocked, success: rep.success, score: finalScore, risk: riskLevel
+    };
+
+    toastShow('จำลองเหตุการณ์เสร็จแล้ว');
+  }
+
+  function explain(){
+    if(!lastReport){ toastShow('ยังไม่มีผลลัพธ์ ให้กด “เริ่มจำลอง” ก่อน'); return; }
+    const r = lastReport;
+    const tips = [];
+
+    // Auth & crypto
+    tips.push((a.wpa3.checked ? 'เปิด WPA3‑SAE แล้ว: รักษาไว้ และใช้รหัสผ่านแข็งแรง' : 'เปิด WPA3‑SAE (หรือ Transition) และใช้รหัสผ่านที่คาดเดายาก'));
+    tips.push((a.tkipOff.checked ? 'ปิด TKIP/WEP แล้ว: ใช้ CCMP/AES เท่านั้น' : 'ปิด TKIP/WEP เพื่อหลีกเลี่ยงการเข้ารหัสล้าสมัย'));
+    tips.push((a.wpsOff.checked ? 'ปิด WPS แล้ว' : 'ปิด WPS เพื่อปิดผิวโจมตีจาก PIN'));
+
+    // PMF/Management frames
+    tips.push((a.pmf.checked && c.mfp.checked ? 'PMF/802.11w เปิดทั้งฝั่ง AP และ Client' : 'เปิด PMF/802.11w ทั้งสองฝั่งเพื่อกัน deauth/disassoc ปลอม'));
+
+    // Enterprise
+    if(a.x11.checked){
+      tips.push(n.radius.checked ? 'ตรวจใบรับรอง RADIUS/EAP‑TLS และแจกจ่าย CA ให้ผู้ใช้' : 'ใช้ RADIUS/ใบรับรองที่เชื่อถือได้สำหรับ 802.1X/EAP‑TLS');
+    }
+
+    // Segmentation & L2 protections
+    tips.push((a.iso.checked ? 'เปิด Client isolation: ลด L2 MITM' : 'เปิด Client isolation เพื่อลดความเสี่ยง L2'));
+    tips.push((a.guest.checked ? 'Guest VLAN/SSID แยก: ใช้ต่อไป' : 'เพิ่ม Guest VLAN/SSID แยกสำหรับผู้มาเยือน/IoT'));
+    tips.push((n.dhcp.checked && n.dai.checked ? 'DHCP snooping + DAI เปิดใช้แล้ว' : 'เปิด DHCP snooping + DAI เพื่อกัน DHCP/ARP ปลอม'));
+    tips.push((n.wids.checked ? 'WIDS/WIPS เปิดใช้: ตรวจ Rogue AP/Evil twin' : 'ใช้ WIDS/WIPS หรือฟีเจอร์ AP ที่ตรวจจับ Rogue AP'));
+
+    // Client hygiene
+    tips.push((c.forget.checked ? 'ผู้ใช้ไม่ auto‑join SSID แปลกหน้า' : 'ให้ผู้ใช้ปิด auto‑join และล้าง SSID ที่เคยจำ'));
+    tips.push((c.vpn.checked ? 'ใช้ VPN บนเครือข่ายสาธารณะ' : 'ใช้ VPN เมื่ออยู่นอกบ้าน/องค์กร'));
+
+    // RF hygiene
+    tips.push((n.auto.checked ? 'Auto channel/DFS กำลังทำงาน' : 'ตั้งค่าแชนเนลให้ไม่ชน, ใช้ 5/6 GHz หากเป็นไปได้'));
+
+    const html = `
+      <h4 style="margin:6px 0 8px">สรุปผล</h4>
+      <ul style="margin:0 0 8px 18px">
+        <li><strong>ฉาก:</strong> ${r.scenario}, <strong>ย่าน:</strong> ${r.band} GHz</li>
+        <li><strong>บล็อกได้:</strong> ${r.blocked}, <strong>สำเร็จ:</strong> ${r.success}</li>
+        <li><strong>ความเสี่ยง:</strong> ${r.risk}, <strong>คะแนนสุขอนามัย:</strong> ${r.score}</li>
+      </ul>
+      <div class="sep"></div>
+      <h4 style="margin:6px 0 8px">คำแนะนำเชิงป้องกัน</h4>
+      <ul style="margin:0 0 10px 18px">
+        ${tips.map(t=> `<li><strong>ข้อเสนอแนะ:</strong> ${t}</li>`).join('')}
+      </ul>
+      <div class="note">หลักการ: ตั้งค่าการยืนยันตัวตน/การเข้ารหัสให้ทันสมัย (WPA3/802.1X), ปกป้องเฟรมจัดการ (PMF), แยกโซน/ลดสิทธิ์, ปิดฟีเจอร์เสี่ยง (WPS/TKIP), รักษาความสะอาดสัญญาณ และอบรมผู้ใช้ไม่เชื่อม SSID แปลก</div>
+    `;
+    $('explain').innerHTML = html;
+    toastShow('แสดงคำอธิบายผลแล้ว');
+  }
+
+  function setPreset(){
+    // reset
+    [...document.querySelectorAll('input[type="checkbox"]')].forEach(el=> el.checked=false);
+
+    if(scenario.value==='home'){
+      a.wpa3.checked = true; a.tkipOff.checked = true; a.wpsOff.checked = true; a.pmf.checked = true; a.iso.checked = true;
+      n.auto.checked = true;
+      band.value = '5';
+      t.deauth.checked = true; t.wps.checked = true; t.psk.checked = true; t.l2.checked = true;
+    } else if(scenario.value==='cafe'){
+      a.wpa3.checked = true; a.pmf.checked = true; a.iso.checked = true; a.guest.checked = true; n.wids.checked = true; n.dhcp.checked = true; n.dai.checked = true; n.auto.checked = true;
+      c.vpn.checked = true; c.forget.checked = true;
+      band.value = '5';
+      t.deauth.checked = true; t.evil.checked = true; t.l2.checked = true; t.dns.checked = true; t.noise.checked = true;
+    } else { // enterprise
+      a.x11.checked = true; n.radius.checked = true; a.pmf.checked = true; a.iso.checked = true; a.guest.checked = true; n.wids.checked = true; n.dhcp.checked = true; n.dai.checked = true; n.roam.checked = true; n.auto.checked = true; a.tkipOff.checked = true; a.wpsOff.checked = true;
+      c.mfp.checked = true; c.cert.checked = true;
+      band.value = '6';
+      t.deauth.checked = true; t.evil.checked = true; t.l2.checked = true; t.dns.checked = true;
+    }
+  }
+
+  $('btnRun').addEventListener('click', simulate);
+  $('btnExplain').addEventListener('click', explain);
+  $('btnClear').addEventListener('click', ()=>{ reset(); toastShow('ล้างคอนโซลแล้ว'); });
+
+  scenario.addEventListener('change', setPreset);
+  setPreset();
+  setTimeout(()=> toastShow('เลือกฉาก + ตั้งค่าความปลอดภัย แล้วกด “เริ่มจำลอง”'), 600);
+})();
+</script>
+</body>
+</html>

@@ -204,40 +204,6 @@ corners.forEach(corner => {
   }
 });
 
-  (function(){
-    let activePointerId = -1, sx = 0, sy = 0, sw = 0, sh = 0;
-    const onPointerDown = e => {
-      e.preventDefault();
-      activePointerId = e.pointerId;
-      sx = e.clientX; sy = e.clientY;
-      const r = panel.getBoundingClientRect();
-      sw = r.width; sh = r.height;
-      try { resizer.setPointerCapture(activePointerId); } catch(e){}
-      WIN.addEventListener('pointermove', onPointerMove, { passive: false });
-      WIN.addEventListener('pointerup', onPointerUp, { once: true });
-      WIN.addEventListener('pointercancel', onPointerUp, { once: true });
-    };
-    const onPointerMove = e => {
-      if (e.pointerId !== activePointerId) return;
-      e.preventDefault();
-      const dx = e.clientX - sx, dy = e.clientY - sy;
-      const left = parseFloat(panel.style.left) || panel.getBoundingClientRect().left;
-      const maxW = Math.max(200, Math.min(WIN.innerWidth - left, Math.round(sw + dx)));
-      const maxH = Math.max(150, Math.min(WIN.innerHeight - (parseFloat(panel.style.top)||panel.getBoundingClientRect().top), Math.round(sh + dy)));
-      panel.style.width = maxW + 'px';
-      panel.style.height = maxH + 'px';
-      panel.style.right = 'auto';
-      panel.style.bottom = 'auto';
-    };
-    const onPointerUp = e => {
-      if (e.pointerId !== activePointerId) return;
-      activePointerId = -1;
-      try { resizer.releasePointerCapture(e.pointerId); } catch(e){}
-      WIN.removeEventListener('pointermove', onPointerMove);
-    };
-    resizer.addEventListener('pointerdown', onPointerDown);
-  })();
-
   const applyTheme = t => {
       if (!t) return;
       Object.keys(t).forEach(k => k !== 'name' && host.style.setProperty(`--${k}`, t[k]));

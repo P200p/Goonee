@@ -113,3 +113,8 @@ body {
 .terminal-yellow { color: #ffaa00; }
 .terminal-blue { color: #0099ff; }
 .terminal-purple { color: #cc66ff; }
+
+/* Fallback positioning for the background canvas and modal z-index.
+    This ensures the canvas stays behind content even if Tailwind doesn't load. */
+#matrix-canvas { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; pointer-events: none; }
+#lab-modal { z-index: 50; }

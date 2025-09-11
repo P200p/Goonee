@@ -130,7 +130,7 @@
 +  // Small contract: automatically add API key header; learners can edit here
 +  const headers = new Headers(opts.headers || {});
 +  // Default API key — learners should try changing this to break auth
-+  headers.set('x-api-key', 'key-demo-123');
++  headers.set('x-api-key', '<DEMO_KEY>');
 +  headers.set('Content-Type', 'application/json');
 +
 +  const controller = new AbortController();
@@ -243,8 +243,8 @@
 +  },
 +  showHeaders: {
 +    title: 'Show current API headers',
-+    code: `// Show headers prepared by apiFetch\nconst h = new Headers(); h.set('x-api-key','key-demo-123'); console.log(Object.fromEntries(h.entries()));`,
-+    run: async ()=>{ const h = new Headers(); h.set('x-api-key','key-demo-123'); $('scriptConsole').textContent = JSON.stringify(Object.fromEntries(h.entries()), null, 2); }
++    code: `// Show headers prepared by apiFetch\nconst h = new Headers(); h.set('x-api-key','<DEMO_KEY>'); console.log(Object.fromEntries(h.entries()));`,
++    run: async ()=>{ const h = new Headers(); h.set('x-api-key','<DEMO_KEY>'); $('scriptConsole').textContent = JSON.stringify(Object.fromEntries(h.entries()), null, 2); }
 +  },
 +  interceptModify: {
 +    title: 'Intercept next request and modify header',

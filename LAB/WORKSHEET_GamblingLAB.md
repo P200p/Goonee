@@ -15,7 +15,7 @@ Gambling API Lab — Worksheet
 
 ส่วนที่ 3 — DevTools Intercept (Intermediate)
 1. เปิด "Intercept outgoing requests" แล้วกด Spin
-2. เลือกคำขอที่โผล่ในรายการ แล้วแก้ header `x-api-key` เป็น `key-demo-123` (ถ้ายังไม่ใช่)
+2. เลือกคำขอที่โผล่ในรายการ แล้วแก้ header `x-api-key` เป็น `<DEMO_KEY>` (ถ้ายังไม่ใช่)
 3. กด "Send modified" แล้วบันทึกผลลัพธ์
 
 ส่วนที่ 4 — Challenge (Optional, Advanced)

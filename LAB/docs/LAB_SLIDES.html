@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Slides: Gambling API Lab — Workshop</title>
+  <style>
+    html,body{height:100%;margin:0;font-family:Segoe UI,Arial,Helvetica,sans-serif;background:#111;color:#eee}
+    .slide{display:none;padding:32px;box-sizing:border-box;height:100%}
+    .slide.active{display:block}
+    h1{margin:0 0 12px}
+    .nav{position:fixed;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between}
+    button{background:#0b66ff;border:0;color:#fff;padding:10px 14px;border-radius:6px}
+    .note{color:#cfcfcf;font-size:14px;margin-top:12px}
+    .small{font-size:13px;color:#aaa}
+    pre{background:#000;padding:10px;border-radius:6px;color:#0f0;max-height:220px;overflow:auto}
+  </style>
+</head>
+<body>
+  <section id="s1" class="slide active">
+    <h1>Gambling API Lab — Workshop</h1>
+    <p>เป้าหมาย: ดึงดูดผู้เรียนด้วยการจำลอง "แฮ็ก" และสคริปต์ตัวอย่าง เพื่อให้เขามีแรงจูงใจมาเรียน JavaScript</p>
+    <ul>
+      <li>รู้จัก fetch, headers, payload</li>
+      <li>ใช้ DevTools Simulator เพื่อดักและแก้คำขอ</li>
+      <li>รันสคริปต์ตัวอย่างจาก Library และแกะดูโค้ด</li>
+    </ul>
+    <p class="note">ใช้ปุ่มขวา/ซ้าย หรือปัด (มือถือ) เพื่อเลื่อนสไลด์</p>
+  </section>
+
+  <section id="s2" class="slide">
+    <h1>แผง DevTools Simulator</h1>
+    <p>ฟีเจอร์สำคัญ:</p>
+    <ol>
+      <li>Intercept outgoing requests</li>
+      <li>Edit headers/body</li>
+      <li>Replay หรือ Send modified</li>
+      <li>Forge requests (ทดลองปลอมคำขอ)</li>
+    </ol>
+    <p class="note">สาธิต: เปิด Intercept แล้วกด Spin ดูคำขอโผล่ในรายการ</p>
+  </section>
+
+  <section id="s3" class="slide">
+    <h1>Scripts Library — teaching by example</h1>
+    <p>แนวทาง: ให้ผู้เรียนรันสคริปต์ตัวอย่างก่อน แล้วให้ดูโค้ด (Show code) เพื่อเรียนรู้แนวคิด</p>
+    <p>ตัวอย่างโค้ด (AutoSpin แบบย่อ):</p>
+    <pre>(async ()=>{ for(let i=0;i<5;i++){ await apiFetch('/api/spin', {method:'POST', body: JSON.stringify({username:'player1',bet:10})}); await new Promise(r=>setTimeout(r,400)); }})();</pre>
+    <p class="small">ชี้: เปลี่ยน bet, ดู response, เพิ่ม retry — step-by-step</p>
+  </section>
+
+  <section id="s4" class="slide">
+    <h1>Workshop Tasks (สรุป)</h1>
+    <ol>
+      <li>รัน AutoSpin แล้วดูผลใน simulated console</li>
+      <li>ใช้ DevTools Simulator ดักคำขอแล้วแก้ header เป็นค่าอื่น (ลองดู 401 → แก้)</li>
+      <li>แก้สคริปต์ให้เพิ่ม timeout/retry</li>
+      <li>ดาวน์โหลด history เป็น CSV แล้วอธิบายข้อมูล</li>
+    </ol>
+    <p class="note">ส่งแบบฝึกหัด: ทำ worksheet ให้เสร็จ (ดูไฟล์ WORKSHEET_GamblingLAB.md)</p>
+  </section>
+
+  <div class="nav">
+    <button id="prev">◀ Prev</button>
+    <div class="navCenter"><button id="help">Notes</button><span class="small">Slide <span id="idx">1</span> / 4</span></div>
+    <button id="next">Next ▶</button>
+  </div>
+
+  <script>
+    // navCenter style
+    const s = document.createElement('style'); s.textContent = '.navCenter{display:flex;gap:8px;align-items:center}'; document.head.appendChild(s);
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    let i = 0; function show(){ slides.forEach(s=>s.classList.remove('active')); slides[i].classList.add('active'); document.getElementById('idx').textContent = i+1; }
+    document.getElementById('next').addEventListener('click', ()=>{ i = Math.min(slides.length-1, i+1); show(); });
+    document.getElementById('prev').addEventListener('click', ()=>{ i = Math.max(0, i-1); show(); });
+    document.addEventListener('keydown', e=>{ if (e.key==='ArrowRight') { i=Math.min(slides.length-1,i+1); show(); } if (e.key==='ArrowLeft') { i=Math.max(0,i-1); show(); }});
+  </script>
+</body>
+</html>

@@ -23,9 +23,39 @@
     .kiwi-link { display: inline-flex; align-items: center; gap: 8px; background-color: #252525; color: #fff; border: 1px solid #444; }
     .kiwi-link img { width: 20px; height: 20px; border-radius: 4px; }
     .go-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-size:14px;z-index:10001;opacity:0;transition:opacity .18s ease}
+    /* ปรับ class ให้ตรงกับหน้านี้ (guide.html) */
+    body { background: radial-gradient(1200px 600px at 10% -10%, #112 0%, #0a0a0a 40%), linear-gradient(135deg, #0a0a0a 0%, #121225 50%, #0c0c1a 100%); font-family: 'Orbitron', monospace; color:#00ff41; min-height:100vh; overflow-x:hidden; }
+    pre.code{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .go-mcol { position:absolute; top:-100px; font-size:13px; color:#00ff41; opacity:.6; animation: go-fall linear infinite; }
+    @keyframes go-fall { 0%{ transform:translateY(-100px); opacity:1;} 100%{ transform:translateY(100vh); opacity:0;} }
+    .go-header { text-align:center; padding:22px 0 16px; border-bottom:2px solid #00ff41; margin-bottom:24px; background:rgba(0,0,0,.72); backdrop-filter: blur(10px); position:relative; z-index:1; }
+    .go-title { font-size:1.9rem; font-weight:900; text-shadow:0 0 18px #00ff41; letter-spacing:1.8px; animation: go-glow 2s ease-in-out infinite alternate; margin:0 0 6px; }
+    @keyframes go-glow { from{ text-shadow:0 0 18px #00ff41;} to{ text-shadow:0 0 28px #00ff41, 0 0 38px #00ff41;} }
+    .go-sub { font-size:.95rem; color:#00ccff; opacity:.85; }
+
+    .container { display:grid; grid-template-columns: 1fr; gap:22px; padding: 0 16px 40px; max-width:900px; margin: 0 auto; position:relative; z-index:1; }
+    .card { perspective: 900px; }
+    .card { background: rgba(0,0,0,.9); border:2px solid #00ff41; border-radius:16px; padding:14px; position:relative; overflow:hidden; box-shadow: 0 0 26px rgba(0,255,65,.18); transition: transform .25s, box-shadow .25s, border-color .25s; }
+    .card:hover { transform: rotateX(2deg) rotateY(-2deg) translateY(-2px); border-color:#ffd700; box-shadow: 0 0 46px rgba(255,215,0,.32); }
+
+    .header-img { width:100%; aspect-ratio: 16 / 9; border-radius:12px; overflow:hidden; border:2px solid #00ff41; background:#090909; box-shadow: inset 0 0 25px #00ff4188; margin-bottom: 16px; }
+    .sub { font-size:1.1em; color:#ffd166; opacity:.95; }
+    .note { opacity:.95; font-size:.95em; text-shadow:0 1px 2px rgba(0,0,0,.6) }
+
+    pre,code { background:rgba(22,8,226,.18); border:1px solid #00ff26; border-radius:10px; padding:10px; display:block; white-space:pre-wrap; word-break:break-word; color:#d7fffd; font-family: 'Courier New', monospace; }
+    a.btn { display:inline-block; margin:6px 6px 6px 0; padding:10px 14px; background:#16a34a; color:#fff; border-radius:10px; text-decoration:none; font-weight:600; text-shadow:0 1px 1px rgba(0,0,0,.45) }
+    a.btn.alt { background:#08d1ff; color:#001b44 }
+    .kiwi-link { display: inline-flex; align-items: center; gap: 8px; background-color: #252525; color: #fff; border: 1px solid #444; }
+    .kiwi-link img { width: 20px; height: 20px; border-radius: 4px; }
+
+    .go-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-size:14px;z-index:10001;opacity:0;transition:opacity .18s ease}
+
+    @media (max-width: 768px) {
+      .go-title { font-size:1.5rem; }
+      .container { padding: 0 10px 32px; }
+      .header-img { aspect-ratio: 16 / 10; }
+    }
   </style>
-</head>
-<body>
   <div class=container>
     <img class="header-img" src="Sharkkadaw.jpg" alt="Goonee Guide" />
     <h1>คู่มือ: Goonee Console</h1>
@@ -118,45 +148,85 @@
 
     </div>
 
+    <div class="card">
+      <h2>Dev tools: Eruda</h2>
+      <p class="note">โหลด Eruda (mobile console) แบบ on-demand — กดปุ่มเพื่อโหลดและเปิด</p>
+      <pre><code id="bm-eruda">javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda';document.body.appendChild(s);s.onload=function(){eruda.init();};})();</code></pre>
+      <p>
+        <a class="btn" href="#" data-copy="#bm-eruda">คัดลอก Eruda Bookmarklet</a>
+        <a class="btn alt" href="#" id="btn-eruda">เปิด Eruda</a>
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Userscript: goonee console2 loader</h2>
+      <p class="note">สคริปต์สำหรับติดตั้งเป็น Userscript (Tampermonkey / Greasemonkey)</p>
+      <pre><code id="bm-userscript">// ==UserScript==
+// @name         goonee console2 loader
+// @namespace    x: @omgnhoy
+// @description  ของเล่น Dev/เครื่องมือใช้สอย
+// @author       x: @omgnhoy
+// @license      MIT
+// @match        *://*/*
+// @version      1.0
+// @homepage     https://goonee.netlify.app
+// @grant        none
+// @require      https://goonee.netlify.app/console2.js
+// ==/UserScript==
+/* ใส่โค้ดส่วนปฏิบัติการไว้ด้านล่าง (ถ้าจำเป็น) */ 
+(function(){ 
+    let s = document.createElement('script'); 
+    // ถ้าอยากข้าม cache ให้เพิ่มพารามิเตอร์ timestamp
+    s.src = 'https://goonee.netlify.app/console2.js?t=' + Date.now();
+    document.body.appendChild(s);
+})();</code></pre>
+      <p>
+        <a class="btn" href="#" data-copy="#bm-userscript">คัดลอก Userscript</a>
+      </p>
+    </div>
+
     <p><a class='btn' href='https://goonee.netlify.app'>← กลับหน้า Home</a></p>
   </div>
 
   <script>
     (function(){
+      /* small UI helpers */
       function showToast(msg){
         const el=document.createElement('div');
-        el.className='go-toast';
-        el.textContent=msg;
-        document.body.appendChild(el);
-        requestAnimationFrame(()=> { el.style.opacity='1'; });
+        el.className='go-toast'; el.textContent=msg; document.body.appendChild(el);
+        requestAnimationFrame(()=> el.style.opacity='1');
         setTimeout(()=> { el.style.opacity='0'; setTimeout(()=>el.remove(), 220); }, 1400);
       }
 
       async function copyText(t){
-        t = String(t||'').trim();
-        if(!t) return false;
-        try{
-          if (navigator.clipboard && window.isSecureContext){
-            await navigator.clipboard.writeText(t);
-            return true;
-          }
-        } catch(e) { /* fallback */ }
-        try {
-          const ta = document.createElement('textarea');
-          ta.value=t; ta.style.position='fixed'; ta.style.opacity='0';
-          document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-          ta.remove();
-          return true;
-        } catch(e) { return false; }
+        t = String(t||'').trim(); if(!t) return false;
+        try{ if (navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(t); return true; } }catch(e){}
+        try{ const ta = document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); return true; }catch(e){ return false; }
       }
 
       function runBookmarkletText(text){
         if (!text) return;
         try{
-          const code = String(text).trim();
-          if (!code) return;
-          const src = code.startsWith('javascript:') ? code.slice(11) : code;
-          (new Function(src))();
+          const code = String(text).trim(); if (!code) return;
+          const body = code.startsWith('javascript:') ? code.slice(11) : code;
+          // try to detect pattern where the bookmarklet creates a script element and sets s.src
+          const m = body.match(/s\.src\s*=\s*['"]([^'"]+)['"]/i);
+          if (m && m[1]){
+            let url = m[1];
+            // if original code appended Date.now(), add timestamp to avoid cache
+            if (/Date\.now\(\)/.test(body)){
+              if (/[?&]t=$/.test(url) || /=$/.test(url)) url = url + Date.now();
+              else if (url.indexOf('?')===-1) url = url + '?t=' + Date.now();
+              else url = url + '&t=' + Date.now();
+            }
+            const s = document.createElement('script'); s.src = url; s.async = true;
+            s.onload = function(){ showToast('สคริปต์โหลดแล้ว'); try{ if (typeof toggleConsole === 'function') toggleConsole(); else if (window.toggleConsole) window.toggleConsole(); }catch(e){} };
+            s.onerror = function(){ showToast('โหลดสคริปต์ไม่สำเร็จ'); };
+            document.body.appendChild(s);
+            return;
+          }
+          // fallback: execute original snippet
+          (new Function(body))();
         }catch(err){ console.error('Bookmarklet run error', err); alert('รันโค้ดไม่สำเร็จ: ' + (err.message || err)); }
       }
 
@@ -166,52 +236,57 @@
             e.preventDefault();
             const sel = copyBtn.getAttribute('data-copy');
             const el = sel && document.querySelector(sel);
-            if(el && await copyText(el.textContent)) {
-                showToast('คัดลอกแล้ว');
-            } else {
-                showToast('คัดลอกไม่สำเร็จ');
-            }
+            if(el && await copyText(el.textContent)) showToast('คัดลอกแล้ว'); else showToast('คัดลอกไม่สำเร็จ');
         }
       });
 
       const testBtn2 = document.getElementById('btn-test-console2');
-      if (testBtn2) {
-          testBtn2.addEventListener('click', function(e) {
-              e.preventDefault();
-              const codeEl = document.getElementById('bm-console2');
-              if (codeEl) {
-                  runBookmarkletText(codeEl.textContent);
-              }
-          });
-      }
+      if (testBtn2) testBtn2.addEventListener('click', function(e){ e.preventDefault(); const codeEl = document.getElementById('bm-console2'); if (codeEl) runBookmarkletText(codeEl.textContent); });
 
-      // handler for buttons with data-run (execute bookmarklet snippet)
       document.addEventListener('click', function(e){
-        const runBtn = e.target.closest('[data-run]');
-        if (!runBtn) return;
-        e.preventDefault();
-        const sel = runBtn.getAttribute('data-run');
-        const el = sel && document.querySelector(sel);
-        if (el) runBookmarkletText(el.textContent);
+        const runBtn = e.target.closest('[data-run]'); if (!runBtn) return; e.preventDefault(); const sel = runBtn.getAttribute('data-run'); const el = sel && document.querySelector(sel); if (el) runBookmarkletText(el.textContent);
       });
 
-      // Random theme application on each page load
+      // Better random theme generator with more variants and optional persistence
       (function(){
-        // simple theme variants: each is a map of CSS variables to apply to body
         const themes = [
-          { '--bg': '#0b1020', '--accent': '#00e5ff', '--muted': '#d7fffd' },
-          { '--bg': '#07120b', '--accent': '#00ff41', '--muted': '#bfffd8' },
-          { '--bg': '#12040f', '--accent': '#ff7edb', '--muted': '#ffd7f0' },
-          { '--bg': '#07112a', '--accent': '#8ad1ff', '--muted': '#dff4ff' }
+          { name:'neon-cyan', bodyBg:'radial-gradient(1200px 600px at 10% -10%, #112 0%, #0a0a0a 40%), linear-gradient(135deg, #0a0a0a 0%, #121225 50%, #0c0c1a 100%)', accent:'#00ff41', title:'#00e5ff' },
+          { name:'green-marine', bodyBg:'linear-gradient(135deg,#07120b,#042023)', accent:'#00ff41', title:'#8ad1ff' },
+          { name:'magenta', bodyBg:'linear-gradient(135deg,#12040f,#2b0037)', accent:'#ff7edb', title:'#ffd7f0' },
+          { name:'deep-blue', bodyBg:'linear-gradient(135deg,#07112a,#001a3a)', accent:'#8ad1ff', title:'#00ccff' },
+          { name:'solar', bodyBg:'linear-gradient(135deg,#2b0a00,#1a1a0b)', accent:'#ffd166', title:'#ffb84d' }
         ];
         try{
-          const pick = themes[Math.floor(Math.random()*themes.length)];
+          const key = 'goonee:lastTheme';
+          let pick = null;
+          // prefer a new random pick each load; to avoid repeats, try up to 6 times
+          const last = (function(){ try{ return localStorage.getItem(key); }catch(e){return null;} })();
+          for (let i=0;i<6;i++){
+            const candidate = themes[Math.floor(Math.random()*themes.length)];
+            if (!last || candidate.name !== last) { pick = candidate; break; }
+          }
+          if (!pick) pick = themes[Math.floor(Math.random()*themes.length)];
+          // apply
+          document.body.style.background = pick.bodyBg;
           const root = document.documentElement;
-          Object.keys(pick).forEach(k=> root.style.setProperty(k, pick[k]));
-          // also apply into inline body background fallback
-          if (pick['--bg']) document.body.style.backgroundColor = pick['--bg'];
-        }catch(e){/* ignore */}
+          root.style.setProperty('--accent', pick.accent);
+          root.style.setProperty('--title-color', pick.title);
+          try{ localStorage.setItem(key, pick.name); }catch(e){}
+        }catch(e){ /* ignore */ }
       })();
+
+      // Eruda loader
+      const erudaBtn = document.getElementById('btn-eruda');
+      if (erudaBtn) erudaBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        // if already loaded, toggle
+        if (window.eruda){ try{ window.eruda.init(); window.eruda.show(); showToast('Eruda เปิดแล้ว'); }catch(e){ showToast('Eruda ready'); } return; }
+        const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/eruda'; s.async=true;
+        s.onload = function(){ try{ if (window.eruda){ window.eruda.init(); window.eruda.show(); showToast('Eruda เปิดแล้ว'); } }catch(e){ showToast('โหลด Eruda เสร็จ'); } };
+        s.onerror = function(){ showToast('โหลด Eruda ไม่สำเร็จ'); };
+        document.body.appendChild(s);
+      });
+
     })();
   </script>
 </body>

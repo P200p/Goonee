@@ -1,0 +1,11 @@
+{
+  "name": "Gambling API Lab",
+  "short_name": "GambleLab",
+  "start_url": "./GamblingAPI_lab.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b66ff",
+  "icons": [
+    {"src":"/docs/icon-192.png","sizes":"192x192","type":"image/png"}
+  ]
+}

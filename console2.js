@@ -17,18 +17,30 @@
 
   const THEMES = [
     { name: 'Matrix', accent: '#00ff40d7', accent2: '#00ec3bc9', accentText: '#001affff', bgPanel: 'rgba(0, 0, 0, 0.47)', bgInput: '#002200c2', bgOutput: '#025a3db6', status: '#00ff83' },
-    { name: 'Cyan', accent: '#00e1ffcb', accent2: '#0077ffdc', accentText: '#ff0000ff', bgPanel: 'rgba(2, 8, 23, 0.63)', bgInput: '#013566b7', bgOutput: '#03305cb4', status: '#6dd6ff' },
-    { name: 'Flame', accent: '#ff9900c2', accent2: '#ff5500be', accentText: '#ff0000bc', bgPanel: 'rgba(20, 10, 0, 0.56)', bgInput: '#4d3501', bgOutput: '#4e3700b6', status: '#ffcc66' },
+    { name: 'Cyan', accent: '#00e1ffcb', accent2: '#0077ffdc', accentText: '#ff0000ff', bgPanel: 'rgba(0, 33, 117, 0.63)', bgInput: '#013566b7', bgOutput: '#03305cb4', status: '#6dd6ff' },
+    { name: 'Flame', accent: '#ff9900c2', accent2: '#ff5500be', accentText: '#ff0000bc', bgPanel: 'rgba(20, 10, 0, 0.56)', bgInput: '#4d3501', bgOutput: '#4e0017b6', status: '#ffcc66' },
     { name: 'Matrix2', accent: '#09ff00ff', accent2: '#23ec00ff', accentText: '#001affff', bgPanel: 'rgba(109, 4, 4, 1)', bgInput: '#002200ff', bgOutput: '#025a3dff', status: '#00ff83' },
     { name: 'Cyan2', accent: '#3700ffff', accent2: '#ff5100ff', accentText: '#ff0000ff', bgPanel: 'rgba(26, 107, 1, 1)', bgInput: '#011066ff', bgOutput: '#03305cb4', status: '#6dd6ff' },
-    { name: 'Flame2', accent: '#ff0000ff', accent2: '#3cff00ff', accentText: '#ff0000ff', bgPanel: 'rgba(20, 10, 0, 0.56)', bgInput: '#563b01ff', bgOutput: '#443208b6', status: '#0feb3bff' },
-    { name: 'Matrix3', accent: '#00ff40d7', accent2: '#00ec3bc9', accentText: '#001affff', bgPanel: 'rgba(0, 0, 0, 0.47)', bgInput: '#002200c2', bgOutput: '#025a3db6', status: '#00ff83' },
-    { name: 'Cyan3', accent: '#1aff00cb', accent2: '#0077ffdc', accentText: '#ff0000a3', bgPanel: 'rgba(2, 23, 7, 0.63)', bgInput: '#013566b7', bgOutput: '#03305cb4', status: '#6dd6ff' },
+    { name: 'Flame2', accent: '#ff0000ff', accent2: '#3cff00ff', accentText: '#ff0000ff', bgPanel: 'rgba(20, 10, 0, 0.56)', bgInput: '#e9a30dff', bgOutput: '#443208b6', status: '#0feb3bff' },
+    { name: 'Matrix3', accent: '#00ff40d7', accent2: '#00ec3bc9', accentText: '#001affff', bgPanel: 'rgba(0, 0, 0, 0.47)', bgInput: '#002200c2', bgOutput: '#025a3db6', status: '#ff0090ff' },
+    { name: 'Cyan3', accent: '#1aff00cb', accent2: '#0077ffdc', accentText: '#ff0000a3', bgPanel: 'rgba(2, 23, 7, 0.63)', bgInput: '#013566b7', bgOutput: '#5c0333b4', status: '#836dffff' },
     { name: 'Flame3', accent: '#00ff08c2', accent2: '#ff5500be', accentText: '#ff0000bc', bgPanel: 'rgba(10, 127, 20, 0.76)', bgInput: '#014d0eff', bgOutput: '#4e3700b6', status: '#f8400dff' },
-    { name: 'Matrix4', accent: '#0091ffb8', accent2: '#23ec00ff', accentText: '#00ffc8ff', bgPanel: 'rgba(109, 4, 4, 1)', bgInput: '#002200ff', bgOutput: '#025a3dff', status: '#33ff00ff' },
-    { name: 'Cyan4', accent: '#3700ffff', accent2: '#ff00ddff', accentText: '#ff0000ff', bgPanel: 'rgba(17, 1, 107, 1)', bgInput: '#016603ff', bgOutput: '#05284bb4', status: '#0e20deff' },
-    { name: 'Flame4', accent: '#ff0000ff', accent2: '#ff0000ff', accentText: '#ff0000ff', bgPanel: 'rgba(192, 104, 16, 0.56)', bgInput: '#563b01ff', bgOutput: '#ce9309b6', status: '#ffcc66' },
-    { name: 'Pink', accent: '#ff3d7ecb', accent2: '#57f833d5', accentText: '#ff0000ff', bgPanel: 'rgba(1, 43, 117, 0.79)', bgInput: '#810038b7', bgOutput: '#470120ff', status: '#ff0059ff' }
+    { name: 'Matrix4', accent: '#0091ffb8', accent2: '#23ec00ff', accentText: '#00ffc8ff', bgPanel: 'rgba(214, 8, 8, 1)', bgInput: '#002200ff', bgOutput: '#02035aff', status: '#33ff00ff' },
+    { name: 'Cyan4', accent: '#3700ffff', accent2: '#ff00ddff', accentText: '#98c70dff', bgPanel: 'rgba(17, 1, 107, 1)', bgInput: '#17cd1aff', bgOutput: '#05284bb4', status: '#0e20deff' },
+    { name: 'Flame4', accent: '#ff0000ff', accent2: '#ff0000ff', accentText: '#ff0000ff', bgPanel: 'rgba(230, 118, 7, 0.56)', bgInput: '#563b01ff', bgOutput: '#ce9309b6', status: '#ffcc66' },
+    { name: 'random1', accent: '#00ff40d7', accent2: '#00ec3bc9', accentText: '#001affff', bgPanel: 'rgba(0, 0, 0, 0.47)', bgInput: '#002200c2', bgOutput: '#5a0222b6', status: '#bd108cff' },
+    { name: 'random2', accent: '#00e1ffcb', accent2: '#0077ffdc', accentText: '#ff0000ff', bgPanel: 'rgba(0, 72, 255, 0.63)', bgInput: '#0469c8b7', bgOutput: '#035c0cb4', status: '#6dd6ff' },
+    { name: 'random3', accent: '#ff9900c2', accent2: '#ff5500be', accentText: '#ff0000bc', bgPanel: 'rgba(76, 146, 6, 0.56)', bgInput: '#4d3501', bgOutput: '#4e3700b6', status: '#ff6675ff' },
+    { name: 'random4', accent: '#09ff00ff', accent2: '#23ec00ff', accentText: '#00ff44ff', bgPanel: 'rgba(109, 4, 4, 1)', bgInput: '#01ff01ff', bgOutput: '#4807d4ff', status: '#ff005dff' },
+    { name: 'random5', accent: '#3700ffff', accent2: '#ff5100ff', accentText: '#1900ffff', bgPanel: 'rgba(56, 217, 7, 1)', bgInput: '#3609caff', bgOutput: '#0761bab4', status: '#6d6fffff' },
+    { name: 'random6', accent: '#ff0000ff', accent2: '#3cff00ff', accentText: '#b00e0eff', bgPanel: 'rgba(197, 104, 12, 0.56)', bgInput: '#563b01ff', bgOutput: '#443208b6', status: '#0feb3bff' },
+    { name: 'random7', accent: '#00ff40d7', accent2: '#00ec3bc9', accentText: '#001affff', bgPanel: 'rgba(215, 20, 20, 0.47)', bgInput: '#002200c2', bgOutput: '#2a025ab6', status: '#4dff00ff' },
+    { name: 'random8', accent: '#1aff00cb', accent2: '#0077ffdc', accentText: '#ff0000a3', bgPanel: 'rgba(215, 9, 6, 0.63)', bgInput: '#013566b7', bgOutput: '#03305cb4', status: '#080bc6ff' },
+    { name: 'random9', accent: '#00ff08c2', accent2: '#ff5500be', accentText: '#ff0000bc', bgPanel: 'rgba(0, 255, 21, 0.93)', bgInput: '#048c1aff', bgOutput: '#4e3700b6', status: '#f80d21ff' },
+    { name: 'random10', accent: '#0091ffb8', accent2: '#23ec00ff', accentText: '#0fdbaeff', bgPanel: 'rgba(229, 7, 7, 1)', bgInput: '#08db08ff', bgOutput: '#195a02ff', status: '#33ff00ff' },
+    { name: 'random11', accent: '#3700ffff', accent2: '#ff00ddff', accentText: '#ff0000ff', bgPanel: 'rgba(34, 3, 214, 1)', bgInput: '#016603ff', bgOutput: '#fc0a0ab4', status: '#0e20deff' },
+    { name: 'random12', accent: '#ff0000ff', accent2: '#ff0000ff', accentText: '#1eff00ff', bgPanel: 'rgba(249, 80, 1, 0.56)', bgInput: '#07f103ff', bgOutput: '#ff6302b6', status: '#f7a80aff' },
+    { name: 'Pink', accent: '#ff3d7ecb', accent2: '#57f833d5', accentText: '#ff0000ff', bgPanel: 'rgba(117, 1, 88, 0.79)', bgInput: '#f7046db7', bgOutput: '#470120ff', status: '#ff0059ff' }
   ];
 
   const host = document.createElement('div');
@@ -99,6 +111,18 @@
   root.append(style, launcher, panel);
   document.documentElement.appendChild(host);
 
+  // ensure panel has explicit left/top in px so dragging/clamping works (convert vw/vh defaults)
+  (function ensurePanelPosition(){
+    const r = panel.getBoundingClientRect();
+    if (!panel.style.left && !panel.style.top) {
+      panel.style.left = r.left + 'px';
+      panel.style.top = r.top + 'px';
+    }
+    // launcher position explicit
+    if (!launcher.style.right) launcher.style.right = '30px';
+    if (!launcher.style.bottom) launcher.style.bottom = '30px';
+  })();
+
   const $ = sel => root.querySelector(sel);
   const setStatus = msg => { const el = $('#gc2Status'); if (el) el.textContent = String(msg); };
   const log = msg => {
@@ -131,14 +155,24 @@
         WIN.addEventListener('pointerup', onPointerUp, { once: true });
         WIN.addEventListener('pointercancel', onPointerUp, { once: true });
     };
-    const onPointerMove = e => {
-        if (e.pointerId !== activePointerId) return;
-        e.preventDefault();
-        const dx = e.clientX - sx, dy = e.clientY - sy;
-        let newLeft = Math.max(0, Math.min(initialRect.left + dx, WIN.innerWidth - initialRect.width));
-        let newTop = Math.max(0, Math.min(initialRect.top + dy, WIN.innerHeight - initialRect.height));
-        Object.assign(target.style, { left: newLeft + 'px', top: newTop + 'px', right: 'auto', bottom: 'auto' });
-    };
+  const onPointerMove = e => {
+    if (e.pointerId !== activePointerId) return;
+    e.preventDefault();
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    // allow dragging partly off-screen but keep a small visible margin so the handle remains reachable
+    const marginVisible = 48; // px visible when dragged off-screen
+    let newLeft = initialRect.left + dx;
+    let minLeft = -initialRect.width + marginVisible;
+    let maxLeft = WIN.innerWidth - marginVisible;
+    newLeft = Math.min(Math.max(newLeft, minLeft), maxLeft);
+
+    let newTop = initialRect.top + dy;
+    let minTop = -initialRect.height + marginVisible;
+    let maxTop = WIN.innerHeight - marginVisible;
+    newTop = Math.min(Math.max(newTop, minTop), maxTop);
+
+    Object.assign(target.style, { left: newLeft + 'px', top: newTop + 'px', right: 'auto', bottom: 'auto' });
+  };
     const onPointerUp = e => {
         if (e.pointerId !== activePointerId) return;
         activePointerId = -1;

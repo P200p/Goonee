@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap');
+
+body { 
+    font-family: 'Sarabun', sans-serif; 
+    background: #0a0a0a;
+    color: #e0e0e0;
+}
+
+.gradient-bg { 
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.gradient-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff" stroke-width="0.1" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.card-hover { 
+    transition: all 0.3s ease; 
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.card-hover:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 20px 40px rgba(100, 255, 218, 0.1);
+    border-color: rgba(100, 255, 218, 0.3);
+    background: rgba(20, 20, 30, 0.9);
+}
+
+.code-block { 
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%); 
+    border-radius: 8px; 
+    overflow-x: auto;
+    border: 1px solid #30363d;
+    font-family: 'Fira Code', monospace;
+}
+
+.difficulty-easy { background: linear-gradient(45deg, #00ff88, #00cc6a); }
+.difficulty-medium { background: linear-gradient(45deg, #ffaa00, #ff8800); }
+.difficulty-hard { background: linear-gradient(45deg, #ff0066, #cc0044); }
+
+.matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.05;
+}
+
+.glitch-text {
+    position: relative;
+    animation: glitch 2s infinite;
+}
+
+@keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+}
+
+.secret-hover {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.secret-hover:hover {
+    color: #00ff88 !important;
+    text-shadow: 0 0 10px #00ff88;
+}
+
+.easter-egg {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.easter-egg.revealed {
+    opacity: 1;
+}
+
+.hacker-cursor {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.neon-glow {
+    box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+    border: 1px solid rgba(100, 255, 218, 0.5);
+}
+
+.terminal-green { color: #00ff88; }
+.terminal-red { color: #ff0066; }
+.terminal-yellow { color: #ffaa00; }
+.terminal-blue { color: #0099ff; }
+.terminal-purple { color: #cc66ff; }

@@ -84,7 +84,7 @@
       <div class="gc2-label">📋 โค้ด (Javascript)</div><textarea class="gc2-text" id="gc2Code" placeholder="javascript:alert('Hello from Goonee!')"></textarea>
       <div class="gc2-label">🧾 ผลลัพธ์</div><pre class="gc2-output" id="gc2Out"></pre>
     </div>
-    <div class="gc2-footer"><div id="gc2Status">พร้อมใช้งาน</div><div id="gc2ThemeName" class="gc2-badge">Matrix</div></div>
+    <div class="gc2-footer"><div id="gc2Status">พร้อมใช้งาน</div><a href="https://x.com/omgnhoy">สั่งทำสคริปต์ที่นี่</a><div id="gc2ThemeName" class="gc2-badge">Matrix</div></div>
   `;
 
   root.append(style, launcher, panel);

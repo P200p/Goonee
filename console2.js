@@ -18,8 +18,17 @@
   const THEMES = [
     { name: 'Matrix', accent: '#00ff40d7', accent2: '#00ec3bc9', accentText: '#001affff', bgPanel: 'rgba(0, 0, 0, 0.47)', bgInput: '#002200c2', bgOutput: '#025a3db6', status: '#00ff83' },
     { name: 'Cyan', accent: '#00e1ffcb', accent2: '#0077ffdc', accentText: '#ff0000ff', bgPanel: 'rgba(2, 8, 23, 0.63)', bgInput: '#013566b7', bgOutput: '#03305cb4', status: '#6dd6ff' },
-    { name: 'Flame', accent: '#ff9900c2', accent2: '#ff5500be', accentText: '#ff0000ff', bgPanel: 'rgba(20, 10, 0, 0.56)', bgInput: '#4d3501', bgOutput: '#4e3700b6', status: '#ffcc66' },
-    { name: 'Pink', accent: '#ff3d7ecb', accent2: '#b8095bd5', accentText: '#ff0073ff', bgPanel: 'rgba(23, 0, 12, 0.57)', bgInput: '#810038b7', bgOutput: '#470120b6', status: '#ff8ab3' }
+    { name: 'Flame', accent: '#ff9900c2', accent2: '#ff5500be', accentText: '#ff0000bc', bgPanel: 'rgba(20, 10, 0, 0.56)', bgInput: '#4d3501', bgOutput: '#4e3700b6', status: '#ffcc66' },
+    { name: 'Matrix2', accent: '#09ff00ff', accent2: '#23ec00ff', accentText: '#001affff', bgPanel: 'rgba(109, 4, 4, 1)', bgInput: '#002200ff', bgOutput: '#025a3dff', status: '#00ff83' },
+    { name: 'Cyan2', accent: '#3700ffff', accent2: '#ff5100ff', accentText: '#ff0000ff', bgPanel: 'rgba(26, 107, 1, 1)', bgInput: '#011066ff', bgOutput: '#03305cb4', status: '#6dd6ff' },
+    { name: 'Flame2', accent: '#ff0000ff', accent2: '#3cff00ff', accentText: '#ff0000ff', bgPanel: 'rgba(20, 10, 0, 0.56)', bgInput: '#563b01ff', bgOutput: '#443208b6', status: '#0feb3bff' },
+    { name: 'Matrix3', accent: '#00ff40d7', accent2: '#00ec3bc9', accentText: '#001affff', bgPanel: 'rgba(0, 0, 0, 0.47)', bgInput: '#002200c2', bgOutput: '#025a3db6', status: '#00ff83' },
+    { name: 'Cyan3', accent: '#1aff00cb', accent2: '#0077ffdc', accentText: '#ff0000a3', bgPanel: 'rgba(2, 23, 7, 0.63)', bgInput: '#013566b7', bgOutput: '#03305cb4', status: '#6dd6ff' },
+    { name: 'Flame3', accent: '#00ff08c2', accent2: '#ff5500be', accentText: '#ff0000bc', bgPanel: 'rgba(10, 127, 20, 0.76)', bgInput: '#014d0eff', bgOutput: '#4e3700b6', status: '#f8400dff' },
+    { name: 'Matrix4', accent: '#0091ffb8', accent2: '#23ec00ff', accentText: '#00ffc8ff', bgPanel: 'rgba(109, 4, 4, 1)', bgInput: '#002200ff', bgOutput: '#025a3dff', status: '#33ff00ff' },
+    { name: 'Cyan4', accent: '#3700ffff', accent2: '#ff00ddff', accentText: '#ff0000ff', bgPanel: 'rgba(17, 1, 107, 1)', bgInput: '#016603ff', bgOutput: '#05284bb4', status: '#0e20deff' },
+    { name: 'Flame4', accent: '#ff0000ff', accent2: '#ff0000ff', accentText: '#ff0000ff', bgPanel: 'rgba(192, 104, 16, 0.56)', bgInput: '#563b01ff', bgOutput: '#ce9309b6', status: '#ffcc66' },
+    { name: 'Pink', accent: '#ff3d7ecb', accent2: '#57f833d5', accentText: '#ff0000ff', bgPanel: 'rgba(1, 43, 117, 0.79)', bgInput: '#810038b7', bgOutput: '#470120ff', status: '#ff0059ff' }
   ];
 
   const host = document.createElement('div');
@@ -34,7 +43,7 @@
     .gc2-panel { position:fixed; top:10vh; left:10vw; width:80vw; height:70vh; min-width:280px; min-height:250px; background:var(--bgPanel); border:2px solid var(--accent); border-radius:12px; color:#e0e0e0; display:none; flex-direction:column; box-shadow:0 12px 40px rgba(0,0,0,.6); resize:both; overflow:hidden; }
     .gc2-header { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#001a0a; font-weight:700; user-select:none; cursor:move; flex-shrink:0; touch-action:none; }
     .gc2-title { display:flex; gap:8px; align-items:center; }
-    .gc2-actions button { background:transparent; border:none; color:#001a0a; padding:4px; font-size:16px; font-weight:bold; cursor:pointer; }
+    .gc2-actions button { background:transparent; border:none; color:#001a0a; padding:6px; gap:24px; font-size:24px; font-weight:bold; cursor:pointer; }
     .gc2-toolbar { display:flex; gap:6px; flex-wrap:wrap; padding:6px 8px; border-bottom:1px solid var(--accent); background:rgba(0,0,0,.2); flex-shrink:0; }
     .gc2-tbtn { background:rgba(255,255,255,.08); border:1px solid var(--accent); color:var(--accentText); padding:4px 8px; border-radius:6px; font:600 12px/1.2 system-ui; cursor:pointer; }
     .gc2-tbtn:hover { background:rgba(255,255,255,.15); }
@@ -72,7 +81,7 @@
   panel.innerHTML = `
     <div class="gc2-header" id="gc2Header">
       <div class="gc2-title"><span>🦈</span><span>กูนี่คอนโซล 2</span></div>
-      <div class="gc2-actions"><button id="gc2Min" title="ย่อ">－</button><button id="gc2Close" title="ปิด">×</button></div>
+      <div class="gc2-actions"><button id="gc2Min" title="ย่อ">－</button><button id="gc2Close" title="ปิด">×</button>.    .</div>
     </div>
     <div class="gc2-toolbar">
       <button class="gc2-tbtn" id="gc2Run">▶ รัน</button><button class="gc2-tbtn" id="gc2Save">💾 บันทึก</button><button class="gc2-tbtn" id="gc2Load">⤴ โหลด</button><button class="gc2-tbtn" id="gc2Del">🗑 ลบ</button>

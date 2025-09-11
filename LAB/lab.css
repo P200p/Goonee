@@ -124,7 +124,6 @@ body {
 .hidden { display: none !important; }
 .flex { display: flex !important; }
 .items-center { align-items: center !important; }
-.justify-between { justify-content: space-between !important; }
 .p-4 { padding: 1rem !important; }
 .text-2xl { font-size: 1.5rem !important; }
 .text-xl { font-size: 1.25rem !important; }

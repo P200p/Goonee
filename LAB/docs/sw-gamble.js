@@ -1,8 +1,29 @@
 // Service worker copy for docs (same behavior as original)
+const SW_VERSION = 'v1';
 const BALANCES = new Map();
 
-self.addEventListener('install', (e) => { self.skipWaiting(); });
-self.addEventListener('activate', (e) => { e.waitUntil(self.clients.claim()); });
+self.addEventListener('install', (e) => {
+  self.skipWaiting();
+  console.log('sw-gamble installed', SW_VERSION);
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil((async () => {
+    await self.clients.claim();
+    console.log('sw-gamble activated', SW_VERSION);
+  })());
+});
+
+// allow page to tell the SW to skipWaiting (used on deploy to force update)
+self.addEventListener('message', (evt) => {
+  try {
+    const data = evt.data || {};
+    if (data && data.type === 'SKIP_WAITING') {
+      console.log('sw-gamble received SKIP_WAITING');
+      self.skipWaiting();
+    }
+  } catch (err) { /* ignore */ }
+});
 
 function jsonResponse(obj, status = 200, delay = 200) {
   return new Promise((resolve) => setTimeout(() => resolve(new Response(JSON.stringify(obj), {

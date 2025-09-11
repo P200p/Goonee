@@ -1,0 +1,2 @@
+/lab    /LAB/index.html    301
+/lab/*  /LAB/:splat        301

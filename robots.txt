@@ -1,0 +1,10 @@
+# Prevent search engines from indexing the LAB folder
+User-agent: *
+Disallow: /LAB/
+Disallow: /lab/
+
+# If you have specific pages to keep visible, add Allow rules under them
+# Allow: /LAB/public.html
+
+# Sitemap (optional) - update if you generate a sitemap
+# Sitemap: https://goonee.netlify.app/sitemap.xml

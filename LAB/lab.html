@@ -25,6 +25,10 @@
     </header>
 
     <main class="p-4">
+        <div id="app-error" class="error-banner hidden">เกิดข้อผิดพลาด: กรุณาเปิด DevTools ดูคอนโซล หรือโหลดหน้านี้ใหม่</div>
+        <noscript>
+            <div class="error-banner">ต้องการ JavaScript เพื่อให้หน้าแล็บทำงาน — กรุณาเปิดใช้งานสคริปต์หรือดูเวอร์ชันบนเดสก์ท็อป</div>
+        </noscript>
         <section id="labs-list">
             <h2 class="text-xl font-semibold mb-2">Labs</h2>
             <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 list-none p-0 m-0">
@@ -82,6 +86,10 @@
     </footer>
 
     <script>
+    // global error handler: show a banner so mobile users don't see an empty page
+    window.addEventListener('error', (ev)=>{ try{ const b=document.getElementById('app-error'); b && b.classList.remove('hidden'); b.textContent = 'เกิดข้อผิดพลาดในสคริปต์: ' + (ev && ev.message ? ev.message : 'unknown'); }catch(e){} });
+    window.addEventListener('unhandledrejection', (ev)=>{ try{ const b=document.getElementById('app-error'); b && b.classList.remove('hidden'); b.textContent = 'Unhandled rejection: ' + (ev && ev.reason ? (ev.reason.message || String(ev.reason)) : 'unknown'); }catch(e){} });
+
         // canonical labData
         const labData = {
             'port-scanning': { title: 'Port Scanning', content: 'แนะนำ nmap และการวิเคราะห์พอร์ต\nตัวอย่าง: nmap -sS example.com' },

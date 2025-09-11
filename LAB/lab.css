@@ -118,3 +118,25 @@ body {
     This ensures the canvas stays behind content even if Tailwind doesn't load. */
 #matrix-canvas { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; pointer-events: none; }
 #lab-modal { z-index: 50; }
+
+/* Minimal fallback utility classes used by the page so content remains visible
+    if Tailwind CDN fails to load on mobile. Keep these lightweight. */
+.hidden { display: none !important; }
+.flex { display: flex !important; }
+.items-center { align-items: center !important; }
+.justify-between { justify-content: space-between !important; }
+.p-4 { padding: 1rem !important; }
+.text-2xl { font-size: 1.5rem !important; }
+.text-xl { font-size: 1.25rem !important; }
+.font-bold { font-weight: 700 !important; }
+.grid { display: grid !important; }
+.grid-cols-1 { grid-template-columns: 1fr !important; }
+.gap-4 { gap: 1rem !important; }
+.rounded { border-radius: 8px !important; }
+.fixed { position: fixed !important; }
+.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+.list-none { list-style: none; padding: 0; margin: 0; }
+
+/* Error/banner used when JS fails */
+.error-banner { background: #ffdde0; color: #660000; padding: 10px 12px; border-radius: 6px; margin: 8px 0; font-weight: 600; }
+.error-banner.hidden { display: none; }

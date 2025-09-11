@@ -50,6 +50,53 @@
       .go-wrap { grid-template-columns:1fr; padding: 0 10px 32px; }
       .go-thumb { width:88px; height:60px; }
     }
+  /* ---------- Variant image styles ---------- */
+  /* Polaroid / tilted print */
+  .variant-polaroid .go-hero { background:linear-gradient(180deg,#fff,#f7f7f7); padding:18px; box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+  .variant-polaroid .go-media-el { border:6px solid #fff; box-shadow: 0 8px 18px rgba(0,0,0,.45); transform: rotate(-4deg) scale(.98); border-radius:6px; }
+
+  /* Glass / frosted */
+  .variant-glass .go-hero { background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.06); backdrop-filter: blur(6px) saturate(120%); }
+  .variant-glass .go-media-el { border-radius:10px; box-shadow: inset 0 0 30px rgba(255,255,255,.02), 0 8px 40px rgba(0,0,0,.5); filter: contrast(1.02) saturate(1.05); }
+
+  /* 3D frame */
+  .variant-frame3d .go-hero { perspective:1200px; }
+  .variant-frame3d .go-media-el { transform-origin:center; transform: rotateX(6deg) rotateY(-4deg) translateZ(12px); border-radius:8px; box-shadow: 0 30px 60px rgba(0,0,0,.6); border:4px solid rgba(255,255,255,.03); }
+
+  /* Vintage / sepia */
+  .variant-vintage .go-media-el { filter: sepia(.45) contrast(.95) saturate(.85) brightness(.96); border-radius:6px; box-shadow: 0 8px 28px rgba(80,60,30,.28); }
+  .variant-vintage .go-hero { background: linear-gradient(180deg,#2b2418,#1a1612); }
+
+  /* Poster / glossy */
+  .variant-poster .go-media-el { border-radius:4px; box-shadow: 0 18px 60px rgba(0,0,0,.65), 0 2px 0 rgba(255,255,255,.05) inset; filter: saturate(1.15) contrast(1.06); transform: scale(1.015); }
+
+  /* Small UI for variant picker */
+  .variant-ui { position:absolute; right:14px; top:14px; z-index:3; display:flex; gap:8px; align-items:center; }
+  .variant-ui select, .variant-ui button, .variant-ui label { background:rgba(0,0,0,.7); color:#00ccff; border:1px solid #00ff41; padding:6px 8px; border-radius:8px; font-family:'Orbitron', monospace; font-weight:700; cursor:pointer; }
+  .variant-ui button { padding:6px 10px; }
+  .variant-ui input[type="checkbox"]{ width:18px; height:18px; cursor:pointer; }
+
+  /* ---------- More variants inspired by examples ---------- */
+  /* Neon / high-contrast CTA like slothack */
+  .variant-neon .go-card-tilt { border-color: #ff00ff; box-shadow: 0 6px 30px rgba(255,0,255,.12); }
+  .variant-neon .go-brand { color:#ff55ff; text-shadow:0 0 10px #ff55ff66; }
+  .variant-neon .go-hero { border-color: #ff00dd; box-shadow: inset 0 0 40px rgba(255,0,200,.06); }
+
+  /* Clean / minimal like sharkkadaw */
+  .variant-clean body { background: linear-gradient(180deg,#0b0b10,#0b0b12); }
+  .variant-clean .go-card-tilt { background: linear-gradient(180deg,#0b0b0f,#0d0d12); border-color: rgba(255,255,255,.06); box-shadow: 0 8px 20px rgba(0,0,0,.6); }
+  .variant-clean .go-brand { color:#9be1ff; text-shadow:none; }
+  .variant-clean .go-btn { background: linear-gradient(90deg,#00d4ff,#00aaff); color:#001; box-shadow: 0 10px 30px rgba(0,170,255,.12); }
+
+  /* Ribbon / badge on corner for promos */
+  .go-card-tilt { position:relative; }
+  .ribbon { position:absolute; right:-38px; top:12px; width:180px; transform: rotate(45deg); background:#ffcc00; color:#000; text-align:center; font-weight:900; padding:6px 0; box-shadow:0 6px 18px rgba(0,0,0,.4); font-size:.85rem; }
+  .variant-ribbon .go-card-tilt .ribbon { display:block; }
+  .go-card-tilt .ribbon { display:none; }
+
+  /* Compact / list-like */
+  .variant-compact .go-card-tilt { padding:10px; border-radius:10px; }
+  .variant-compact .go-hero { aspect-ratio: 4/3; }
   </style>
 </head>
 <body>
@@ -57,6 +104,28 @@
   <div class="go-header">
     <h1 class="go-title">AI WIN RATE SIGNUP GRID</h1>
     <div class="go-sub">AUTO SCAN FOLDERS · RESPONSIVE HERO MEDIA · DYNAMIC AI RATES</div>
+    <div class="variant-ui" id="variantUI" aria-hidden="true" style="display:none">
+      <label for="variantSel" style="display:none">variant</label>
+      <select id="variantSel" title="เลือกสไตล์ภาพ">
+        <option value="none">คลาสสิค</option>
+        <option value="polaroid">Polaroid</option>
+        <option value="glass">Glass</option>
+        <option value="frame3d">3D Frame</option>
+        <option value="vintage">Vintage</option>
+        <option value="poster">Poster</option>
+        <option value="neon">Neon</option>
+        <option value="clean">Clean</option>
+        <option value="ribbon">Ribbon</option>
+        <option value="compact">Compact</option>
+      </select>
+      <button id="variantRand" title="สุ่ม">สุ่ม</button>
+      <button id="variantApply" title="นำไปใช้">ใช้</button>
+    </div>
+  </div>
+  <!-- Intro video overlay -->
+  <div id="introOverlay" style="position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:9999">
+    <video id="introVideo" src="Intro.mp4" style="width:80%;max-width:980px;border-radius:12px;box-shadow:0 20px 80px rgba(0,0,0,.8)" playsinline muted></video>
+    <button id="skipIntro" style="position:absolute;right:18px;top:18px;background:rgba(0,0,0,.6);color:#fff;border:1px solid #fff;padding:8px 12px;border-radius:8px;cursor:pointer">ข้าม</button>
   </div>
   <div class="go-wrap">
     
@@ -358,7 +427,7 @@
         <div class="go-card-tilt">
           <div class="go-brand">FK9</div>
           <div class="go-hero" aria-label="FK9 media"><img class="go-media-el" src="web/FK9/112.webp" alt="FK9"></div>
-          <div class="go-thumbs"><img class="go-thumb" src="web/FK9/113.webp" alt="FK9"><img class="go-thumb" src="web/FK9/114.webp" alt="FK9"><img class="go-thumb" src="web/FK9/115.webp" alt="FK9"><img class="go-thumb" src="web/FK9/4572004_1750982994504.webp" alt="FK9"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/FK9/113.webp" alt="FK9"><img class="go-thumb" src="web/FK9/114.webp" alt="FK9"><img class="go-thumb" src="web/FK9/115.webp" alt="FK9"></div>
           <div class="go-ai">
             <div class="go-ai-row">
               <span class="go-ai-label">WIN %</span>
@@ -925,7 +994,7 @@
         <div class="go-card-tilt">
           <div class="go-brand">VT8</div>
           <div class="go-hero" aria-label="VT8 media"><img class="go-media-el" src="web/VT8/wff.webp" alt="VT8"></div>
-          <div class="go-thumbs"></div>
+          <div class="go-thumbs"><img class="go-thumb" src="web/VT8/145.webp" alt="VT8"><img class="go-thumb" src="web/VT8/146.webp" alt="VT8"><img class="go-thumb" src="web/VT8/147.webp" alt="VT8"><img class="go-thumb" src="web/VT8/148.webp" alt="VT8"><img class="go-thumb" src="web/VT8/149.webp" alt="VT8"></div>
           <div class="go-ai">
             <div class="go-ai-row">
               <span class="go-ai-label">WIN %</span>
@@ -1117,6 +1186,123 @@
         requestAnimationFrame(tick);
       })();
     });
+    // Variant picker: apply different visual treatments to all hero elements
+    (function(){
+      const sel = document.getElementById('variantSel');
+      const btnRand = document.getElementById('variantRand');
+      const btnApply = document.getElementById('variantApply');
+      const wrap = document.querySelector('.go-wrap');
+      if (!sel || !wrap) return;
+
+      const variants = ['none','polaroid','glass','frame3d','vintage','poster'];
+      function applyVariant(v){
+        // remove existing variant- classes
+        variants.forEach(x=> wrap.classList.remove('variant-'+x));
+        if (v && v!=='none') wrap.classList.add('variant-'+v);
+        // For hero preview: tweak shadow, border, and add small overlay for some variants
+        document.querySelectorAll('.go-hero').forEach((h, i)=>{
+          h.style.transition = 'all .28s ease';
+          if (v==='polaroid'){
+            h.style.padding = '';
+          } else {
+            h.style.padding = '';
+          }
+          // ensure the hero media fills correctly after class change
+          const img = h.querySelector('.go-media-el');
+          if (img) img.style.transition = 'transform .35s ease, filter .35s ease, box-shadow .35s ease';
+        });
+      }
+
+      sel.addEventListener('change', ()=> applyVariant(sel.value));
+      btnRand.addEventListener('click', ()=>{ const v = variants[Math.floor(Math.random()*variants.length)]; sel.value = v; applyVariant(v); });
+      btnApply.addEventListener('click', ()=>{ applyVariant(sel.value); /* could persist to localStorage */ localStorage.setItem('goVariant', sel.value); });
+
+      // restore previous choice
+      try{ const prev = localStorage.getItem('goVariant'); if (prev){ sel.value = prev; applyVariant(prev); } }catch(e){}
+    })();
+
+    // Neon rainbow per-card + auto-cycle hero images
+    (function(){
+      const wrap = document.querySelector('.go-wrap');
+      if (!wrap) return;
+      // force neon variant for this mode
+      wrap.classList.add('variant-neon');
+
+      // create a CSS variable for hue per card and set neon glow
+      const cards = Array.from(document.querySelectorAll('.go-card'));
+      function randHue() { return Math.floor(Math.random()*360); }
+      // make a rainbow-like spread by stepping hue
+      let base = Math.floor(Math.random()*360);
+      cards.forEach((card, i)=>{
+        const h = (base + i*18 + Math.floor(Math.random()*12)) % 360; // step roughly
+        const color = `hsl(${h} 95% 55%)`;
+        const glow = `0 0 18px color-mix(in srgb, ${color} 50%, black)`;
+        card.style.setProperty('--neon-color', color);
+        card.style.setProperty('--neon-hue', h);
+        // apply a colored border/glow
+        const tilt = card.querySelector('.go-card-tilt');
+        if (tilt){
+          tilt.style.borderColor = color;
+          tilt.style.boxShadow = `0 8px 40px ${color}33`;
+        }
+        const brand = card.querySelector('.go-brand'); if (brand) brand.style.color = color;
+        const media = card.querySelector('.go-media-el'); if (media) media.style.filter = 'saturate(1.02) contrast(1.04)';
+      });
+
+      // Auto-cycle hero images per card: combine hero original + thumbs
+      cards.forEach((card, idx)=>{
+        const hero = card.querySelector('.go-hero');
+        if (!hero) return;
+        const thumbs = Array.from(card.querySelectorAll('.go-thumb'));
+        // build cycle list: start with existing hero img src then thumbs
+        const start = hero.querySelector('.go-media-el');
+        const list = [];
+        if (start && start.src) list.push(start.src);
+        thumbs.forEach(t => { if (t.src) list.push(t.src); });
+        if (list.length<2) return; // nothing to rotate
+
+        let pos = 0;
+        function showSrc(src){
+          hero.innerHTML = '';
+          const el = document.createElement('img');
+          el.className = 'go-media-el';
+          el.src = src;
+          el.alt = card.dataset.brand || 'media';
+          // neon tint overlay using mix-blend-mode for subtle color shift
+          el.style.transition = 'opacity .6s ease, transform .6s ease';
+          el.style.opacity = '0';
+          hero.appendChild(el);
+          requestAnimationFrame(()=>{ el.style.opacity='1'; el.style.transform='scale(1.01)'; });
+          // add tiny hue-rotate for neon feel
+          const h = card.style.getPropertyValue('--neon-hue') || 0;
+          el.style.filter += ` drop-shadow(0 8px 40px hsla(${h},80%,60%,.16))`;
+        }
+
+        // staggered timing so not all change at once
+        const baseDelay = 2000 + idx*300;
+        let interval = 3000 + Math.floor(Math.random()*4000);
+        setTimeout(function loop(){
+          pos = (pos+1) % list.length;
+          try{ showSrc(list[pos]); }catch(e){}
+          interval = 3000 + Math.floor(Math.random()*5000);
+          setTimeout(loop, interval);
+        }, baseDelay);
+      });
+
+      // Intro video controls: play once then hide overlay or allow skip
+      const intro = document.getElementById('introVideo');
+      const overlay = document.getElementById('introOverlay');
+      const skip = document.getElementById('skipIntro');
+      try{
+        if (intro){
+          intro.play().catch(()=>{ /* autoplay may be blocked */ });
+          intro.addEventListener('ended', ()=>{ if (overlay) overlay.style.display='none'; });
+        }
+        if (skip){ skip.addEventListener('click', ()=>{ if (overlay) overlay.style.display='none'; try{ intro.pause(); }catch(e){} }); }
+        // also hide overlay if user clicks outside video
+        if (overlay){ overlay.addEventListener('click', (ev)=>{ if (ev.target===overlay){ overlay.style.display='none'; try{ intro.pause(); }catch(e){} } }); }
+      }catch(e){}
+    })();
   })();
   </script>
 </body>

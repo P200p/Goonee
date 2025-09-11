@@ -1,3 +1,11 @@
 {
-    "livePreview.defaultPreviewPath": "/index.html"
+    "livePreview.defaultPreviewPath": "/index.html",
+    "commentTranslate.googleTranslate.mirror": "https://translate.google.com",
+    "commentTranslate.googleTranslate.defaultTargetLanguage": "th",
+    "commentTranslate.googleTranslate.showLanguageCode": true,
+    "commentTranslate.googleTranslate.showLanguageName": true,
+    "commentTranslate.googleTranslate.showFlags": true,
+    "commentTranslate.googleTranslate.showAutoDetect": true,
+    "commentTranslate.googleTranslate.showOriginalText": true,
+    "commentTranslate.googleTranslate.showTranslationText": true
 }

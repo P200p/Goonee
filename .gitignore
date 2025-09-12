@@ -53,7 +53,7 @@ scan/gen.js
 /scan/scan.html
 /scan/sell_autogen.html
 glow_gift_grid.html
-
+./scan
 # Local Netlify folder
 .netlify
 .gittracked.txt

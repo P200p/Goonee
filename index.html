@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
+    <link rel="stylesheet" href="assets/goonee-collapsible-nav.css">
+    <script defer src="assets/goonee-collapsible-nav.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Favicons -->
@@ -487,6 +490,30 @@
     </style>
 </head>
 <body>
+<!-- Goonee collapsible nav injected (auto) -->
+<div class="goonee-cnav-root">
+  <button class="goonee-cnav-toggle goonee-cnav-left" aria-label="Open navigation" data-goonee-toggle data-goonee-target="goonee-panel-auto-2" data-goonee-overlay="goonee-overlay-auto-2" aria-expanded="false">☰</button>
+  <div id="goonee-overlay-auto-2" class="goonee-cnav-overlay" tabindex="-1"></div>
+  <nav id="goonee-panel-auto-2" class="goonee-cnav-panel" aria-hidden="true">
+    <div class="goonee-cnav-header">
+      <div class="goonee-cnav-title">เมนู</div>
+      <button class="goonee-cnav-close" aria-label="Close">✕</button>
+    </div>
+    <ul class="goonee-cnav-list">
+      <li><a href="/">หน้าแรก</a></li>
+      <li><a href="/guide.html">เกี่ยวกับ</a></li>
+      <li class="goonee-cnav-item">
+        <button class="goonee-cnav-subtoggle" data-goonee-subtoggle data-goonee-subtarget="goonee-sublist-auto-2" aria-controls="goonee-sublist-auto-2">ตัวอย่างผลงานอื่นๆ <span class="goonee-cnav-caret">›</span></button>
+        <ul id="goonee-sublist-auto-2" class="goonee-cnav-sublist" aria-hidden="true">
+          <li><a href="https://sharkkadaw.netlify.app/" target="_blank" rel="noopener">Sharkkadaw</a></li>
+          <li><a href="https://goonee.netlify.app/ai/scan" target="_blank" rel="noopener">Goonee Scan</a></li>
+        </ul>
+      </li>
+      <li><a href="/contact.html">ติดต่อ</a></li>
+    </ul>
+  </nav>
+</div>
+
         <canvas class="matrix-bg" id="matrixCanvas"></canvas>
         <!-- PWA Install Popup -->
         <div id="pwaInstallPrompt" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.95);border:2px solid #00ff41;color:#00ff41;padding:24px 20px 16px 20px;border-radius:12px;z-index:2000;box-shadow:0 8px 32px #00ff4133;max-width:90vw;">

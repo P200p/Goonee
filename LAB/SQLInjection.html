@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Thai Ethical Hacking Labs — SQL Injection</title>
+    <link rel="stylesheet" href="lab.css">
+    <style>
+        .demo-section {
+            background: rgba(20, 20, 30, 0.9);
+            border: 1px solid #00ff88;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(10, 10, 10, 0.8);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #00ff88;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            background: #1a1a2e;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 1rem;
+        }
+        
+        .result-area {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 6px;
+            font-family: monospace;
+            color: #00ff88;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+        
+        .payload-examples {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .payload-item {
+            background: #1a1a2e;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .payload-item:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .warning-box {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #ff6b6b;
+        }
+        
+        @media (max-width: 768px) {
+            .login-form {
+                margin: 0;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+    
+    <div class="container">
+        <div style="text-align: center; padding: 2rem 1rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">💉</div>
+            <h1 style="color: #00ff88; font-size: 2rem; margin-bottom: 1rem;">SQL Injection Lab</h1>
+            <p style="color: #8ea4ca; font-size: 1.1rem; line-height: 1.6;">
+                เรียนรู้เทคนิค SQL Injection และวิธีการป้องกันในสภาพแวดล้อมที่ปลอดภัย
+            </p>
+        </div>
+        
+        <div class="warning-box">
+            <strong>⚠️ คำเตือน:</strong> การทดสอบนี้เป็นเพียงการจำลองเพื่อการศึกษาเท่านั้น 
+            ห้ามนำไปใช้กับระบบจริงหรือเว็บไซต์ที่ไม่ได้รับอนุญาต
+        </div>
+        
+        <div class="demo-section">
+            <h3 style="color: #00ff88; margin-bottom: 1rem;">🎯 Vulnerable Login Demo</h3>
+            <p style="color: #b0c4de; margin-bottom: 1rem;">
+                ระบบ login นี้มีช่องโหว่ SQL Injection ลองใช้ payload ต่างๆ เพื่อ bypass การ login
+            </p>
+            
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="admin" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="password" />
+                </div>
+                
+                <button class="login-btn" onclick="attemptLogin()">Login</button>
+                
+                <div class="result-area" id="loginResult">
+                    กรอกข้อมูลและกด Login เพื่อดูผลลัพธ์...
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h3 style="color: #00ff88; margin-bottom: 1rem;">🔧 SQL Injection Payloads</h3>
+            <p style="color: #b0c4de; margin-bottom: 1rem;">
+                คลิกที่ payload เพื่อใส่ในช่อง username หรือ password:
+            </p>
+            
+            <div class="payload-examples">
+                <div class="payload-item" onclick="setPayload('username', `admin' --`)">
+                    <strong>Basic Comment:</strong> admin' --
+                </div>
+                <div class="payload-item" onclick="setPayload('username', `admin' OR '1'='1`)">
+                    <strong>Always True:</strong> admin' OR '1'='1
+                </div>
+                <div class="payload-item" onclick="setPayload('username', `' OR 1=1 --`)">
+                    <strong>Bypass Login:</strong> ' OR 1=1 --
+                </div>
+                <div class="payload-item" onclick="setPayload('username', `admin'; DROP TABLE users; --`)">
+                    <strong>SQL Injection (Dangerous):</strong> admin'; DROP TABLE users; --
+                </div>
+                <div class="payload-item" onclick="setPayload('username', `' UNION SELECT username, password FROM users --`)">
+                    <strong>UNION Attack:</strong> ' UNION SELECT username, password FROM users --
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h3 style="color: #00ff88; margin-bottom: 1rem;">🛡️ Protection Methods</h3>
+            <div style="color: #b0c4de; line-height: 1.6;">
+                <h4 style="color: #ffaa00;">1. Prepared Statements</h4>
+                <div style="background: #000; padding: 1rem; border-radius: 4px; font-family: monospace; margin: 0.5rem 0;">
+$stmt = $pdo->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+$stmt->execute([$username, $password]);
+                </div>
+                
+                <h4 style="color: #ffaa00;">2. Input Validation</h4>
+                <ul>
+                    <li>ตรวจสอบและกรองข้อมูลที่รับเข้ามา</li>
+                    <li>ใช้ whitelist แทน blacklist</li>
+                    <li>จำกัดความยาวของ input</li>
+                </ul>
+                
+                <h4 style="color: #ffaa00;">3. Least Privilege</h4>
+                <ul>
+                    <li>ใช้ database user ที่มีสิทธิ์จำกัด</li>
+                    <li>ไม่ให้สิทธิ์ DROP, CREATE ถ้าไม่จำเป็น</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <button onclick="window.location.href='index.html'" 
+                    style="background: #333; color: #00ff88; border: 1px solid #00ff88; 
+                           padding: 12px 24px; border-radius: 8px; cursor: pointer; 
+                           font-weight: 600;">
+                ← กลับไปหน้าหลัก Labs
+            </button>
+        </div>
+    </div>
+    
+    <div id="toast-container" style="position: fixed; bottom: 1rem; right: 1rem; z-index: 1000;"></div>
+    
+    <script>
+        // Simulated vulnerable database
+        const users = [
+            { username: 'admin', password: 'admin123' },
+            { username: 'user', password: 'password' },
+            { username: 'guest', password: 'guest' }
+        ];
+        
+        // Simulate SQL query execution
+        function executeQuery(username, password) {
+            // Simulate vulnerable SQL query
+            const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+            
+            // Check for SQL injection patterns
+            const injectionPatterns = [
+                /'/,
+                /--/,
+                /OR/i,
+                /UNION/i,
+                /DROP/i,
+                /SELECT/i,
+                /INSERT/i,
+                /UPDATE/i,
+                /DELETE/i
+            ];
+            
+            const hasInjection = injectionPatterns.some(pattern => 
+                pattern.test(username) || pattern.test(password)
+            );
+            
+            return {
+                query: query,
+                hasInjection: hasInjection,
+                result: hasInjection ? 'SQL_INJECTION_DETECTED' : checkCredentials(username, password)
+            };
+        }
+        
+        // Check normal credentials
+        function checkCredentials(username, password) {
+            const user = users.find(u => u.username === username && u.password === password);
+            return user ? 'LOGIN_SUCCESS' : 'LOGIN_FAILED';
+        }
+        
+        // Attempt login
+        function attemptLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultArea = document.getElementById('loginResult');
+            
+            if (!username || !password) {
+                resultArea.textContent = 'กรุณากรอก username และ password';
+                return;
+            }
+            
+            const result = executeQuery(username, password);
+            
+            let output = `SQL Query:\n${result.query}\n\n`;
+            
+            if (result.hasInjection) {
+                if (username.includes("'") && (username.includes('OR') || username.includes('--'))) {
+                    output += `🚨 SQL Injection ตรวจพบ!\n`;
+                    output += `✅ Login สำเร็จ (bypassed authentication)\n\n`;
+                    output += `ผลลัพธ์: คุณสามารถ bypass การ login ได้สำเร็จ!\n`;
+                    output += `ในระบบจริง คุณจะสามารถเข้าถึงข้อมูลที่ไม่ได้รับอนุญาต`;
+                    resultArea.style.color = '#ff6b6b';
+                } else if (username.includes('DROP')) {
+                    output += `💥 SQL Injection ตรวจพบ!\n`;
+                    output += `⚠️ คำสั่ง DROP TABLE ถูกป้องกัน\n\n`;
+                    output += `ในระบบจริงที่ไม่มีการป้องกัน คำสั่งนี้อาจลบตารางทั้งหมด!`;
+                    resultArea.style.color = '#ff6b6b';
+                } else if (username.includes('UNION')) {
+                    output += `🔍 UNION SQL Injection ตรวจพบ!\n`;
+                    output += `📊 ข้อมูลที่ดึงได้:\n`;
+                    users.forEach(user => {
+                        output += `- ${user.username} : ${user.password}\n`;
+                    });
+                    output += `\nในระบบจริง คุณจะสามารถดึงข้อมูลจากตารางอื่นได้`;
+                    resultArea.style.color = '#ffaa00';
+                } else {
+                    output += `⚠️ SQL Injection pattern ตรวจพบ แต่ไม่สำเร็จ\n`;
+                    output += `❌ Login ล้มเหลว`;
+                    resultArea.style.color = '#ff6b6b';
+                }
+            } else {
+                if (result.result === 'LOGIN_SUCCESS') {
+                    output += `✅ Login สำเร็จ\n`;
+                    output += `ยินดีต้อนรับ ${username}!`;
+                    resultArea.style.color = '#00ff88';
+                } else {
+                    output += `❌ Login ล้มเหลว\n`;
+                    output += `Username หรือ Password ไม่ถูกต้อง`;
+                    resultArea.style.color = '#ff6b6b';
+                }
+            }
+            
+            resultArea.textContent = output;
+            
+            // Show toast notification
+            if (result.hasInjection) {
+                showToast('SQL Injection ตรวจพบ! ตรวจสอบผลลัพธ์', 'warning');
+            }
+        }
+        
+        // Set payload in input field
+        function setPayload(field, payload) {
+            document.getElementById(field).value = payload;
+            showToast(`Payload ถูกใส่ในช่อง ${field}`, 'info');
+        }
+        
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                background: ${type === 'success' ? '#00ff88' : type === 'warning' ? '#ffaa00' : type === 'error' ? '#ff6b6b' : '#1a1a2e'};
+                color: ${type === 'success' || type === 'warning' || type === 'error' ? '#000' : '#fff'};
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                margin-bottom: 0.5rem;
+                border: 1px solid ${type === 'success' ? '#00cc6a' : type === 'warning' ? '#ff8800' : type === 'error' ? '#ff4444' : '#00ff88'};
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                font-weight: 600;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // Matrix background animation (lightweight)
+        function initMatrix() {
+            const canvas = document.getElementById('matrix-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            window.addEventListener('resize', resize);
+            resize();
+            
+            const chars = 'マアマラワソカユイワルミヤABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()';
+            const fontSize = 14;
+            const columns = Math.floor(canvas.width / fontSize);
+            const drops = Array(columns).fill(1);
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff41';
+                ctx.font = fontSize + 'px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+                
+                requestAnimationFrame(draw);
+            }
+            
+            draw();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initMatrix();
+            showToast('ยินดีต้อนรับสู่ SQL Injection Lab! 💉');
+        });
+    </script>
+    <script src="lab-nav.js"></script>
+</body>
+</html>

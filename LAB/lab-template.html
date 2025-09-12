@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Thai Ethical Hacking Labs — [LAB_NAME]</title>
+    <link rel="stylesheet" href="lab.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(20, 20, 30, 0.9));
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .hero-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-description {
+            color: #8ea4ca;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .coming-soon {
+            background: linear-gradient(45deg, #ffaa00, #ff8800);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .coming-soon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 170, 0, 0.3);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            color: #00ff88;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-description {
+            color: #b0c4de;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .progress-section {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .progress-title {
+            color: #00ff88;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .progress-item:last-child {
+            border-bottom: none;
+        }
+        
+        .progress-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        
+        .progress-status.completed {
+            background: #00ff88;
+            color: #000;
+        }
+        
+        .progress-status.current {
+            background: #ffaa00;
+            color: #000;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 1.5rem;
+            }
+            
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .hero-description {
+                font-size: 1rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+    
+    <div class="container">
+        <div class="hero-section">
+            <div class="hero-icon">[ICON]</div>
+            <h1 class="hero-title">[LAB_NAME]</h1>
+            <p class="hero-description">[DESCRIPTION]</p>
+            <button class="coming-soon" onclick="showComingSoon()">
+                🚧 กำลังพัฒนา - เร็วๆ นี้!
+            </button>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">Learning Objectives</h3>
+                <p class="feature-description">
+                    เรียนรู้แนวคิดและเทคนิคพื้นฐานที่จำเป็นสำหรับการทำความเข้าใจหัวข้อนี้
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🛠️</div>
+                <h3 class="feature-title">Hands-on Practice</h3>
+                <p class="feature-description">
+                    ฝึกปฏิบัติจริงผ่านการจำลองสถานการณ์และเครื่องมือที่ใช้ในงานจริง
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h3 class="feature-title">Challenges</h3>
+                <p class="feature-description">
+                    ทดสอบความเข้าใจผ่านแบบฝึกหัดและความท้าทายที่หลากหลาย
+                </p>
+            </div>
+        </div>
+        
+        <div class="progress-section">
+            <h3 class="progress-title">📋 Learning Path</h3>
+            <div class="progress-item">
+                <div class="progress-status completed">✓</div>
+                <span>เรียนรู้แนวคิดพื้นฐาน</span>
+            </div>
+            <div class="progress-item">
+                <div class="progress-status current">2</div>
+                <span>ทำความเข้าใจเครื่องมือและเทคนิค</span>
+            </div>
+            <div class="progress-item">
+                <div class="progress-status">3</div>
+                <span>ฝึกปฏิบัติผ่านการจำลอง</span>
+            </div>
+            <div class="progress-item">
+                <div class="progress-status">4</div>
+                <span>ทดสอบความเข้าใจด้วยแบบฝึกหัด</span>
+            </div>
+            <div class="progress-item">
+                <div class="progress-status">5</div>
+                <span>ประยุกต์ใช้ในสถานการณ์จริง</span>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <button onclick="window.location.href='index.html'" 
+                    style="background: #333; color: #00ff88; border: 1px solid #00ff88; 
+                           padding: 12px 24px; border-radius: 8px; cursor: pointer; 
+                           font-weight: 600;">
+                ← กลับไปหน้าหลัก Labs
+            </button>
+        </div>
+    </div>
+    
+    <div id="toast-container" style="position: fixed; bottom: 1rem; right: 1rem; z-index: 1000;"></div>
+    
+    <script>
+        // Show coming soon notification
+        function showComingSoon() {
+            showToast('Lab นี้กำลังอยู่ในระหว่างการพัฒนา! 🚀\nจะเปิดให้ใช้งานเร็วๆ นี้', 'info');
+        }
+        
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                background: ${type === 'success' ? '#00ff88' : type === 'error' ? '#ff6b6b' : '#1a1a2e'};
+                color: ${type === 'success' || type === 'error' ? '#000' : '#fff'};
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                margin-bottom: 0.5rem;
+                border: 1px solid ${type === 'success' ? '#00cc6a' : type === 'error' ? '#ff4444' : '#00ff88'};
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                font-weight: 600;
+                white-space: pre-line;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 4000);
+        }
+        
+        // Matrix background animation (lightweight)
+        function initMatrix() {
+            const canvas = document.getElementById('matrix-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            window.addEventListener('resize', resize);
+            resize();
+            
+            const chars = 'マアマラワソカユイワルミヤABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()';
+            const fontSize = 14;
+            const columns = Math.floor(canvas.width / fontSize);
+            const drops = Array(columns).fill(1);
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff41';
+                ctx.font = fontSize + 'px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+                
+                requestAnimationFrame(draw);
+            }
+            
+            draw();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initMatrix();
+            showToast('ยินดีต้อนรับสู่ Lab! 🔒');
+        });
+    </script>
+    <script src="lab-nav.js"></script>
+</body>
+</html>

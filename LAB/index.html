@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Goonee Labs - Cybersecurity Learning Platform</title>
+    <link rel="stylesheet" href="lab.css">
+    <style>
+        /* Mobile-first responsive design */
+        .lab-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            padding: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .lab-grid {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 2rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .lab-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .lab-card {
+            background: linear-gradient(135deg, rgba(74, 211, 149, 0.1), rgba(20, 20, 30, 0.9));
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .lab-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(100, 255, 218, 0.5);
+            box-shadow: 0 10px 30px rgba(100, 255, 218, 0.1);
+        }
+        
+        .lab-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .lab-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #00ff88;
+        }
+        
+        .lab-description {
+            color: #b0c4de;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            flex-grow: 1;
+            margin-bottom: 1rem;
+        }
+        
+        .lab-difficulty {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .difficulty-beginner { background: #00ff88; color: #000; }
+        .difficulty-intermediate { background: #ffaa00; color: #000; }
+        .difficulty-advanced { background: #ff6b6b; color: #fff; }
+        
+        .lab-button {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            color: #000;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+        
+        .lab-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+        
+        .header-section {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #00ff88;
+            text-shadow: 0 0 20px #00ff88;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #8ea4ca;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-section {
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            background: #1a1a2e;
+            border-radius: 999px;
+            height: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #00ff88, #00cc6a);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        /* Touch-friendly mobile improvements */
+        @media (max-width: 768px) {
+            .main-title { font-size: 2rem; }
+            .lab-card { min-height: 180px; }
+            .lab-button { 
+                min-height: 48px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+    
+    <header class="header-section">
+        <h1 class="main-title">🔒 Goonee Labs</h1>
+        <p class="subtitle">Interactive Cybersecurity Learning Platform</p>
+        
+        <div class="progress-section">
+            <h3 style="margin: 0 0 1rem 0; color: #00ff88;">Learning Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <p id="progressText" style="margin: 0; color: #8ea4ca;">0 of 12 labs completed</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="lab-grid" id="labGrid">
+            <!-- Labs will be populated by JavaScript -->
+        </div>
+    </main>
+
+    <div id="toast-container" style="position: fixed; bottom: 1rem; right: 1rem; z-index: 1000;"></div>
+
+    <script>
+        // Lab data with enhanced mobile-friendly structure
+        const labs = [
+            {
+                id: 'gambling-api',
+                title: 'API Security Lab',
+                description: 'เรียนรู้การทำงานของ API, การส่ง request/response, และการจัดการ authentication ผ่านการจำลอง gambling API',
+                icon: '🎰',
+                difficulty: 'beginner',
+                file: 'GamblingAPI_lab.html',
+                completed: false
+            },
+            {
+                id: 'classical-ciphers',
+                title: 'Classical Ciphers',
+                description: 'ศึกษาการเข้ารหัสแบบคลาสสิก เช่น Caesar Cipher, Vigenère Cipher และเทคนิคการถอดรหัส',
+                icon: '🔐',
+                difficulty: 'beginner',
+                file: 'ClassicalCiphers.html',
+                completed: false
+            },
+            {
+                id: 'network-forensics',
+                title: 'Network Forensics',
+                description: 'วิเคราะห์ network traffic, ตรวจสอบ packet capture และค้นหาหลักฐานในการสื่อสารเครือข่าย',
+                icon: '🔍',
+                difficulty: 'intermediate',
+                file: 'NetworkForensics.html',
+                completed: false
+            },
+            {
+                id: 'firewall-config',
+                title: 'Firewall Configuration',
+                description: 'เรียนรู้การตั้งค่า firewall rules, การบล็อกและอนุญาต traffic ตามนโยบายความปลอดภัย',
+                icon: '🛡️',
+                difficulty: 'intermediate',
+                file: 'FirewallConfig.html',
+                completed: false
+            },
+            {
+                id: 'port-scanning',
+                title: 'Port Scanning',
+                description: 'ใช้เครื่องมือ nmap ในการสแกนพอร์ต ค้นหาบริการที่เปิดอยู่ และวิเคราะห์ผลลัพธ์',
+                icon: '🔎',
+                difficulty: 'beginner',
+                file: 'portscan.html',
+                completed: false
+            },
+            {
+                id: 'mitm-attack',
+                title: 'Man-in-the-Middle',
+                description: 'เข้าใจการโจมตีแบบ MITM, การดักจับข้อมูล และวิธีการป้องกันการโจมตีประเภทนี้',
+                icon: '👥',
+                difficulty: 'advanced',
+                file: 'Man-in-the-Middle.html',
+                completed: false
+            },
+            {
+                id: 'ddos-simulation',
+                title: 'DDoS Simulation',
+                description: 'จำลองการโจมตี DDoS, เข้าใจผลกระทบ และเรียนรู้วิธีการป้องกันและลดผลกระทบ',
+                icon: '💥',
+                difficulty: 'advanced',
+                file: 'DDoS.html',
+                completed: false
+            },
+            {
+                id: 'wireless-security',
+                title: 'Wireless Security',
+                description: 'ทดสอบความปลอดภัยของเครือข่าย WiFi, การ crack password และการป้องกัน wireless attacks',
+                icon: '📶',
+                difficulty: 'intermediate',
+                file: 'WirelessSecurity.html',
+                completed: false
+            },
+            {
+                id: 'log-analysis',
+                title: 'Log Analysis Challenge',
+                description: 'วิเคราะห์ log files เพื่อค้นหาหลักฐานการโจมตี, ติดตามผู้บุกรุก และสร้าง timeline ของเหตุการณ์',
+                icon: '📊',
+                difficulty: 'intermediate',
+                file: 'LogAnalysisChallenge.html',
+                completed: false
+            },
+            {
+                id: 'sql-injection',
+                title: 'SQL Injection Lab',
+                description: 'เรียนรู้เทคนิค SQL Injection, การค้นหาช่องโหว่ และวิธีการป้องกันในสภาพแวดล้อมที่ปลอดภัย',
+                icon: '💉',
+                difficulty: 'intermediate',
+                file: '#',
+                completed: false
+            },
+            {
+                id: 'xss-lab',
+                title: 'Cross-Site Scripting',
+                description: 'ทำความเข้าใจ XSS attacks, การฉีด JavaScript code และเทคนิคการป้องกัน XSS vulnerabilities',
+                icon: '🕷️',
+                difficulty: 'intermediate',
+                file: '#',
+                completed: false
+            },
+            {
+                id: 'csrf-lab',
+                title: 'CSRF Protection',
+                description: 'เรียนรู้การโจมตี Cross-Site Request Forgery และการใช้ CSRF tokens เพื่อป้องกัน',
+                icon: '🔄',
+                difficulty: 'advanced',
+                file: '#',
+                completed: false
+            }
+        ];
+
+        // Load completion status from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('goonee-labs-progress');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                labs.forEach(lab => {
+                    if (progress[lab.id]) {
+                        lab.completed = true;
+                    }
+                });
+            }
+        }
+
+        // Save completion status
+        function saveProgress() {
+            const progress = {};
+            labs.forEach(lab => {
+                if (lab.completed) {
+                    progress[lab.id] = true;
+                }
+            });
+            localStorage.setItem('goonee-labs-progress', JSON.stringify(progress));
+            updateProgressBar();
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const completed = labs.filter(lab => lab.completed).length;
+            const total = labs.length;
+            const percentage = (completed / total) * 100;
+            
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${completed} of ${total} labs completed`;
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                background: ${type === 'success' ? '#00ff88' : '#1a1a2e'};
+                color: ${type === 'success' ? '#000' : '#fff'};
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                margin-bottom: 0.5rem;
+                border: 1px solid ${type === 'success' ? '#00cc6a' : '#00ff88'};
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                font-weight: 600;
+            `;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Mark lab as completed
+        function markCompleted(labId) {
+            const lab = labs.find(l => l.id === labId);
+            if (lab && !lab.completed) {
+                lab.completed = true;
+                saveProgress();
+                showToast(`เสร็จสิ้น: ${lab.title}`, 'success');
+                renderLabs();
+            }
+        }
+
+        // Open lab
+        function openLab(lab) {
+            if (lab.file === '#') {
+                showToast('Lab นี้กำลังพัฒนา - เร็วๆ นี้!');
+                return;
+            }
+            
+            // Mark as completed when opened (for demo purposes)
+            markCompleted(lab.id);
+            
+            // Open in new tab for better mobile experience
+            window.open(lab.file, '_blank');
+        }
+
+        // Render labs
+        function renderLabs() {
+            const grid = document.getElementById('labGrid');
+            grid.innerHTML = '';
+            
+            labs.forEach(lab => {
+                const card = document.createElement('div');
+                card.className = 'lab-card';
+                card.onclick = () => openLab(lab);
+                
+                card.innerHTML = `
+                    <div class="lab-icon">${lab.icon}</div>
+                    <h3 class="lab-title">${lab.title}</h3>
+                    <span class="lab-difficulty difficulty-${lab.difficulty}">
+                        ${lab.difficulty.charAt(0).toUpperCase() + lab.difficulty.slice(1)}
+                    </span>
+                    <p class="lab-description">${lab.description}</p>
+                    <button class="lab-button">
+                        ${lab.completed ? '✅ เสร็จแล้ว - เปิดอีกครั้ง' : '🚀 เริ่มต้น Lab'}
+                    </button>
+                `;
+                
+                if (lab.completed) {
+                    card.style.opacity = '0.8';
+                    card.style.background = 'linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(20, 20, 30, 0.9))';
+                }
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Matrix background animation (lightweight)
+        function initMatrix() {
+            const canvas = document.getElementById('matrix-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            window.addEventListener('resize', resize);
+            resize();
+            
+            const chars = 'マアマラワソカユイワルミヤABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()';
+            const fontSize = 14;
+            const columns = Math.floor(canvas.width / fontSize);
+            const drops = Array(columns).fill(1);
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff41';
+                ctx.font = fontSize + 'px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+                
+                requestAnimationFrame(draw);
+            }
+            
+            draw();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+            renderLabs();
+            updateProgressBar();
+            initMatrix();
+            
+            showToast('ยินดีต้อนรับสู่ Goonee Labs! 🚀');
+        });
+    </script>
+</body>
+</html>

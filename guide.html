@@ -52,10 +52,56 @@
 
     .go-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-size:14px;z-index:10001;opacity:0;transition:opacity .18s ease}
 
+    /* Enhanced mobile responsiveness */
     @media (max-width: 768px) {
       .go-title { font-size:1.5rem; }
       .container { padding: 0 10px 32px; }
       .header-img { aspect-ratio: 16 / 10; }
+      
+      .feature-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .tool-grid { grid-template-columns: 1fr !important; }
+      
+      .theme-control .btn {
+        padding: 8px 12px;
+        font-size: 0.9em;
+      }
+      
+      kbd {
+        font-size: 0.8em;
+        padding: 2px 4px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 3px;
+      }
+    }
+
+    /* Keyboard shortcut styling */
+    kbd {
+      font-family: monospace;
+      font-size: 0.9em;
+      padding: 3px 6px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    /* Enhanced card hover effects */
+    .card:hover {
+      transform: rotateX(2deg) rotateY(-2deg) translateY(-2px) scale(1.02);
+      border-color: var(--accent, #ffd700);
+      box-shadow: 0 0 46px rgba(255,215,0,.32);
+    }
+
+    /* Theme control panel special styling */
+    .theme-control {
+      background: linear-gradient(135deg, rgba(0,255,65,0.1), rgba(0,229,255,0.1)) !important;
+      border: 2px solid var(--accent, #00ff41) !important;
+      box-shadow: 0 0 30px rgba(0,255,65,0.2) !important;
+    }
+
+    .theme-control:hover {
+      box-shadow: 0 0 50px rgba(0,255,65,0.4) !important;
     }
   </style>
   <div class=container>
@@ -63,18 +109,67 @@
     <h1>คู่มือ: Goonee Console</h1>
     <p class=sub>คู่มือการใช้งานเครื่องมือสำหรับนักพัฒนาเว็บ Goonee Console V2</p>
 
+    <!-- Theme Control Panel -->
+    <div class="card theme-control" id="theme-panel">
+        <h2>🎨 Theme Control Center</h2>
+        <p class="note">ปรับแต่งธีมและสไตล์ของหน้าเว็บตามใจชอบ</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0;">
+            <button class="btn" id="btn-random-theme">🎲 สุ่มธีม</button>
+            <button class="btn" id="btn-save-theme">💾 บันทึกธีม</button>
+            <button class="btn" id="btn-hacker-mode">💀 Hacker Mode</button>
+            <button class="btn" id="btn-matrix-rain">🌊 Matrix Rain</button>
+            <button class="btn alt" id="btn-reset-theme">↺ รีเซ็ต</button>
+        </div>
+        <div id="theme-status" style="font-size: 0.9em; color: #ffd166; margin-top: 8px;"></div>
+    </div>
+
     <div class="card" id="console2-main">
-        <h2>🚀 กูนี่คอนโซล V2 (แนะนำ)</h2>
-        <p class="note">เครื่องมือเวอร์ชันใหม่ล่าสุดที่ปรับปรุงประสิทธิภาพ, การใช้งานบนมือถือ, และเพิ่มเครื่องมือช่วยเหลือใหม่ๆ</p>
-        <h3>1. คัดลอก Bookmarklet</h3>
-        <p class="note">ลากปุ่มนี้ไปที่แถบบุ๊คมาร์ค หรือคัดลอกโค้ดไปสร้างบุ๊คมาร์คใหม่</p>
+        <h2>🦈 กูนี่คอนโซล V2 - Ultimate Hacker Edition</h2>
+        <p class="note">เครื่องมือแฮ็กเกอร์สุดล้ำ! พร้อมฟีเจอร์ XSS Testing, Cookie Hacking, DOM Spy, Network Sniffing และอีกมากมาย</p>
+        
+        <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0;">
+            <div class="feature-item" style="background: rgba(0,255,65,0.1); border: 1px solid #00ff41; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">⚡</div>
+                <strong>XSS Testing</strong>
+                <div style="font-size: 0.8em; opacity: 0.8;">ทดสอบช่องโหว่ XSS</div>
+            </div>
+            <div class="feature-item" style="background: rgba(255,107,107,0.1); border: 1px solid #ff6b6b; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">🍪</div>
+                <strong>Cookie Hacking</strong>
+                <div style="font-size: 0.8em; opacity: 0.8;">ดึงและวิเคราะห์ cookies</div>
+            </div>
+            <div class="feature-item" style="background: rgba(0,229,255,0.1); border: 1px solid #00e5ff; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">🔍</div>
+                <strong>DOM Spy</strong>
+                <div style="font-size: 0.8em; opacity: 0.8;">สแกนหาช่องโหว่ DOM</div>
+            </div>
+            <div class="feature-item" style="background: rgba(255,215,0,0.1); border: 1px solid #ffd700; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">📡</div>
+                <strong>Network Sniffer</strong>
+                <div style="font-size: 0.8em; opacity: 0.8;">ดักจับ network requests</div>
+            </div>
+        </div>
+
+        <h3>🚀 Quick Start</h3>
+        <p class="note">คัดลอกโค้ดนี้ไปสร้างบุ๊คมาร์ค หรือกดทดสอบเลย!</p>
         <pre><code id="bm-console2">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/console2.js?t='+Date.now();document.body.appendChild(s);})();</code></pre>
         <p>
-            <a class="btn" href="#" data-copy="#bm-console2">คัดลอกโค้ด</a>
+            <a class="btn" href="#" data-copy="#bm-console2">📋 คัดลอกโค้ด</a>
             <a class="btn alt" href="#" id="btn-test-console2">🧪 ทดสอบบนหน้านี้</a>
         </p>
-        <h3>2. สำหรับผู้ใช้ Android</h3>
-        <p class="note">เพื่อประสบการณ์ที่ดีที่สุด (รองรับส่วนขยายจาก Chrome) แนะนำให้ใช้ Kiwi Browser</p>
+
+        <h3>⌨️ Keyboard Shortcuts</h3>
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid #00ff41; border-radius: 8px; padding: 12px; margin: 12px 0;">
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; font-family: monospace; font-size: 0.9em;">
+                <span><kbd>Ctrl + `</kbd></span><span>เปิด/ปิด Console</span>
+                <span><kbd>Ctrl + Shift + H</kbd></span><span>Hacker Mode (ลบ CSS + Matrix)</span>
+                <span><kbd>Ctrl + Shift + P</kbd></span><span>แสดงรหัสผ่านทั้งหมด</span>
+                <span><kbd>Ctrl + Shift + X</kbd></span><span>ทดสอบ XSS</span>
+            </div>
+        </div>
+
+        <h3>📱 สำหรับผู้ใช้ Android</h3>
+        <p class="note">เพื่อประสบการณ์แฮ็กเกอร์ที่สมบูรณ์แบบ แนะนำให้ใช้ Kiwi Browser</p>
         <p>
             <a class="btn kiwi-link" href="https://apkpure.com/kiwi-browser-fast-quiet/com.kiwibrowser.browser" target="_blank" rel="noopener">
                 <img src="https://image.winudf.com/v2/image1/Y29tLmtpd2licm93c2VyLmJyb3dzZXJfaWNvbl8xNTYxNTg4NjMxXzAxNg/icon.webp?w=140&fakeurl=1&type=.webp" alt="Kiwi Browser icon">
@@ -84,15 +179,30 @@
     </div>
 
     <div class="card">
-      <h2>เครื่องมืออื่นๆ (Bookmarklets)</h2>
-      <p>คัดลอกโค้ดสำหรับเครื่องมือเฉพาะทางอื่นๆ ที่ต้องการใช้งาน</p>
-      <h3>• Monitor</h3>
-      <pre><code id="bm-monitor">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/monitor.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-monitor">คัดลอกโค้ด</a></p>
+      <h2>🛠️ เครื่องมือเฉพาะทาง (Specialized Tools)</h2>
+      <p class="note">เครื่องมือแฮ็กเกอร์เฉพาะด้าน สำหรับงานที่ต้องการความเชี่ยวชาญ</p>
+      
+      <div class="tool-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 16px 0;">
+        <div class="tool-card" style="background: rgba(0,255,65,0.05); border: 1px solid #00ff41; border-radius: 8px; padding: 16px;">
+          <h3 style="margin-top: 0;">📊 System Monitor</h3>
+          <p style="font-size: 0.9em; opacity: 0.8;">ติดตามประสิทธิภาพระบบ, การใช้งาน CPU, RAM และ Network</p>
+          <pre style="font-size: 0.8em; margin: 8px 0;"><code id="bm-monitor">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/monitor.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+          <p>
+            <a class="btn" href="#" data-copy="#bm-monitor">📋 คัดลอก</a>
+            <a class="btn alt" href="#" data-run="#bm-monitor">🧪 ทดสอบ</a>
+          </p>
+        </div>
 
-      <h3>• Theme</h3>
-      <pre><code id="bm-theme">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/Theme.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p><a class="btn" href="#" data-copy="#bm-theme">คัดลอกโค้ด</a></p>
+        <div class="tool-card" style="background: rgba(255,107,107,0.05); border: 1px solid #ff6b6b; border-radius: 8px; padding: 16px;">
+          <h3 style="margin-top: 0;">🎨 Theme Changer</h3>
+          <p style="font-size: 0.9em; opacity: 0.8;">เปลี่ยนธีมและสีสันของเว็บไซต์แบบเรียลไทม์</p>
+          <pre style="font-size: 0.8em; margin: 8px 0;"><code id="bm-theme">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/Theme.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+          <p>
+            <a class="btn" href="#" data-copy="#bm-theme">📋 คัดลอก</a>
+            <a class="btn alt" href="#" data-run="#bm-theme">🧪 ทดสอบ</a>
+          </p>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -151,12 +261,24 @@
     </div>
 
     <div class="card">
-      <h2>Dev tools: Eruda</h2>
-      <p class="note">โหลด Eruda (mobile console) แบบ on-demand — กดปุ่มเพื่อโหลดและเปิด</p>
-      <pre><code id="bm-eruda">javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda';document.body.appendChild(s);s.onload=function(){eruda.init();};})();</code></pre>
+      <h2>🧪 Developer Tools: Eruda Mobile Console</h2>
+      <p class="note">เครื่องมือ Developer Console สำหรับมือถือ - ดีบักและตรวจสอบเว็บไซต์ได้ทุกที่</p>
+      
+      <div style="background: rgba(0,229,255,0.1); border: 1px solid #00e5ff; border-radius: 8px; padding: 12px; margin: 12px 0;">
+        <h4 style="margin-top: 0; color: #00e5ff;">✨ ฟีเจอร์ Eruda:</h4>
+        <ul style="margin: 8px 0; padding-left: 20px; font-size: 0.9em;">
+          <li>Console สำหรับรัน JavaScript</li>
+          <li>Elements Inspector สำหรับดู DOM</li>
+          <li>Network Monitor ติดตาม requests</li>
+          <li>Resources Viewer ดูไฟล์และ storage</li>
+          <li>Sources Debugger สำหรับ debug โค้ด</li>
+        </ul>
+      </div>
+
+      <pre><code id="bm-eruda">javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda';document.body.appendChild(s);s.onload=function(){eruda.init();eruda.show();};})();</code></pre>
       <p>
-        <a class="btn" href="#" data-copy="#bm-eruda">คัดลอก Eruda Bookmarklet</a>
-        <a class="btn alt" href="#" id="btn-eruda">เปิด Eruda</a>
+        <a class="btn" href="#" data-copy="#bm-eruda">📋 คัดลอก Bookmarklet</a>
+        <a class="btn alt" href="#" id="btn-eruda">🧪 เปิด Eruda ทันที</a>
       </p>
     </div>
 
@@ -349,45 +471,384 @@
         const runBtn = e.target.closest('[data-run]'); if (!runBtn) return; e.preventDefault(); const sel = runBtn.getAttribute('data-run'); const el = sel && document.querySelector(sel); if (el) runBookmarkletText(el.textContent);
       });
 
-      // Better random theme generator with more variants and optional persistence
+      // 🔥 Advanced Theme System with Hacker Effects
       (function(){
         const themes = [
-          { name:'neon-cyan', bodyBg:'radial-gradient(1200px 600px at 10% -10%, #112 0%, #0a0a0a 40%), linear-gradient(135deg, #0a0a0a 0%, #121225 50%, #0c0c1a 100%)', accent:'#00ff41', title:'#00e5ff' },
-          { name:'green-marine', bodyBg:'linear-gradient(135deg,#07120b,#042023)', accent:'#00ff41', title:'#8ad1ff' },
-          { name:'magenta', bodyBg:'linear-gradient(135deg,#12040f,#2b0037)', accent:'#ff7edb', title:'#ffd7f0' },
-          { name:'deep-blue', bodyBg:'linear-gradient(135deg,#07112a,#001a3a)', accent:'#8ad1ff', title:'#00ccff' },
-          { name:'solar', bodyBg:'linear-gradient(135deg,#2b0a00,#1a1a0b)', accent:'#ffd166', title:'#ffb84d' }
+          { name:'Matrix Green', bodyBg:'radial-gradient(1200px 600px at 10% -10%, #001100 0%, #000a00 40%), linear-gradient(135deg, #000000 0%, #001a00 50%, #000c00 100%)', accent:'#00ff41', title:'#00ff88', cardBg:'rgba(0,255,65,0.08)' },
+          { name:'Cyber Blue', bodyBg:'linear-gradient(135deg,#000a1a,#001122)', accent:'#00e1ff', title:'#8ad1ff', cardBg:'rgba(0,225,255,0.08)' },
+          { name:'Neon Pink', bodyBg:'linear-gradient(135deg,#1a0010,#2b0020)', accent:'#ff3d7f', title:'#ff8ab3', cardBg:'rgba(255,61,127,0.08)' },
+          { name:'Hacker Orange', bodyBg:'linear-gradient(135deg,#1a0a00,#2b1500)', accent:'#ff9900', title:'#ffcc66', cardBg:'rgba(255,153,0,0.08)' },
+          { name:'Deep Purple', bodyBg:'linear-gradient(135deg,#0a001a,#15002b)', accent:'#9d4edd', title:'#c77dff', cardBg:'rgba(157,78,221,0.08)' },
+          { name:'Toxic Green', bodyBg:'linear-gradient(135deg,#0f1a00,#1a3300)', accent:'#39ff14', title:'#7fff00', cardBg:'rgba(57,255,20,0.08)' },
+          { name:'Blood Red', bodyBg:'linear-gradient(135deg,#1a0000,#330000)', accent:'#ff0040', title:'#ff6b6b', cardBg:'rgba(255,0,64,0.08)' },
+          { name:'Electric Blue', bodyBg:'linear-gradient(135deg,#000f1a,#001f33)', accent:'#0080ff', title:'#40a0ff', cardBg:'rgba(0,128,255,0.08)' },
+          { name:'Alien Green', bodyBg:'linear-gradient(135deg,#001a0a,#003315)', accent:'#00ff80', title:'#66ffaa', cardBg:'rgba(0,255,128,0.08)' },
+          { name:'Void Black', bodyBg:'linear-gradient(135deg,#000000,#111111)', accent:'#ffffff', title:'#cccccc', cardBg:'rgba(255,255,255,0.05)' }
         ];
-        try{
-          const key = 'goonee:lastTheme';
-          let pick = null;
-          // prefer a new random pick each load; to avoid repeats, try up to 6 times
-          const last = (function(){ try{ return localStorage.getItem(key); }catch(e){return null;} })();
-          for (let i=0;i<6;i++){
-            const candidate = themes[Math.floor(Math.random()*themes.length)];
-            if (!last || candidate.name !== last) { pick = candidate; break; }
-          }
-          if (!pick) pick = themes[Math.floor(Math.random()*themes.length)];
-          // apply
-          document.body.style.background = pick.bodyBg;
+
+        let currentTheme = null;
+        let matrixInterval = null;
+        let hackerMode = false;
+
+        function applyTheme(theme) {
+          currentTheme = theme;
+          document.body.style.background = theme.bodyBg;
           const root = document.documentElement;
-          root.style.setProperty('--accent', pick.accent);
-          root.style.setProperty('--title-color', pick.title);
-          try{ localStorage.setItem(key, pick.name); }catch(e){}
-        }catch(e){ /* ignore */ }
+          root.style.setProperty('--accent', theme.accent);
+          root.style.setProperty('--title-color', theme.title);
+          
+          // Update card backgrounds
+          document.querySelectorAll('.card').forEach(card => {
+            card.style.background = theme.cardBg;
+            card.style.borderColor = theme.accent;
+          });
+          
+          updateThemeStatus(`ธีมปัจจุบัน: ${theme.name}`);
+        }
+
+        function updateThemeStatus(msg) {
+          const status = document.getElementById('theme-status');
+          if (status) {
+            status.textContent = msg;
+            status.style.color = currentTheme ? currentTheme.accent : '#ffd166';
+          }
+        }
+
+        function randomTheme() {
+          const theme = themes[Math.floor(Math.random() * themes.length)];
+          applyTheme(theme);
+          showToast(`🎨 เปลี่ยนเป็นธีม: ${theme.name}`);
+        }
+
+        function saveTheme() {
+          if (!currentTheme) return;
+          try {
+            localStorage.setItem('goonee:savedTheme', JSON.stringify(currentTheme));
+            showToast('💾 บันทึกธีมแล้ว!');
+            updateThemeStatus(`ธีมที่บันทึก: ${currentTheme.name}`);
+          } catch(e) {
+            showToast('❌ บันทึกธีมไม่สำเร็จ');
+          }
+        }
+
+        function loadSavedTheme() {
+          try {
+            const saved = localStorage.getItem('goonee:savedTheme');
+            if (saved) {
+              const theme = JSON.parse(saved);
+              applyTheme(theme);
+              return true;
+            }
+          } catch(e) {}
+          return false;
+        }
+
+        function hackerModeToggle() {
+          hackerMode = !hackerMode;
+          
+          if (hackerMode) {
+            // Apply hacker styling
+            document.body.style.background = '#000000';
+            document.body.style.color = '#00ff00';
+            document.body.style.fontFamily = '"Courier New", monospace';
+            
+            document.querySelectorAll('.card').forEach(card => {
+              card.style.background = 'rgba(0,255,0,0.05)';
+              card.style.border = '1px solid #00ff00';
+              card.style.boxShadow = '0 0 20px rgba(0,255,0,0.3)';
+            });
+            
+            // Add glitch effect to title
+            const title = document.querySelector('.go-title');
+            if (title) {
+              title.style.animation = 'go-glitch 0.3s infinite';
+            }
+            
+            showToast('💀 HACKER MODE ACTIVATED');
+            updateThemeStatus('💀 HACKER MODE - System Compromised');
+          } else {
+            // Restore normal theme
+            if (currentTheme) {
+              applyTheme(currentTheme);
+            } else {
+              randomTheme();
+            }
+            
+            const title = document.querySelector('.go-title');
+            if (title) {
+              title.style.animation = 'go-glow 2s ease-in-out infinite alternate';
+            }
+            
+            showToast('🔒 Normal Mode Restored');
+          }
+        }
+
+        function matrixRain() {
+          if (matrixInterval) {
+            clearInterval(matrixInterval);
+            matrixInterval = null;
+            const canvas = document.getElementById('matrix-canvas');
+            if (canvas) canvas.remove();
+            showToast('🌊 Matrix Rain ปิดแล้ว');
+            return;
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.id = 'matrix-canvas';
+          canvas.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.3;
+          `;
+          document.body.appendChild(canvas);
+
+          const ctx = canvas.getContext('2d');
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+
+          const chars = 'กขคงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%^&*(){}[]<>?/|\\~`';
+          const fontSize = 14;
+          const columns = Math.floor(canvas.width / fontSize);
+          const drops = Array(columns).fill(1);
+
+          matrixInterval = setInterval(() => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = currentTheme ? currentTheme.accent : '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+              const char = chars[Math.floor(Math.random() * chars.length)];
+              ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+              if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+              }
+              drops[i]++;
+            }
+          }, 35);
+
+          showToast('🌊 Matrix Rain เปิดใช้งาน');
+        }
+
+        function resetTheme() {
+          hackerMode = false;
+          if (matrixInterval) {
+            clearInterval(matrixInterval);
+            matrixInterval = null;
+            const canvas = document.getElementById('matrix-canvas');
+            if (canvas) canvas.remove();
+          }
+          
+          // Apply default theme
+          const defaultTheme = themes[0];
+          applyTheme(defaultTheme);
+          
+          const title = document.querySelector('.go-title');
+          if (title) {
+            title.style.animation = 'go-glow 2s ease-in-out infinite alternate';
+          }
+          
+          showToast('↺ รีเซ็ตธีมเรียบร้อย');
+        }
+
+        // Event listeners
+        document.getElementById('btn-random-theme')?.addEventListener('click', randomTheme);
+        document.getElementById('btn-save-theme')?.addEventListener('click', saveTheme);
+        document.getElementById('btn-hacker-mode')?.addEventListener('click', hackerModeToggle);
+        document.getElementById('btn-matrix-rain')?.addEventListener('click', matrixRain);
+        document.getElementById('btn-reset-theme')?.addEventListener('click', resetTheme);
+
+        // Easter Eggs - Secret Key Combinations
+        let keySequence = [];
+        document.addEventListener('keydown', (e) => {
+          keySequence.push(e.key.toLowerCase());
+          if (keySequence.length > 10) keySequence.shift();
+          
+          const sequence = keySequence.join('');
+          
+          // Konami Code: ↑↑↓↓←→←→ba
+          if (sequence.includes('arrowuparrowuparrowdownarrowdownarrowleftarrowrightarrowleftarrowrightba')) {
+            showToast('🎮 KONAMI CODE ACTIVATED!');
+            hackerModeToggle();
+            matrixRain();
+            keySequence = [];
+          }
+          
+          // "hack" sequence
+          if (sequence.includes('hack')) {
+            showToast('💀 HACK SEQUENCE DETECTED!');
+            randomTheme();
+            keySequence = [];
+          }
+          
+          // "goonee" sequence
+          if (sequence.includes('goonee')) {
+            showToast('🦈 GOONEE EASTER EGG!');
+            const specialTheme = {
+              name: 'Goonee Special',
+              bodyBg: 'linear-gradient(45deg, #ff0000, #00ff00, #0000ff, #ffff00, #ff00ff, #00ffff)',
+              accent: '#ffffff',
+              title: '#000000',
+              cardBg: 'rgba(255,255,255,0.1)'
+            };
+            applyTheme(specialTheme);
+            keySequence = [];
+          }
+        });
+
+        // Initialize
+        if (!loadSavedTheme()) {
+          randomTheme();
+        }
+
+        // Add glitch animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+          @keyframes go-glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+          }
+        `;
+        document.head.appendChild(style);
+
+        // Expose functions globally for console access
+        window.gooneeTheme = {
+          random: randomTheme,
+          save: saveTheme,
+          hacker: hackerModeToggle,
+          matrix: matrixRain,
+          reset: resetTheme,
+          themes: themes
+        };
+
       })();
 
-      // Eruda loader
+      // Enhanced Eruda loader with hacker effects
       const erudaBtn = document.getElementById('btn-eruda');
       if (erudaBtn) erudaBtn.addEventListener('click', function(e){
         e.preventDefault();
+        
+        // Add loading effect
+        erudaBtn.textContent = '⏳ กำลังโหลด...';
+        erudaBtn.style.background = '#ffaa00';
+        
         // if already loaded, toggle
-        if (window.eruda){ try{ window.eruda.init(); window.eruda.show(); showToast('Eruda เปิดแล้ว'); }catch(e){ showToast('Eruda ready'); } return; }
-        const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/eruda'; s.async=true;
-        s.onload = function(){ try{ if (window.eruda){ window.eruda.init(); window.eruda.show(); showToast('Eruda เปิดแล้ว'); } }catch(e){ showToast('โหลด Eruda เสร็จ'); } };
-        s.onerror = function(){ showToast('โหลด Eruda ไม่สำเร็จ'); };
+        if (window.eruda){ 
+          try{ 
+            window.eruda.init(); 
+            window.eruda.show(); 
+            showToast('🧪 Eruda Console เปิดแล้ว!'); 
+            erudaBtn.textContent = '🧪 เปิด Eruda ทันที';
+            erudaBtn.style.background = '';
+          }catch(e){ 
+            showToast('Eruda พร้อมใช้งาน'); 
+          } 
+          return; 
+        }
+        
+        const s=document.createElement('script'); 
+        s.src='https://cdn.jsdelivr.net/npm/eruda'; 
+        s.async=true;
+        
+        s.onload = function(){ 
+          try{ 
+            if (window.eruda){ 
+              window.eruda.init(); 
+              window.eruda.show(); 
+              showToast('🧪 Eruda Console พร้อมใช้งาน!'); 
+              
+              // Add some hacker flair
+              setTimeout(() => {
+                if (window.eruda && window.eruda._devTools) {
+                  console.log('%c🦈 GOONEE HACKER CONSOLE LOADED! 🦈', 'color: #00ff41; font-size: 20px; font-weight: bold; text-shadow: 0 0 10px #00ff41;');
+                  console.log('%cType gooneeTheme.random() to change theme!', 'color: #00e5ff; font-size: 14px;');
+                  console.log('%cType gooneeTheme.hacker() for hacker mode!', 'color: #ff6b6b; font-size: 14px;');
+                }
+              }, 1000);
+            } 
+          }catch(e){ 
+            showToast('โหลด Eruda เสร็จ'); 
+          }
+          
+          erudaBtn.textContent = '🧪 เปิด Eruda ทันที';
+          erudaBtn.style.background = '';
+        };
+        
+        s.onerror = function(){ 
+          showToast('❌ โหลด Eruda ไม่สำเร็จ'); 
+          erudaBtn.textContent = '🧪 เปิด Eruda ทันที';
+          erudaBtn.style.background = '';
+        };
+        
         document.body.appendChild(s);
       });
+
+      // 🔥 Additional Easter Eggs and Hacker Features
+      
+      // Secret click counter on logo
+      let logoClicks = 0;
+      const logo = document.querySelector('.header-img');
+      if (logo) {
+        logo.addEventListener('click', () => {
+          logoClicks++;
+          if (logoClicks === 5) {
+            showToast('🦈 Secret: กด Ctrl+Shift+G เพื่อเปิด God Mode!');
+          } else if (logoClicks === 10) {
+            showToast('💀 Ultra Secret: พิมพ์ "goonee" เพื่อดู Easter Egg!');
+            logoClicks = 0;
+          }
+        });
+      }
+
+      // God Mode shortcut
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'G') {
+          e.preventDefault();
+          
+          // Activate all effects
+          if (window.gooneeTheme) {
+            window.gooneeTheme.hacker();
+            setTimeout(() => window.gooneeTheme.matrix(), 500);
+          }
+          
+          // Add special styling
+          document.body.style.cursor = 'crosshair';
+          document.title = '🦈 GOONEE GOD MODE ACTIVATED 🦈';
+          
+          showToast('⚡ GOD MODE ACTIVATED! ⚡');
+          
+          // Console message
+          console.log('%c⚡ GOONEE GOD MODE ACTIVATED! ⚡', 'color: #ff0000; font-size: 24px; font-weight: bold; text-shadow: 0 0 10px #ff0000;');
+          console.log('%cAll systems compromised. Welcome, hacker.', 'color: #00ff00; font-size: 16px;');
+        }
+      });
+
+      // Random hacker quotes
+      const hackerQuotes = [
+        "The best way to get the right answer on the Internet is not to ask a question, but to post the wrong answer.",
+        "There are only 10 types of people in the world: those who understand binary and those who don't.",
+        "Programming is like sex: one mistake and you have to support it for the rest of your life.",
+        "A computer lets you make more mistakes faster than any invention in human history.",
+        "The Internet: where men are men, women are men, and children are FBI agents."
+      ];
+
+      // Show random quote every 30 seconds
+      setInterval(() => {
+        if (Math.random() < 0.1) { // 10% chance
+          const quote = hackerQuotes[Math.floor(Math.random() * hackerQuotes.length)];
+          showToast(`💭 Hacker Wisdom: ${quote}`);
+        }
+      }, 30000);
 
     })();
   </script>

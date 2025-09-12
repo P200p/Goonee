@@ -30,6 +30,21 @@
   .chip{background:var(--chip); color:#b9c7ea; border:1px solid #2a3a69; padding:6px 10px; border-radius:999px; font-size:.85rem}
   .grid{display:grid; gap:16px; grid-template-columns: 1.15fr .85fr}
   @media (max-width: 1000px){ .grid{grid-template-columns:1fr} }
+  
+  /* Enhanced mobile improvements */
+  @media (max-width: 768px) {
+    body{font-size:16px}
+    .wrap{padding:12px}
+    h1{font-size:1.2rem}
+    select,button,input,textarea{font-size:16px;padding:12px;min-height:44px}
+    .btn{min-height:48px;font-size:16px}
+    .row{flex-direction:column;gap:12px}
+    .chips{justify-content:center}
+    .chip{font-size:14px;padding:8px 12px}
+    .kpi{grid-template-columns:repeat(2,1fr);gap:8px}
+    .cfg{grid-template-columns:1fr;gap:12px}
+    .log{height:180px}
+  }
   .muted{color:var(--muted)}
   .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
   .kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
@@ -512,5 +527,6 @@
   setTimeout(()=> toastShow('ตั้งค่านโยบาย แล้วกด “เริ่มจำลอง” — ลองตรึง SSH ด้วย CIDR ดู'), 700);
 })();
 </script>
+<script src="lab-nav.js"></script>
 </body>
 </html>

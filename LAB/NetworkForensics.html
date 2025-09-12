@@ -31,6 +31,21 @@
   .chip{background:var(--chip,#1b2440); color:#b9c7ea; border:1px solid #2a3a69; padding:6px 10px; border-radius:999px; font-size:.85rem}
   .grid{display:grid; gap:16px; grid-template-columns: 1.2fr .8fr}
   @media (max-width: 1020px){ .grid{grid-template-columns:1fr} }
+  
+  /* Enhanced mobile improvements */
+  @media (max-width: 768px) {
+    body{font-size:16px}
+    .wrap{padding:12px}
+    h1{font-size:1.2rem}
+    select,button,input,textarea{font-size:16px;padding:12px;min-height:44px}
+    .btn{min-height:48px;font-size:16px}
+    .row{flex-direction:column;gap:12px}
+    .chips{justify-content:center}
+    .chip{font-size:14px;padding:8px 12px}
+    .kpi{grid-template-columns:repeat(2,1fr);gap:8px}
+    .panel{grid-template-columns:1fr;gap:12px}
+    .log{height:200px}
+  }
   .log{height:260px; overflow:auto; padding:12px; background:var(--code); border:1px solid #1d2a4b; border-radius:10px; font-family:ui-monospace,Menlo,Consolas,"Noto Sans Mono",monospace; line-height:1.45}
   .muted{color:var(--muted)}
   .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
@@ -523,5 +538,6 @@
   setTimeout(()=> toastShow('เลือกฉาก → สร้างแคปเจอร์ → ฟิลเตอร์/ค้นหา/ถอดรหัส → อธิบายผล/รายงาน'), 700);
 })();
 </script>
+<script src="lab-nav.js"></script>
 </body>
 </html>

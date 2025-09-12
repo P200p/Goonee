@@ -31,26 +31,39 @@
         </noscript>
         <section id="labs-list">
             <h2 class="text-xl font-semibold mb-2">Labs</h2>
-            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 list-none p-0 m-0">
+            <div style="text-align: center; padding: 2rem; background: rgba(0, 255, 136, 0.1); border: 1px solid #00ff88; border-radius: 12px; margin: 2rem 0;">
+                <h2 style="color: #00ff88; margin-bottom: 1rem;">🚀 New Enhanced Lab Interface</h2>
+                <p style="color: #8ea4ca; margin-bottom: 2rem;">
+                    เราได้อัปเกรดหน้า Labs ให้ใช้งานง่ายขึ้นบนมือถือและมีฟีเจอร์ใหม่มากมาย!
+                </p>
+                <button onclick="window.location.href='index.html'" 
+                        style="background: linear-gradient(45deg, #00ff88, #00cc6a); color: #000; 
+                               border: none; padding: 16px 32px; border-radius: 8px; 
+                               font-weight: 700; font-size: 18px; cursor: pointer;">
+                    เปิดหน้า Labs ใหม่ →
+                </button>
+            </div>
+            
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 list-none p-0 m-0" style="opacity: 0.7;">
                 <li class="bg-gray-800 p-4 rounded">
                     <h3 class="font-bold">Port Scanning</h3>
                     <p class="text-sm">ใช้ nmap วิเคราะห์พอร์ต</p>
-                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="port-scanning">Start</button>
+                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="port-scanning">Start (Legacy)</button>
                 </li>
                 <li class="bg-gray-800 p-4 rounded">
                     <h3 class="font-bold">SQL Injection</h3>
                     <p class="text-sm">ค้นหาช่องโหว่ SQL (sandbox)</p>
-                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="sql-injection">Start</button>
+                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="sql-injection">Start (Legacy)</button>
                 </li>
                 <li class="bg-gray-800 p-4 rounded">
                     <h3 class="font-bold">Cross-Site Scripting (XSS)</h3>
                     <p class="text-sm">การโจมตี XSS และการป้องกัน</p>
-                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="xss">Start</button>
+                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="xss">Start (Legacy)</button>
                 </li>
                 <li class="bg-gray-800 p-4 rounded">
                     <h3 class="font-bold">Cross-Site Request Forgery (CSRF)</h3>
                     <p class="text-sm">เรียนรู้ CSRF และ mitigation</p>
-                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="csrf">Start</button>
+                    <button class="mt-2 px-3 py-1 bg-blue-600 rounded start-btn" data-lab="csrf">Start (Legacy)</button>
                 </li>
             </ul>
             <div class="mt-6">

@@ -20,6 +20,20 @@
   main .wrap{padding:24px 0}
   .grid{display:grid;gap:16px;grid-template-columns:1.3fr .7fr}
   @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  
+  /* Enhanced mobile improvements */
+  @media(max-width:768px){
+    body{font-size:16px}
+    h1{font-size:1.2rem}
+    .wrap{padding:0 12px}
+    input,select,button,textarea{font-size:16px;padding:12px;min-height:44px}
+    .btn{min-height:48px;font-size:16px}
+    .chips{justify-content:center}
+    .chip{font-size:14px;padding:6px 12px}
+    .kpi{grid-template-columns:1fr;gap:8px}
+    .row{flex-direction:column;gap:12px}
+    .row > div{flex:none}
+  }
   .card{background:linear-gradient(180deg,rgba(74,211,149,0.06),transparent 25%),var(--card);
     border:1px solid var(--line);border-radius:12px;padding:16px}
   .title{margin-bottom:12px;display:flex;align-items:center;gap:8px}
@@ -279,5 +293,6 @@
   newChallenge();
 })();
 </script>
+<script src="lab-nav.js"></script>
 </body>
 </html>

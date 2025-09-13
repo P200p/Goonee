@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="th">
 <head>
-    <link rel="stylesheet" href="assets/goonee-collapsible-nav.css">
-    <script defer src="assets/goonee-collapsible-nav.js"></script>
+    <link rel="stylesheet" href="../../assets/goonee-collapsible-nav.css">
+    <script defer src="../../assets/goonee-collapsible-nav.js"></script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -45,4 +45,11 @@
   </ul>
   <p class="small">หลัง push ขึ้น GitHub ให้ไปที่ Settings → Pages → เลือก branch main / folder /docs เพื่อเปิด Pages</p>
 </body>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.gooneeCollapsibleNav && typeof window.gooneeCollapsibleNav.init === 'function') {
+      window.gooneeCollapsibleNav.init({ idPrefix: 'goonee' });
+    }
+  });
+</script>
 </html>

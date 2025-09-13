@@ -32,6 +32,12 @@
         });
         if(overlay){overlay.addEventListener('click',close)}
 
+        // close button inside panel
+        const closeBtn = panel.querySelector('.'+prefix+'-cnav-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', close);
+        }
+
         // close on Escape when focused inside panel
         panel.addEventListener('keydown',e=>{
           if(e.key==='Escape') close();
@@ -41,9 +47,9 @@
         btn.goonee = {open,close};
       });
       // submenu toggles (data-goonee-subtoggle -> aria controls a sublist id)
-      const subtoggles = document.querySelectorAll('[data-'+(opts&&opts.idPrefix||'goonee')+'-subtoggle]');
+      const subtoggles = document.querySelectorAll('[data-'+prefix+'-subtoggle]');
       subtoggles.forEach(st=>{
-        const subTarget = st.getAttribute('data-'+(opts&&opts.idPrefix||'goonee')+'-subtarget');
+        const subTarget = st.getAttribute('data-'+prefix+'-subtarget');
         const subList = document.getElementById(subTarget);
         if(!subList) return;
         st.setAttribute('aria-expanded','false');

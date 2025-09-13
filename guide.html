@@ -7,12 +7,13 @@
   <title>คู่มือ Goonee Console</title>
   <link rel="icon" type="image/png" sizes="192x192" href="../icon/192x192.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="../icon/192x192.png" />
-  <link rel=stylesheet href=home.css />
+  <link rel="stylesheet" href="home.css" />
+  <link rel="stylesheet" href="assets/guide-styles.css" />
   <style>
     body{background:url('BG.png') center/cover fixed #0b1020;color:#e0e0e0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;text-shadow:0 1px 2px rgba(0,0,0,.75)}
     .container{max-width:900px;margin:0 auto;padding:20px}
     .header-img{display:block;width:100%;max-width:900px;height:auto;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.35);margin:8px 0 16px}
-    .card{background:rgba(2,255,18,.08);border:1px solid rgba(8,20,253,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:12px;padding:16px;margin:12px 0}
+    .card{background:rgba(2,255,18,.08);border:1px solid rgba(8,20,253,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-radius:12px;padding:16px;margin:12px 0}
     h1,h2,h3{color:#00e5ff; -webkit-text-stroke:0.6px rgba(0,0,0,.45)}
     h2{margin:0 0 8px;color:#011055;-webkit-text-stroke:0.6px rgba(0,0,0,.6);text-shadow:0 2px 4px rgba(0,0,0,.55)}
     pre,code{background:rgba(22,8,226,.18);border:1px solid #00ff26;border-radius:10px;padding:10px;display:block;white-space:pre-wrap;word-break:break-word;color:#d7fffd; font-family: 'Courier New', monospace;}
@@ -22,13 +23,13 @@
     .note{opacity:.95;font-size:.95em;text-shadow:0 1px 2px rgba(0,0,0,.6)}
     .kiwi-link { display: inline-flex; align-items: center; gap: 8px; background-color: #252525; color: #fff; border: 1px solid #444; }
     .kiwi-link img { width: 20px; height: 20px; border-radius: 4px; }
-    .go-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-size:14px;z-index:10001;opacity:0;transition:opacity .18s ease}
+    .go-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.25);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);font-size:14px;z-index:10001;opacity:0;transition:opacity .18s ease}
     /* ปรับ class ให้ตรงกับหน้านี้ (guide.html) */
     body { background: radial-gradient(1200px 600px at 10% -10%, #112 0%, #0a0a0a 40%), linear-gradient(135deg, #0a0a0a 0%, #121225 50%, #0c0c1a 100%); font-family: 'Orbitron', monospace; color:#00ff41; min-height:100vh; overflow-x:hidden; }
     pre.code{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:auto;max-height: 100px; }
     .go-mcol { position:absolute; top:-100px; font-size:13px; color:#00ff41; opacity:.6; animation: go-fall linear infinite; }
     @keyframes go-fall { 0%{ transform:translateY(-100px); opacity:1;} 100%{ transform:translateY(100vh); opacity:0;} }
-    .go-header { text-align:center; padding:22px 0 16px; border-bottom:2px solid #00ff41; margin-bottom:24px; background:rgba(0,0,0,.72); backdrop-filter: blur(10px); position:relative; z-index:1; }
+    .go-header { text-align:center; padding:22px 0 16px; border-bottom:2px solid #00ff41; margin-bottom:24px; background:rgba(0,0,0,.72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); position:relative; z-index:1; }
     .go-title { font-size:1.9rem; font-weight:900; text-shadow:0 0 18px #00ff41; letter-spacing:1.8px; animation: go-glow 2s ease-in-out infinite alternate; margin:0 0 6px; }
     @keyframes go-glow { from{ text-shadow:0 0 18px #00ff41;} to{ text-shadow:0 0 28px #00ff41, 0 0 38px #00ff41;} }
     .go-sub { font-size:.95rem; color:#00ccff; opacity:.85; }
@@ -104,6 +105,7 @@
       box-shadow: 0 0 50px rgba(0,255,65,0.4) !important;
     }
   </style>
+  <body class="page-guide">
   <div class=container>
     <img class="header-img" src="Sharkkadaw.jpg" alt="Goonee Guide" />
     <h1>คู่มือ: Goonee Console</h1>
@@ -113,40 +115,40 @@
     <div class="card theme-control" id="theme-panel">
         <h2>🎨 Theme Control Center</h2>
         <p class="note">ปรับแต่งธีมและสไตล์ของหน้าเว็บตามใจชอบ</p>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0;">
+        <div class="button-group">
             <button class="btn" id="btn-random-theme">🎲 สุ่มธีม</button>
             <button class="btn" id="btn-save-theme">💾 บันทึกธีม</button>
             <button class="btn" id="btn-hacker-mode">💀 Hacker Mode</button>
             <button class="btn" id="btn-matrix-rain">🌊 Matrix Rain</button>
             <button class="btn alt" id="btn-reset-theme">↺ รีเซ็ต</button>
         </div>
-        <div id="theme-status" style="font-size: 0.9em; color: #ffd166; margin-top: 8px;"></div>
+        <div id="theme-status"></div>
     </div>
 
     <div class="card" id="console2-main">
         <h2>🦈 กูนี่คอนโซล V2 - Ultimate Hacker Edition</h2>
         <p class="note">เครื่องมือแฮ็กเกอร์สุดล้ำ! พร้อมฟีเจอร์ XSS Testing, Cookie Hacking, DOM Spy, Network Sniffing และอีกมากมาย</p>
         
-        <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0;">
-            <div class="feature-item" style="background: rgba(0,255,65,0.1); border: 1px solid #00ff41; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="font-size: 2em; margin-bottom: 8px;">⚡</div>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div>⚡</div>
                 <strong>XSS Testing</strong>
-                <div style="font-size: 0.8em; opacity: 0.8;">ทดสอบช่องโหว่ XSS</div>
+                <div>ทดสอบช่องโหว่ XSS</div>
             </div>
-            <div class="feature-item" style="background: rgba(255,107,107,0.1); border: 1px solid #ff6b6b; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="font-size: 2em; margin-bottom: 8px;">🍪</div>
+            <div class="feature-item">
+                <div>🍪</div>
                 <strong>Cookie Hacking</strong>
-                <div style="font-size: 0.8em; opacity: 0.8;">ดึงและวิเคราะห์ cookies</div>
+                <div>ดึงและวิเคราะห์ cookies</div>
             </div>
-            <div class="feature-item" style="background: rgba(0,229,255,0.1); border: 1px solid #00e5ff; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="font-size: 2em; margin-bottom: 8px;">🔍</div>
+            <div class="feature-item">
+                <div>🔍</div>
                 <strong>DOM Spy</strong>
-                <div style="font-size: 0.8em; opacity: 0.8;">สแกนหาช่องโหว่ DOM</div>
+                <div>สแกนหาช่องโหว่ DOM</div>
             </div>
-            <div class="feature-item" style="background: rgba(255,215,0,0.1); border: 1px solid #ffd700; border-radius: 8px; padding: 12px; text-align: center;">
-                <div style="font-size: 2em; margin-bottom: 8px;">📡</div>
+            <div class="feature-item">
+                <div>📡</div>
                 <strong>Network Sniffer</strong>
-                <div style="font-size: 0.8em; opacity: 0.8;">ดักจับ network requests</div>
+                <div>ดักจับ network requests</div>
             </div>
         </div>
 
@@ -159,8 +161,8 @@
         </p>
 
         <h3>⌨️ Keyboard Shortcuts</h3>
-        <div style="background: rgba(0,0,0,0.5); border: 1px solid #00ff41; border-radius: 8px; padding: 12px; margin: 12px 0;">
-            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px; font-family: monospace; font-size: 0.9em;">
+        <div class="console-section">
+            <div class="console-shortcuts">
                 <span><kbd>Ctrl + `</kbd></span><span>เปิด/ปิด Console</span>
                 <span><kbd>Ctrl + Shift + H</kbd></span><span>Hacker Mode (ลบ CSS + Matrix)</span>
                 <span><kbd>Ctrl + Shift + P</kbd></span><span>แสดงรหัสผ่านทั้งหมด</span>
@@ -182,21 +184,21 @@
       <h2>🛠️ เครื่องมือเฉพาะทาง (Specialized Tools)</h2>
       <p class="note">เครื่องมือแฮ็กเกอร์เฉพาะด้าน สำหรับงานที่ต้องการความเชี่ยวชาญ</p>
       
-      <div class="tool-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 16px 0;">
-        <div class="tool-card" style="background: rgba(0,255,65,0.05); border: 1px solid #00ff41; border-radius: 8px; padding: 16px;">
-          <h3 style="margin-top: 0;">📊 System Monitor</h3>
-          <p style="font-size: 0.9em; opacity: 0.8;">ติดตามประสิทธิภาพระบบ, การใช้งาน CPU, RAM และ Network</p>
-          <pre style="font-size: 0.8em; margin: 8px 0;"><code id="bm-monitor">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/monitor.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+      <div class="tool-grid">
+        <div class="tool-card">
+          <h3>📊 System Monitor</h3>
+          <p>ติดตามประสิทธิภาพระบบ, การใช้งาน CPU, RAM และ Network</p>
+          <pre><code id="bm-monitor">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/monitor.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
           <p>
             <a class="btn" href="#" data-copy="#bm-monitor">📋 คัดลอก</a>
             <a class="btn alt" href="#" data-run="#bm-monitor">🧪 ทดสอบ</a>
           </p>
         </div>
 
-        <div class="tool-card" style="background: rgba(255,107,107,0.05); border: 1px solid #ff6b6b; border-radius: 8px; padding: 16px;">
-          <h3 style="margin-top: 0;">🎨 Theme Changer</h3>
-          <p style="font-size: 0.9em; opacity: 0.8;">เปลี่ยนธีมและสีสันของเว็บไซต์แบบเรียลไทม์</p>
-          <pre style="font-size: 0.8em; margin: 8px 0;"><code id="bm-theme">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/Theme.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
+        <div class="tool-card">
+          <h3>🎨 Theme Changer</h3>
+          <p>เปลี่ยนธีมและสีสันของเว็บไซต์แบบเรียลไทม์</p>
+          <pre><code id="bm-theme">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/Theme.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
           <p>
             <a class="btn" href="#" data-copy="#bm-theme">📋 คัดลอก</a>
             <a class="btn alt" href="#" data-run="#bm-theme">🧪 ทดสอบ</a>
@@ -264,9 +266,9 @@
       <h2>🧪 Developer Tools: Eruda Mobile Console</h2>
       <p class="note">เครื่องมือ Developer Console สำหรับมือถือ - ดีบักและตรวจสอบเว็บไซต์ได้ทุกที่</p>
       
-      <div style="background: rgba(0,229,255,0.1); border: 1px solid #00e5ff; border-radius: 8px; padding: 12px; margin: 12px 0;">
-        <h4 style="margin-top: 0; color: #00e5ff;">✨ ฟีเจอร์ Eruda:</h4>
-        <ul style="margin: 8px 0; padding-left: 20px; font-size: 0.9em;">
+      <div class="devtools-section">
+        <h4>✨ ฟีเจอร์ Eruda:</h4>
+        <ul>
           <li>Console สำหรับรัน JavaScript</li>
           <li>Elements Inspector สำหรับดู DOM</li>
           <li>Network Monitor ติดตาม requests</li>
@@ -308,7 +310,7 @@
         <a class="btn alt" href="https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" rel="noopener">ติดตั้งส่วนขยาย Userscript ก่อน</a>
         <a class="btn alt" href="https://openuserjs.org/scripts/GooneeShark/Goonee_Console2_Floating_Button" target="_blank" rel="noopener">หน้า OpenUserJS</a>
       </p>
-      <p style="margin-top:8px">
+      <p class="spacing-top">
         <code id="bm-userscript-url">// ==UserScript==
 // @name        Goonee Console2 Floating Button
 // @namespace   http://tampermonkey.net/
@@ -464,7 +466,7 @@
         }
       });
 
-      const testBtn2 = document.getElementById('btn-test-console2');
+      const testBtn2 = document.querySelector('.page-guide #btn-test-console2');
       if (testBtn2) testBtn2.addEventListener('click', function(e){ e.preventDefault(); const codeEl = document.getElementById('bm-console2'); if (codeEl) runBookmarkletText(codeEl.textContent); });
 
       document.addEventListener('click', function(e){
@@ -498,7 +500,7 @@
           root.style.setProperty('--title-color', theme.title);
           
           // Update card backgrounds
-          document.querySelectorAll('.card').forEach(card => {
+          document.querySelectorAll('.page-guide .card').forEach(card => {
             card.style.background = theme.cardBg;
             card.style.borderColor = theme.accent;
           });
@@ -559,7 +561,7 @@
             });
             
             // Add glitch effect to title
-            const title = document.querySelector('.go-title');
+            const title = document.querySelector('.page-guide .go-title');
             if (title) {
               title.style.animation = 'go-glitch 0.3s infinite';
             }
@@ -574,7 +576,7 @@
               randomTheme();
             }
             
-            const title = document.querySelector('.go-title');
+            const title = document.querySelector('.page-guide .go-title');
             if (title) {
               title.style.animation = 'go-glow 2s ease-in-out infinite alternate';
             }

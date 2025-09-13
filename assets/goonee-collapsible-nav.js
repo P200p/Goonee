@@ -1,26 +1,43 @@
-/* Namespaced collapsible nav JS — exposes initCollapsibleNav(options)
-   Usage: gooneeCollapsibleNav.init({idPrefix:'goonee'}); */
-(function(window,document){
+// Namespaced collapsible nav JS — exposes initCollapsibleNav(options)
+// @ts-check
+(function(window, document) {
+  'use strict';
+  
+  // Type declarations
+  /** @typedef {Object} GooneeNavMethods
+   * @property {() => void} open - Opens the nav panel
+   * @property {() => void} close - Closes the nav panel
+   */
+  
+  /** @typedef {HTMLElement & { goonee?: GooneeNavMethods }} GooneeToggleButton */
   const gooneeCollapsibleNav = {
     init(opts){
       const prefix = (opts && opts.idPrefix) || 'goonee';
       // find all toggle buttons that opt-in via data-goonee-toggle attribute
-      const toggles = document.querySelectorAll('[data-'+prefix+'-toggle]');
-      toggles.forEach(btn=>{
+      // @ts-ignore - We know these are buttons with our custom data attributes
+      const toggles = /** @type {NodeListOf<GooneeToggleButton>} */ (document.querySelectorAll('[data-'+prefix+'-toggle]'));
+      toggles.forEach((btn) => {
         const target = btn.getAttribute('data-'+prefix+'-target');
+        if (!target) return;
+        
         const panel = document.getElementById(target);
-        const overlay = document.getElementById(btn.getAttribute('data-'+prefix+'-overlay'));
+        if (!panel) return;
+        
+        const overlayId = btn.getAttribute('data-'+prefix+'-overlay');
+        const overlay = overlayId ? document.getElementById(overlayId) : null;
         if(!panel) return;
         const openClass = 'goonee-open';
         const overlayVisible = 'goonee-visible';
 
         function open(){
+          if (!panel) return; // Additional safety check
           panel.classList.add(openClass);
           if(overlay) overlay.classList.add(overlayVisible);
           btn.setAttribute('aria-expanded','true');
           panel.setAttribute('aria-hidden','false');
         }
         function close(){
+          if (!panel) return; // Additional safety check
           panel.classList.remove(openClass);
           if(overlay) overlay.classList.remove(overlayVisible);
           btn.setAttribute('aria-expanded','false');
@@ -44,12 +61,14 @@
         });
 
         // expose dataset methods for external control
-        btn.goonee = {open,close};
+        // @ts-ignore - Adding methods to button element
+        btn.goonee = { open, close };
       });
       // submenu toggles (data-goonee-subtoggle -> aria controls a sublist id)
       const subtoggles = document.querySelectorAll('[data-'+prefix+'-subtoggle]');
       subtoggles.forEach(st=>{
         const subTarget = st.getAttribute('data-'+prefix+'-subtarget');
+        if (!subTarget) return;
         const subList = document.getElementById(subTarget);
         if(!subList) return;
         st.setAttribute('aria-expanded','false');
@@ -60,5 +79,6 @@
       });
     }
   };
+  // @ts-ignore - Attach to window for global access
   window.gooneeCollapsibleNav = gooneeCollapsibleNav;
 })(window,document);

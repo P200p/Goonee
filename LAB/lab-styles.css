@@ -1,0 +1,61 @@
+/* LAB page specific styles */
+.page-lab .progress-section {
+  background: rgba(20, 20, 30, 0.8);
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem;
+  text-align: center;
+}
+
+.page-lab .progress-bar {
+  background: #1a1a2e;
+  border-radius: 999px;
+  height: 8px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.page-lab .progress-fill {
+  background: linear-gradient(90deg, #00ff88, #00cc6a);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.page-lab #progressText {
+  margin: 0;
+  color: #8ea4ca;
+}
+
+.page-lab #toast-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+.page-lab .toast {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+  animation: slideIn 0.3s ease-out;
+}
+
+.page-lab .toast.info {
+  background: #1a1a2e;
+  color: #fff;
+  border: 1px solid #00ff88;
+}
+
+.page-lab .toast.success {
+  background: #00ff88;
+  color: #000;
+  border: 1px solid #00cc6a;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

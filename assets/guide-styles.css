@@ -1,0 +1,138 @@
+/* Feature Grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.feature-item {
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.feature-item div:first-child {
+  font-size: 2em;
+  margin-bottom: 8px;
+}
+
+.feature-item div:last-child {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+/* Feature Item Colors */
+.feature-item:nth-child(1) {
+  background: rgba(0,255,65,0.1);
+  border: 1px solid #00ff41;
+}
+
+.feature-item:nth-child(2) {
+  background: rgba(255,107,107,0.1);
+  border: 1px solid #ff6b6b;
+}
+
+.feature-item:nth-child(3) {
+  background: rgba(0,229,255,0.1);
+  border: 1px solid #00e5ff;
+}
+
+.feature-item:nth-child(4) {
+  background: rgba(255,215,0,0.1);
+  border: 1px solid #ffd700;
+}
+
+/* Tool Grid */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.tool-card {
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.tool-card h3 {
+  margin-top: 0;
+}
+
+.tool-card p {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.tool-card pre {
+  font-size: 0.8em;
+  margin: 8px 0;
+}
+
+/* Tool Card Colors */
+.tool-card:nth-child(1) {
+  background: rgba(0,255,65,0.05);
+  border: 1px solid #00ff41;
+}
+
+.tool-card:nth-child(2) {
+  background: rgba(255,107,107,0.05);
+  border: 1px solid #ff6b6b;
+}
+
+/* Theme Control */
+.theme-control .button-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+#theme-status {
+  font-size: 0.9em;
+  color: #ffd166;
+  margin-top: 8px;
+}
+
+/* Console Styles */
+.console-section {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid #00ff41;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.console-shortcuts {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+/* Developer Tools */
+.devtools-section {
+  background: rgba(0,229,255,0.1);
+  border: 1px solid #00e5ff;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.devtools-section h4 {
+  margin-top: 0;
+  color: #00e5ff;
+}
+
+.devtools-section ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  font-size: 0.9em;
+}
+
+/* Spacing */
+.spacing-top {
+  margin-top: 8px;
+}

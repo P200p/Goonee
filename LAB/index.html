@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Goonee Labs - Cybersecurity Learning Platform</title>
     <link rel="stylesheet" href="lab.css">
+    <link rel="stylesheet" href="lab-styles.css">
     <style>
         /* Mobile-first responsive design */
-        .lab-grid {
+        .page-lab .lab-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1rem;
@@ -15,19 +16,19 @@
         }
         
         @media (min-width: 768px) {
-            .lab-grid {
+            .page-lab .lab-grid {
                 grid-template-columns: repeat(2, 1fr);
                 padding: 2rem;
             }
         }
         
         @media (min-width: 1024px) {
-            .lab-grid {
+            .page-lab .lab-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
         
-        .lab-card {
+        .page-lab .lab-card {
             background: linear-gradient(135deg, rgba(74, 211, 149, 0.1), rgba(20, 20, 30, 0.9));
             border: 1px solid rgba(100, 255, 218, 0.2);
             border-radius: 12px;
@@ -39,26 +40,26 @@
             flex-direction: column;
         }
         
-        .lab-card:hover {
+        .page-lab .lab-card:hover {
             transform: translateY(-5px);
             border-color: rgba(100, 255, 218, 0.5);
             box-shadow: 0 10px 30px rgba(100, 255, 218, 0.1);
         }
         
-        .lab-icon {
+        .page-lab .lab-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
             text-align: center;
         }
         
-        .lab-title {
+        .page-lab .lab-title {
             font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
             color: #00ff88;
         }
         
-        .lab-description {
+        .page-lab .lab-description {
             color: #b0c4de;
             font-size: 0.9rem;
             line-height: 1.5;
@@ -66,7 +67,7 @@
             margin-bottom: 1rem;
         }
         
-        .lab-difficulty {
+        .page-lab .lab-difficulty {
             display: inline-block;
             padding: 0.25rem 0.75rem;
             border-radius: 999px;
@@ -75,11 +76,11 @@
             margin-bottom: 1rem;
         }
         
-        .difficulty-beginner { background: #00ff88; color: #000; }
-        .difficulty-intermediate { background: #ffaa00; color: #000; }
-        .difficulty-advanced { background: #ff6b6b; color: #fff; }
+        .page-lab .difficulty-beginner { background: #00ff88; color: #000; }
+        .page-lab .difficulty-intermediate { background: #ffaa00; color: #000; }
+        .page-lab .difficulty-advanced { background: #ff6b6b; color: #fff; }
         
-        .lab-button {
+        .page-lab .lab-button {
             background: linear-gradient(45deg, #00ff88, #00cc6a);
             color: #000;
             border: none;
@@ -92,18 +93,18 @@
             font-size: 1rem;
         }
         
-        .lab-button:hover {
+        .page-lab .lab-button:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
         }
         
-        .header-section {
+        .page-lab .header-section {
             text-align: center;
             padding: 2rem 1rem;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
         }
         
-        .main-title {
+        .page-lab .main-title {
             font-size: 2.5rem;
             font-weight: 700;
             color: #00ff88;
@@ -111,13 +112,13 @@
             margin-bottom: 0.5rem;
         }
         
-        .subtitle {
+        .page-lab .subtitle {
             color: #8ea4ca;
             font-size: 1.1rem;
             margin-bottom: 2rem;
         }
         
-        .progress-section {
+        .page-lab .progress-section {
             background: rgba(20, 20, 30, 0.8);
             border: 1px solid rgba(100, 255, 218, 0.2);
             border-radius: 12px;
@@ -126,7 +127,7 @@
             text-align: center;
         }
         
-        .progress-bar {
+        .page-lab .progress-bar {
             background: #1a1a2e;
             border-radius: 999px;
             height: 8px;
@@ -134,7 +135,7 @@
             overflow: hidden;
         }
         
-        .progress-fill {
+        .page-lab .progress-fill {
             background: linear-gradient(90deg, #00ff88, #00cc6a);
             height: 100%;
             transition: width 0.3s ease;
@@ -142,16 +143,16 @@
         
         /* Touch-friendly mobile improvements */
         @media (max-width: 768px) {
-            .main-title { font-size: 2rem; }
-            .lab-card { min-height: 180px; }
-            .lab-button { 
+            .page-lab .main-title { font-size: 2rem; }
+            .page-lab .lab-card { min-height: 180px; }
+            .page-lab .lab-button { 
                 min-height: 48px;
                 font-size: 1.1rem;
             }
         }
     </style>
 </head>
-<body>
+<body class="page-lab">
     <canvas id="matrix-canvas" aria-hidden="true"></canvas>
     
     <header class="header-section">
@@ -159,11 +160,11 @@
         <p class="subtitle">Interactive Cybersecurity Learning Platform</p>
         
         <div class="progress-section">
-            <h3 style="margin: 0 0 1rem 0; color: #00ff88;">Learning Progress</h3>
+            <h3 class="progress-title">Learning Progress</h3>
             <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                <div class="progress-fill" id="progressFill"></div>
             </div>
-            <p id="progressText" style="margin: 0; color: #8ea4ca;">0 of 12 labs completed</p>
+            <p id="progressText">0 of 12 labs completed</p>
         </div>
     </header>
 
@@ -173,7 +174,7 @@
         </div>
     </main>
 
-    <div id="toast-container" style="position: fixed; bottom: 1rem; right: 1rem; z-index: 1000;"></div>
+    <div id="toast-container"></div>
 
     <script>
         // Lab data with enhanced mobile-friendly structure
@@ -319,24 +320,24 @@
             const total = labs.length;
             const percentage = (completed / total) * 100;
             
-            document.getElementById('progressFill').style.width = percentage + '%';
-            document.getElementById('progressText').textContent = `${completed} of ${total} labs completed`;
+            const progressFill = document.getElementById('progressFill');
+            if (progressFill) {
+                progressFill.style.width = percentage + '%';
+            }
+            
+            const progressText = document.getElementById('progressText');
+            if (progressText) {
+                progressText.textContent = `${completed} of ${total} labs completed`;
+            }
         }
 
         // Show toast notification
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
+            if (!container) return;
+            
             const toast = document.createElement('div');
-            toast.style.cssText = `
-                background: ${type === 'success' ? '#00ff88' : '#1a1a2e'};
-                color: ${type === 'success' ? '#000' : '#fff'};
-                padding: 1rem 1.5rem;
-                border-radius: 8px;
-                margin-bottom: 0.5rem;
-                border: 1px solid ${type === 'success' ? '#00cc6a' : '#00ff88'};
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-                font-weight: 600;
-            `;
+            toast.className = `toast ${type}`;
             toast.textContent = message;
             container.appendChild(toast);
             

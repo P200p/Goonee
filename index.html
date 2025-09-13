@@ -797,7 +797,7 @@
         
         // Shortcuts management
         let editMode = false;
-        let shortcuts = JSON.parse(localStorage.getItem('kiwiShortcuts')) || [
+        const defaultShortcuts = [
             { name: 'YouTube', url: 'https://youtube.com', icon: '📺' },
             { name: 'GitHub', url: 'https://github.com', icon: '🪬' },
             { name: 'Gmail', url: 'https://gmail.com', icon: '📧' },
@@ -809,6 +809,14 @@
             { name: 'AI_AUTO_SCAN', url: 'https://goonee.netlify.app/ai/scan.html', icon: '☠︎' },
             { name: 'LAB_HACKER', url: 'https://goonee.netlify.app/lab/index.html', icon: '🧬' }
         ];
+        let shortcuts = (() => {
+            try {
+                const raw = localStorage.getItem('kiwiShortcuts');
+                const parsed = raw ? JSON.parse(raw) : null;
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            } catch (_) { /* ignore parse errors */ }
+            return defaultShortcuts.slice();
+        })();
         
         function renderShortcuts() {
             const grid = document.getElementById('shortcutsGrid');

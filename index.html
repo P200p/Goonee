@@ -887,6 +887,11 @@
             renderShortcuts();
             showNotification(`🗑️ ลบ "${shortcut.name}" แล้ว`);
         }
+        
+        // Render shortcuts on initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            try { renderShortcuts(); } catch(e) { /* no-op */ }
+        });
     </script>
 
     <!-- Initialize Goonee Collapsible Nav -->

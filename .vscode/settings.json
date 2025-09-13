@@ -7,5 +7,6 @@
     "commentTranslate.googleTranslate.showFlags": true,
     "commentTranslate.googleTranslate.showAutoDetect": true,
     "commentTranslate.googleTranslate.showOriginalText": true,
-    "commentTranslate.googleTranslate.showTranslationText": true
+    "commentTranslate.googleTranslate.showTranslationText": true,
+    "commentTranslate.targetLanguage": "th"
 }

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Dynamic Grid</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      .grid-item {
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .grid-item:hover {
+        transform: scale(1.02);
+        z-index: 10;
+      }
+
+      .image-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .main-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all 0.8s ease-in-out;
+      }
+
+      .thumbnail-strip {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 20%;
+        display: flex;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        padding: 4px;
+        gap: 2px;
+      }
+
+      .thumbnail {
+        flex: 1;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 2px;
+        opacity: 0.6;
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+      }
+
+      .thumbnail.active {
+        opacity: 1;
+        border: 1px solid white;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          var(--color-1),
+          var(--color-2),
+          var(--color-3)
+        );
+        background-size: 400% 400%;
+        animation: gradientShift 8s ease infinite;
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .floating {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .pulse-glow {
+        animation: pulseGlow 3s ease-in-out infinite;
+      }
+
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        50% {
+          box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+        }
+      }
+
+      .slide-up {
+        animation: slideUp 0.8s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .rotate-in {
+        animation: rotateIn 0.6s ease-out;
+      }
+
+      @keyframes rotateIn {
+        from {
+          transform: rotate(-5deg) scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: rotate(0deg) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .fade-slide {
+        animation: fadeSlide 0.7s ease-out;
+      }
+
+      @keyframes fadeSlide {
+        from {
+          transform: translateX(-30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen overflow-x-hidden">
+    <div id="mainContainer" class="min-h-screen p-3 md:p-6 gradient-bg">
+      <!-- Header -->
+      <header class="text-center mb-6 floating">
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 pulse-glow">
+          Smart Gallery Grid
+        </h1>
+        <p class="text-sm md:text-lg text-white/80 max-w-xl mx-auto">
+          40 ภาพที่สลับเปลี่ยนแบบอัตโนมัติ
+        </p>
+        <button
+          onclick="regenerateGrid()"
+          class="mt-4 px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition-all duration-300 border border-white/30 text-sm"
+        >
+          🎲 สุ่มใหม่
+        </button>
+      </header>
+
+      <!-- Dynamic Grid -->
+      <div id="dynamicGrid" class="max-w-5xl mx-auto">
+        <!-- Grid items will be generated here -->
+      </div>
+
+      <!-- Stats Footer -->
+      <footer class="text-center mt-8 text-white/60 text-sm">
+        <p>Grid Layout: <span id="gridStats"></span></p>
+      </footer>
+    </div>
+
+    <script>
+      // Color palettes for random selection
+      const colorPalettes = [
+        ["#FF6B6B", "#4ECDC4", "#45B7D1"],
+        ["#96CEB4", "#FFEAA7", "#DDA0DD"],
+        ["#74B9FF", "#A29BFE", "#FD79A8"],
+        ["#00B894", "#FDCB6E", "#E17055"],
+        ["#6C5CE7", "#A29BFE", "#FD79A8"],
+        ["#00CEC9", "#55A3FF", "#FF7675"],
+      ];
+
+      // Animation effects
+      const animationEffects = ["slide-up", "rotate-in", "fade-slide"];
+
+      // SVG image sets (each set has 4 related images)
+      const imageSets = [
+        // Nature set
+        [
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="sky1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#87CEEB"/>
+                        <stop offset="100%" style="stop-color:#98FB98"/>
+                    </linearGradient></defs>
+                    <rect width="300" height="200" fill="url(#sky1)"/>
+                    <circle cx="250" cy="50" r="30" fill="#FFD700"/>
+                    <polygon points="50,150 100,100 150,150" fill="#228B22"/>
+                    <polygon points="150,150 200,80 250,150" fill="#32CD32"/>
+                </svg>`,
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#87CEEB"/>
+                    <circle cx="80" cy="60" r="25" fill="#FFD700"/>
+                    <polygon points="0,120 80,60 160,120 300,120 300,200 0,200" fill="#228B22"/>
+                    <rect x="120" y="80" width="8" height="40" fill="#8B4513"/>
+                    <circle cx="124" cy="70" r="15" fill="#32CD32"/>
+                </svg>`,
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#4682B4"/>
+                    <polygon points="0,100 100,50 200,80 300,60 300,200 0,200" fill="#228B22"/>
+                    <circle cx="200" cy="40" r="20" fill="#FFD700"/>
+                    <rect x="50" y="70" width="6" height="30" fill="#8B4513"/>
+                    <circle cx="53" cy="60" r="12" fill="#32CD32"/>
+                </svg>`,
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#191970"/>
+                    <circle cx="50" cy="30" r="15" fill="#F0E68C"/>
+                    <polygon points="0,140 150,90 300,120 300,200 0,200" fill="#006400"/>
+                    <circle cx="100" cy="110" r="8" fill="#32CD32"/>
+                    <circle cx="200" cy="100" r="10" fill="#32CD32"/>
+                </svg>`,
+        ],
+        // Abstract set
+        [
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#FF6B6B"/>
+                    <circle cx="150" cy="100" r="60" fill="#4ECDC4" opacity="0.8"/>
+                    <rect x="100" y="50" width="100" height="100" fill="#45B7D1" opacity="0.6"/>
+                </svg>`,
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#4ECDC4"/>
+                    <polygon points="150,20 250,100 150,180 50,100" fill="#FF6B6B" opacity="0.8"/>
+                    <circle cx="150" cy="100" r="30" fill="#45B7D1"/>
+                </svg>`,
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#45B7D1"/>
+                    <rect x="50" y="50" width="80" height="80" fill="#FF6B6B" opacity="0.7" transform="rotate(45 90 90)"/>
+                    <circle cx="200" cy="100" r="40" fill="#4ECDC4" opacity="0.8"/>
+                </svg>`,
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#9B59B6"/>
+                    <polygon points="100,50 200,50 250,150 50,150" fill="#FF6B6B" opacity="0.7"/>
+                    <circle cx="150" cy="100" r="25" fill="#4ECDC4"/>
+                </svg>`,
+        ],
+        // Geometric set
+        [
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#E74C3C"/>
+                    <polygon points="150,30 220,100 150,170 80,100" fill="#F39C12"/>
+                    <rect x="125" y="75" width="50" height="50" fill="#3498DB"/>
+                </svg>`,
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#F39C12"/>
+                    <circle cx="100" cy="70" r="40" fill="#E74C3C"/>
+                    <circle cx="200" cy="130" r="35" fill="#3498DB"/>
+                    <rect x="140" y="90" width="20" height="20" fill="#2ECC71"/>
+                </svg>`,
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#3498DB"/>
+                    <polygon points="50,50 100,50 125,100 75,150 25,150 0,100" fill="#E74C3C"/>
+                    <polygon points="200,60 250,60 275,110 225,160 175,160 150,110" fill="#F39C12"/>
+                </svg>`,
+          `<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="300" height="200" fill="#2ECC71"/>
+                    <rect x="60" y="60" width="60" height="60" fill="#E74C3C" transform="rotate(30 90 90)"/>
+                    <rect x="180" y="80" width="40" height="40" fill="#F39C12" transform="rotate(-15 200 100)"/>
+                </svg>`,
+        ],
+      ];
+
+      let gridItems = [];
+      let autoRotateIntervals = [];
+
+      function getRandomElement(array) {
+        return array[Math.floor(Math.random() * array.length)];
+      }
+
+      function createImageSet() {
+        return getRandomElement(imageSets);
+      }
+
+      function startAutoRotate(itemIndex, images) {
+        const interval = Math.random() * 3000 + 2000; // 2-5 seconds
+
+        autoRotateIntervals[itemIndex] = setInterval(() => {
+          const item = document.querySelector(`[data-item="${itemIndex}"]`);
+          if (!item) return;
+
+          const mainImg = item.querySelector(".main-image");
+          const thumbnails = item.querySelectorAll(".thumbnail");
+          const currentActive = item.querySelector(".thumbnail.active");
+
+          let nextIndex = 0;
+          if (currentActive) {
+            nextIndex =
+              (parseInt(currentActive.dataset.index) + 1) % images.length;
+          }
+
+          // Update main image with random effect
+          const effect = getRandomElement(animationEffects);
+          mainImg.style.animation = "none";
+          setTimeout(() => {
+            mainImg.innerHTML = images[nextIndex];
+            mainImg.classList.add(effect);
+            setTimeout(() => mainImg.classList.remove(effect), 800);
+          }, 50);
+
+          // Update active thumbnail
+          thumbnails.forEach((thumb) => thumb.classList.remove("active"));
+          thumbnails[nextIndex].classList.add("active");
+        }, interval);
+      }
+
+      function generateRandomGrid() {
+        // Clear existing intervals
+        autoRotateIntervals.forEach((interval) => clearInterval(interval));
+        autoRotateIntervals = [];
+
+        const palette = getRandomElement(colorPalettes);
+
+        // Set CSS variables for gradient
+        document.documentElement.style.setProperty("--color-1", palette[0]);
+        document.documentElement.style.setProperty("--color-2", palette[1]);
+        document.documentElement.style.setProperty("--color-3", palette[2]);
+
+        const grid = document.getElementById("dynamicGrid");
+
+        let gridHTML = `<div class="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 auto-rows-fr">`;
+
+        // Generate exactly 40 items
+        for (let i = 0; i < 40; i++) {
+          const images = createImageSet();
+          const delay = Math.random() * 2;
+
+          gridHTML += `
+                    <div class="grid-item aspect-square rounded-lg overflow-hidden backdrop-blur-sm border border-white/20 hover:border-white/40 cursor-pointer"
+                         data-item="${i}"
+                         style="animation-delay: ${delay}s; background: linear-gradient(135deg, ${
+            palette[0]
+          }20, ${palette[1]}40);">
+                        <div class="image-container">
+                            <div class="main-image">
+                                ${images[0]}
+                            </div>
+                            <div class="thumbnail-strip">
+                                ${images
+                                  .map(
+                                    (img, idx) => `
+                                    <div class="thumbnail ${
+                                      idx === 0 ? "active" : ""
+                                    }" data-index="${idx}">
+                                        ${img}
+                                    </div>
+                                `
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+          // Start auto-rotate for this item
+          setTimeout(() => startAutoRotate(i, images), delay * 1000 + 1000);
+        }
+
+        gridHTML += "</div>";
+        grid.innerHTML = gridHTML;
+
+        // Add click handlers for thumbnails
+        setTimeout(() => {
+          document.querySelectorAll(".thumbnail").forEach((thumb) => {
+            thumb.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const item = thumb.closest(".grid-item");
+              const itemIndex = parseInt(item.dataset.item);
+              const imageIndex = parseInt(thumb.dataset.index);
+              const mainImg = item.querySelector(".main-image");
+              const images = gridItems[itemIndex] || createImageSet();
+
+              // Update main image
+              const effect = getRandomElement(animationEffects);
+              mainImg.style.animation = "none";
+              setTimeout(() => {
+                mainImg.innerHTML = images[imageIndex];
+                mainImg.classList.add(effect);
+                setTimeout(() => mainImg.classList.remove(effect), 800);
+              }, 50);
+
+              // Update active thumbnail
+              item
+                .querySelectorAll(".thumbnail")
+                .forEach((t) => t.classList.remove("active"));
+              thumb.classList.add("active");
+            });
+          });
+        }, 100);
+
+        // Update stats
+        document.getElementById(
+          "gridStats"
+        ).textContent = `40 รายการ | 10 คอลัมน์`;
+      }
+
+      function regenerateGrid() {
+        const grid = document.getElementById("dynamicGrid");
+        grid.style.opacity = "0";
+        grid.style.transform = "scale(0.95)";
+
+        setTimeout(() => {
+          generateRandomGrid();
+          grid.style.opacity = "1";
+          grid.style.transform = "scale(1)";
+        }, 300);
+      }
+
+      // Initialize on page load
+      document.addEventListener("DOMContentLoaded", generateRandomGrid);
+
+      // Add smooth transitions to grid container
+      document.getElementById("dynamicGrid").style.transition = "all 0.3s ease";
+
+      // Cleanup intervals when page unloads
+      window.addEventListener("beforeunload", () => {
+        autoRotateIntervals.forEach((interval) => clearInterval(interval));
+      });
+    </script>
+    <script>
+      (function () {
+        function c() {
+          var b = a.contentDocument || a.contentWindow.document;
+          if (b) {
+            var d = b.createElement("script");
+            d.innerHTML =
+              "window.__CF$cv$params={r:'97e2fdd3946a45b4',t:'MTc1NzcxNzcxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName("head")[0].appendChild(d);
+          }
+        }
+        if (document.body) {
+          var a = document.createElement("iframe");
+          a.height = 1;
+          a.width = 1;
+          a.style.position = "absolute";
+          a.style.top = 0;
+          a.style.left = 0;
+          a.style.border = "none";
+          a.style.visibility = "hidden";
+          document.body.appendChild(a);
+          if ("loading" !== document.readyState) c();
+          else if (window.addEventListener)
+            document.addEventListener("DOMContentLoaded", c);
+          else {
+            var e = document.onreadystatechange || function () {};
+            document.onreadystatechange = function (b) {
+              e(b);
+              "loading" !== document.readyState &&
+                ((document.onreadystatechange = e), c());
+            };
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

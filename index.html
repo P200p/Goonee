@@ -488,22 +488,43 @@
   transform: scale(1.1);
 }
 
-                .effects-toggle {
-                        margin-left: 8px;
-                        background: rgba(0,0,0,0.6);
-                        color: #00ff41;
-                        border: 1px solid #00ff41;
-                        padding: 6px 10px;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        font-family: 'Fira Code', monospace;
-                        font-weight: 600;
-                }
-                .effects-toggle[aria-pressed="true"] {
-                        background: linear-gradient(45deg, #00ff41, #00cc33);
-                        color: #000;
-                        border-color: #00cc33;
-                }
+        /* FX toggle: fixed position to avoid overlapping nav and content */
+        #effectsToggle.effects-toggle {
+            position: fixed;
+            left: 12px; /* align near nav toggle */
+            top: 62px; /* lower than nav toggle to avoid overlap */
+            z-index: 2000;
+            background: rgba(0,0,0,0.6);
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: transform 0.12s ease, background 0.12s ease;
+        }
+        #effectsToggle.effects-toggle:focus {
+            outline: 2px solid rgba(0,255,65,0.25);
+            transform: translateY(-1px);
+        }
+        #effectsToggle.effects-toggle[aria-pressed="true"] {
+            background: linear-gradient(45deg, #00ff41, #00cc33);
+            color: #000;
+            border-color: #00cc33;
+        }
+
+        /* Responsive: push FX lower on small screens and reduce size */
+        @media (max-width: 480px) {
+            #effectsToggle.effects-toggle {
+            left: 10px;
+            top: 78px; /* move further down so it doesn't overlap hamburger */
+            padding: 6px 8px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            }
+        }
 
         .guide-frame {
             width: 100%;
@@ -524,9 +545,8 @@
 <body>
 <!-- Goonee collapsible nav injected (auto) -->
 <div class="goonee-cnav-root">
-  <button class="goonee-cnav-toggle goonee-cnav-left" aria-label="Open navigation" data-goonee-toggle data-goonee-target="goonee-panel-auto-2" data-goonee-overlay="goonee-overlay-auto-2" aria-expanded="false">☰</button>
-    <button id="effectsToggle" class="effects-toggle" aria-pressed="false" title="ปิด/เปิดเอฟเฟค">FX</button>
-  <div id="goonee-overlay-auto-2" class="goonee-cnav-overlay" tabindex="-1"></div>
+    <button class="goonee-cnav-toggle goonee-cnav-left" aria-label="Open navigation" data-goonee-toggle data-goonee-target="goonee-panel-auto-2" data-goonee-overlay="goonee-overlay-auto-2" aria-expanded="false">☰</button>
+    <div id="goonee-overlay-auto-2" class="goonee-cnav-overlay" tabindex="-1"></div>
   <nav id="goonee-panel-auto-2" class="goonee-cnav-panel" aria-hidden="true">
     <div class="goonee-cnav-header">
       <div class="goonee-cnav-title">เมนู</div>
@@ -548,6 +568,9 @@
     </ul>
   </nav>
 </div>
+
+<!-- FX toggle fixed control (separate from nav to avoid overlap) -->
+<button id="effectsToggle" class="effects-toggle" aria-pressed="false" title="ปิด/เปิดเอฟเฟค">FX</button>
 
         <canvas class="matrix-bg" id="matrixCanvas"></canvas>
         <!-- PWA Install Popup -->

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Goonee play stop</title>
+  <link rel="icon" href="../icon/192x192.png">
+  <style>
+    :root{--accent:#1e88e5;--accent-2:#34a853;--muted:#6b7280}
+    html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;background:#f6f7fb;color:#111}
+    .topbar{display:flex;align-items:center;gap:16px;padding:22px 24px;background:linear-gradient(90deg,#fff,#fbfdff);box-shadow:0 1px 0 rgba(16,24,40,0.04)}
+    .logo{display:flex;align-items:center;gap:12px}
+  .logo img{width:56px;height:56px;box-shadow:0 6px 18px rgba(16,24,40,0.06);object-fit:cover}
+  /* triangle mask similar to Play icon but distinct */
+  .logo .tri-mask{width:56px;height:56px;clip-path:polygon(10% 0,100% 50%,10% 100%);overflow:hidden;border-radius:6px}
+    .brand{font-size:20px;font-weight:700;color:var(--accent)}
+    .subtitle{font-size:13px;color:var(--muted);margin-top:4px}
+
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    .hero{display:flex;gap:20px;align-items:flex-start}
+    .hero .meta{flex:0 0 320px;background:#fff;border-radius:12px;padding:18px;box-shadow:0 8px 24px rgba(16,24,40,0.06)}
+    .meta h1{margin:0;font-size:22px}
+    .meta .by{color:var(--muted);font-size:13px;margin-top:6px}
+  .qr{width:100%;height:220px;background:repeating-linear-gradient(45deg,#e9f2ff 0 10px, #fff 10px 20px);display:flex;align-items:center;justify-content:center;border-radius:8px;margin:12px 0}
+  .qr-inner{text-align:center;color:var(--muted)}
+  .qr-label{font-size:12px;margin-bottom:6px}
+  .qr-inner img{width:160px;height:160px;object-fit:contain;border-radius:8px;background:#fff;padding:10px;display:block;margin:0 auto}
+    .install-btn{display:inline-block;background:var(--accent-2);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+
+    .gallery{display:flex;gap:12px;margin-top:12px;overflow-x:auto;padding-bottom:6px}
+    .gallery::-webkit-scrollbar{height:8px}
+    .gallery::-webkit-scrollbar-thumb{background:#e1e7ff;border-radius:8px}
+    .thumb{flex:0 0 160px; /* narrow fixed width like Play screenshots */
+      height:284px; /* portrait 9:16 approx */
+      background:linear-gradient(180deg,#fff,#f4f7ff);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;overflow:hidden}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  /* allow specific thumbs to stretch (show full image even if aspect ratio differs) */
+  .thumb--stretch img{object-fit:fill}
+
+    .content{flex:1;margin-left:6px}
+    .content .badge{display:inline-block;background:#fff;border-radius:18px;padding:6px 10px;color:var(--muted);font-weight:600;margin-bottom:10px}
+    .content p.lead{margin-top:0;color:#111;line-height:1.45}
+
+    .comments-panel{margin-top:18px;background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(16,24,40,0.04)}
+    .comment-form{display:flex;gap:10px;flex-direction:column}
+    .comment-form input,.comment-form textarea{padding:10px;border:1px solid #e6e9ef;border-radius:8px;font-size:14px}
+    .controls{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn.secondary{background:#eef3ff;color:var(--accent)}
+
+    .comments-list{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+    .comment{background:linear-gradient(180deg,#fbfdff,#fff);padding:12px;border-radius:10px;border:1px solid #f1f5ff}
+    .comment .meta{display:flex;align-items:center;gap:10px}
+    .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(120deg,#ffd54a,#ff6f61);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .c-name{font-weight:700}
+    .c-text{margin-top:6px;color:#111}
+
+  .hint{font-size:13px;color:var(--muted);margin-top:8px}
+  .hint-right{margin-left:auto}
+  .c-time{margin-top:3px;font-size:12px;color:var(--muted)}
+    footer{max-width:980px;margin:26px auto;text-align:center;color:var(--muted);font-size:13px}
+    @media(max-width:860px){.hero{flex-direction:column}.meta{width:100%}.content{margin-left:0}}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo">
+  <div class="tri-mask"><img src="../icon/icon128.png" alt="Goonee"></div>
+      <div>
+        <div class="brand">Goonee play stop</div>
+        <div class="subtitle">a friendly parody — คอมเมนต์ขำ ๆ ได้ที่นี่</div>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <section class="hero">
+      <aside class="meta">
+  <h1>Goonee Play Stop</h1>
+  <div class="by">Developer: <strong>Goonee ทีมผู้ร่วมแซว</strong></div>
+        <div class="qr" title="สแกนเพื่อติดตั้ง">
+          <div class="qr-inner">
+            <div class="qr-label">สแกน QR เพื่อติดตั้ง</div>
+            <img src="https://goonee.netlify.app/icon/QR.png" alt="QR ตัวอย่าง">
+          </div>
+        </div>
+        <a class="install-btn" href="#">ดาวน์โหลด/ติดตั้ง</a>
+        <div class="gallery">
+          <div class="thumb thumb--stretch"><img src="../icon/wallet.jpg" alt="wallet sample"></div>
+          <div class="thumb"><img src="../icon/play1.png" alt="play sample 1"></div>
+          <div class="thumb"><img src="../icon/play2.png" alt="play sample 2"></div>
+          <div class="thumb"><img src="../icon/play3.png" alt="play sample 3"></div>
+        </div>
+      </aside>
+
+      <div class="content">
+        <span class="badge">เกม & ความสนุก • จำกัดอายุ: 18+</span>
+        <p class="lead">นี่คือหน้าล้อเลียนของหน้าร้านแอป — รูปและข้อความถูกปรับให้ขำและไม่เอาเปรียบผู้อื่น โปรดคอมเมนต์ด้วยมุกสุภาพและไม่ละเมิดใคร :)</p>
+
+        <div class="comments-panel">
+          <form id="commentForm" class="comment-form">
+            <input id="name" placeholder="ชื่อเล่น (เช่น: จิ๊กโก๋ฮา)" maxlength="40">
+            <textarea id="msg" rows="3" placeholder="พิมพ์คอมเมนต์ล้อเลียนแบบขำๆ ที่ไม่เกินไป..." maxlength="400"></textarea>
+            <div class="controls">
+              <button type="submit" class="btn">โพสต์คอมเมนต์</button>
+              <button type="button" id="sampleBtn" class="btn secondary">เพิ่มมุกตัวอย่าง</button>
+              <div class="hint hint-right">คอมเมนต์จะถูกเก็บเฉพาะบนเครื่องนี้ (ไม่ส่งออก)</div>
+            </div>
+          </form>
+
+          <div class="comments-list" id="commentsList">
+            <!-- sample comments injected here -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    สร้างด้วยความขำและความระมัดระวัง — กรุณาให้ความเคารพผู้ใช้อื่น
+  </footer>
+
+  <script>
+    // simple client-side comments (local only)
+    const commentsKey = 'goonee_play_stop_comments_v1';
+    const sampleJokes = [
+      'แอปนี้ทำให้ผมหัวเราะจนแบตลดฮวบ!',
+      'ติดตั้งแล้ว ได้รับความสุขเว่อร์ ๆ',
+      'กราฟิกสวยจนลืมเติมเงิน',
+      'คะแนน 5 ดาว เพราะอ่านคำอธิบายแล้วงง แต่ยังฮา',
+      'ลองแล้ว เจอโบนัสมุกฟรีทุก 3 นาที'
+    ];
+
+    const byId = id => document.getElementById(id);
+    const listEl = byId('commentsList');
+
+    function loadComments(){
+      try{
+        const raw = localStorage.getItem(commentsKey);
+        return raw? JSON.parse(raw): [];
+      }catch(e){return []}
+    }
+
+    function saveComments(arr){
+      try{localStorage.setItem(commentsKey, JSON.stringify(arr));}catch(e){}
+    }
+
+    function render(){
+      listEl.innerHTML='';
+      const comments = loadComments();
+      if(!comments.length){
+        const el = document.createElement('div'); el.className='hint'; el.textContent='ยังไม่มีคอมเมนต์ — เป็นคนแรกที่ลงมุก!'; listEl.appendChild(el);
+        return;
+      }
+      comments.slice().reverse().forEach(c=>{
+        const d = document.createElement('div'); d.className='comment';
+        d.innerHTML = `<div class="meta"><div class="avatar">${escapeHtml(c.name||'G')}</div><div><div class="c-name">${escapeHtml(c.name||'ไม่ระบุ')}</div><div class="c-time">${new Date(c.t).toLocaleString()}</div></div></div><div class="c-text">${escapeHtml(c.msg)}</div>`;
+        listEl.appendChild(d);
+      });
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m]});
+    }
+
+    document.getElementById('commentForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = byId('name').value.trim() || 'ผู้แซว';
+      const msg = byId('msg').value.trim();
+      if(!msg){ alert('กรุณาพิมพ์คอมเมนต์ก่อน'); return; }
+      const comments = loadComments();
+      comments.push({name, msg, t: Date.now()});
+      saveComments(comments);
+      byId('name').value=''; byId('msg').value='';
+      render();
+    });
+
+    byId('sampleBtn').addEventListener('click', function(){
+      const s = sampleJokes[Math.floor(Math.random()*sampleJokes.length)];
+      byId('msg').value = s;
+    });
+
+    // seed with a few playful sample comments if empty
+    (function seed(){
+      const cur = loadComments();
+      if(cur.length===0){
+        const now = Date.now();
+        const seeds = [
+          {name:'มุกเริ่มต้น',msg:'ลองเล่นแล้ว ได้รับแต้มมุก 999',t:now-86400000},
+          {name:'แอบชอบ',msg:'ฉันชอบ UI ที่ทำให้ฉันหัวเราะ',t:now-43200000},
+          {name:'ผู้ทดสอบ',msg:'ติดตั้งแล้ว พบว่าแอปนี้ไม่มีผลกับชีวิตจริง แต่ฮาดี',t:now-3600000}
+        ];
+        saveComments(seeds);
+      }
+      render();
+    })();
+  </script>
+</body>
+</html>

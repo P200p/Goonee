@@ -488,6 +488,23 @@
   transform: scale(1.1);
 }
 
+                .effects-toggle {
+                        margin-left: 8px;
+                        background: rgba(0,0,0,0.6);
+                        color: #00ff41;
+                        border: 1px solid #00ff41;
+                        padding: 6px 10px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-family: 'Fira Code', monospace;
+                        font-weight: 600;
+                }
+                .effects-toggle[aria-pressed="true"] {
+                        background: linear-gradient(45deg, #00ff41, #00cc33);
+                        color: #000;
+                        border-color: #00cc33;
+                }
+
         .guide-frame {
             width: 100%;
             min-height: 900px;
@@ -508,6 +525,7 @@
 <!-- Goonee collapsible nav injected (auto) -->
 <div class="goonee-cnav-root">
   <button class="goonee-cnav-toggle goonee-cnav-left" aria-label="Open navigation" data-goonee-toggle data-goonee-target="goonee-panel-auto-2" data-goonee-overlay="goonee-overlay-auto-2" aria-expanded="false">☰</button>
+    <button id="effectsToggle" class="effects-toggle" aria-pressed="false" title="ปิด/เปิดเอฟเฟค">FX</button>
   <div id="goonee-overlay-auto-2" class="goonee-cnav-overlay" tabindex="-1"></div>
   <nav id="goonee-panel-auto-2" class="goonee-cnav-panel" aria-hidden="true">
     <div class="goonee-cnav-header">
@@ -519,10 +537,12 @@
       <li><a href="/guide.html">เกี่ยวกับ</a></li>
       <li class="goonee-cnav-item">
         <button class="goonee-cnav-subtoggle" data-goonee-subtoggle data-goonee-subtarget="goonee-sublist-auto-2" aria-controls="goonee-sublist-auto-2">ตัวอย่างผลงานอื่นๆ <span class="goonee-cnav-caret">›</span></button>
-        <ul id="goonee-sublist-auto-2" class="goonee-cnav-sublist" aria-hidden="true">
-          <li><a href="https://sharkkadaw.netlify.app/" target="_blank" rel="noopener">Sharkkadaw</a></li>
-          <li><a href="https://goonee.netlify.app/ai/scan" target="_blank" rel="noopener">Goonee Scan</a></li>
-        </ul>
+                <ul id="goonee-sublist-auto-2" class="goonee-cnav-sublist" aria-hidden="true">
+                    <li><a href="https://sharkkadaw.netlify.app/" target="_blank" rel="noopener">Sharkkadaw</a></li>
+                    <li><a href="https://goonee.netlify.app/ai/scan" target="_blank" rel="noopener">Goonee Scan</a></li>
+                    <li><a href="https://goonee.netlify.app/assets/goonee_play_stop.html" target="_blank" rel="noopener">Goonee Play Stop</a></li>
+                    <li><a href="https://goonee.netlify.app/lab/index.html" target="_blank" rel="noopener">GooneeLAB</a></li>
+                </ul>
       </li>
       <li><a href="/contact.html">ติดต่อ</a></li>
     </ul>
@@ -666,45 +686,74 @@
         // Matrix background animation
         const canvas = document.getElementById('matrixCanvas');
         const ctx = canvas.getContext('2d');
-        
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        const matrix = "マアマラワソカユイワルミヤABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
-        const matrixArray = matrix.split("");
-        
-        const fontSize = 10;
-        const columns = canvas.width / fontSize;
-        
-        const drops = [];
-        for(let x = 0; x < columns; x++) {
-            drops[x] = 1;
-        }
-        
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#00ff41';
-            ctx.font = fontSize + 'px Fira Code';
-            
-            for(let i = 0; i < drops.length; i++) {
-                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                
-                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
-        }
-        
-        setInterval(drawMatrix, 35);
-        
-        // Resize canvas on window resize
-        window.addEventListener('resize', () => {
+
+        let matrixInterval = null;
+        let matrixRunning = true;
+
+        function startMatrix() {
+            if (matrixInterval) return;
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+
+            const matrix = "マアマラワソカユイワルミヤABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+            const matrixArray = matrix.split("");
+
+            const fontSize = 10;
+            const columns = Math.floor(canvas.width / fontSize);
+
+            const drops = [];
+            for(let x = 0; x < columns; x++) {
+                drops[x] = 1;
+            }
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#00ff41';
+                ctx.font = fontSize + 'px Fira Code';
+
+                for(let i = 0; i < drops.length; i++) {
+                    const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            matrixInterval = setInterval(drawMatrix, 35);
+            matrixRunning = true;
+            canvas.style.display = '';
+            document.getElementById('effectsToggle').setAttribute('aria-pressed', 'true');
+        }
+
+        function stopMatrix() {
+            if (!matrixInterval) return;
+            clearInterval(matrixInterval);
+            matrixInterval = null;
+            matrixRunning = false;
+            // clear canvas to transparent so gradient shows clearly
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            canvas.style.display = 'none';
+            document.getElementById('effectsToggle').setAttribute('aria-pressed', 'false');
+        }
+
+        // start by default
+        startMatrix();
+
+        // Resize handling
+        window.addEventListener('resize', () => {
+            if (matrixRunning) {
+                // restart matrix to recalc columns
+                stopMatrix();
+                startMatrix();
+            } else {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
         });
         
         // Copy spell function
@@ -914,6 +963,12 @@
         // Render shortcuts on initial load
         document.addEventListener('DOMContentLoaded', () => {
             try { renderShortcuts(); } catch(e) { /* no-op */ }
+            const fxBtn = document.getElementById('effectsToggle');
+            if (fxBtn) {
+                fxBtn.addEventListener('click', () => {
+                    if (matrixRunning) stopMatrix(); else startMatrix();
+                });
+            }
         });
     </script>
 

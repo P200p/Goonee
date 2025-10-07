@@ -13,7 +13,7 @@ class GooneDoorSystem {
             doorOpenSvg: options.doorOpenSvg || 'door_on.svg',
             // รองรับ CDN
             useCDN: options.useCDN || false,
-            cdnBase: options.cdnBase || 'https://cdn.jsdelivr.net/gh/yourusername/yourrepo@main/',
+            cdnBase: options.cdnBase || 'https://cdn.jsdelivr.net/gh/P200p/Goonee@main/',
             autoClose: options.autoClose || false,
             autoCloseDelay: options.autoCloseDelay || 30000,
             animationDuration: options.animationDuration || 2000,

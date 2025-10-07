@@ -3,15 +3,10 @@
 /* Container ครอบ iframe/SVG */
 .iframe-door-container {
   position: relative;
-  width: 100%;
-    width: 100vw;       /* เต็ม viewport */
-  max-width: 100%;    /* ไม่ถูกบีบ */
-  margin: 0 auto; 
-  aspect-ratio: 1084 / 1042; /* สัดส่วนจริงของ SVG */
-  max-height: 95vh;          /* สูงเกือบเต็มจอ แต่ไม่เกิน */
-  overflow: hidden;          /* กันโจรมุด */
-  border-radius: 10px;
-  background: #000;
+  width: 100vw;
+  height: 95vh;     /* ฟาดสูงเกือบเต็มจอ */
+  max-height: none; /* ไม่จำกัด */
+  aspect-ratio: auto;
 }
 
 /* เนื้อหา iframe */

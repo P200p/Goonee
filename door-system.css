@@ -3,8 +3,9 @@
 .iframe-door-container {
     position: relative;
     width: 100%;
-    height: 100vh; /* เต็มความสูงหน้าจอ */
-    min-height: 800px; /* ความสูงขั้นต่ำ */
+    height: auto; /* ความสูงอัตโนมัติ */
+    min-height: 500px; /* ความสูงขั้นต่ำ */
+    aspect-ratio: 16/9; /* อัตราส่วนมาตรฐาน */
     overflow: hidden;
     border-radius: 10px;
     background: #000;
@@ -12,26 +13,26 @@
 
 .iframe-door-content {
     width: 100%;
-    height: 100%;
+    height: 100%; /* เต็มความสูงของ container */
     border: none;
     background: white;
 }
 
 .door-overlay {
-    position: fixed; /* เปลี่ยนเป็น fixed เพื่อเต็มจอ */
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw; /* เต็มความกว้างหน้าจอ */
-    height: 100vh; /* เต็มความสูงหน้าจอ */
+    width: 100%; /* เท่ากับ container พอดี */
+    height: 100%; /* เท่ากับ container พอดี */
     z-index: 1000;
     pointer-events: none;
     opacity: 1;
-    transition: opacity 0.5s ease; /* ใช้ opacity แทน transform */
+    transition: opacity 0.5s ease;
 }
 
 .door-svg {
-    width: 100vw; /* เต็มความกว้างหน้าจอ */
-    height: 100vh; /* เต็มความสูงหน้าจอ */
+    width: 100%; /* เต็มความกว้างของ overlay */
+    height: auto; /* เต็มความสูงของ overlay */
     object-fit: cover;
     filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
     transition: none; /* ปิด transition เพื่อให้ SVG จัดการอนิเมชั่นเอง */

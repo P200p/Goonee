@@ -222,20 +222,15 @@ class GooneDoorSystem {
             this.options.onAnimationStart('open');
         }
         
-        // Remove previous classes
-        this.elements.overlay.classList.remove('closed', 'closing');
-        
-        // Add opening animation
-        this.elements.overlay.classList.add('opening');
         this.elements.status.innerHTML = '🔄 สถานะ: กำลังเปิด...';
         
-        // เปลี่ยน SVG เป็นแบบเปิด
+        // เปลี่ยน SVG เป็นแบบเปิด (SVG จะเล่นอนิเมชั่นเอง)
         this.changeDoorSvg('open');
         
-        // After animation completes
+        // รอให้ SVG เล่นอนิเมชั่นเสร็จ แล้วซ่อน overlay (เฟรมสุดท้ายโปร่งแสง)
         setTimeout(() => {
-            this.elements.overlay.classList.remove('opening');
-            this.elements.overlay.classList.add('opened');
+            this.elements.overlay.classList.remove('closed', 'closing', 'opening');
+            this.elements.overlay.classList.add('opened'); // opacity: 0
             this.elements.status.innerHTML = '🔓 สถานะ: เปิด';
             this.isAnimating = false;
             this.updateUI();
@@ -277,22 +272,20 @@ class GooneDoorSystem {
             this.options.onAnimationStart('close');
         }
         
-        // Remove previous classes
-        this.elements.overlay.classList.remove('opened', 'opening');
-        
-        // Add closing animation
-        this.elements.overlay.classList.add('closing');
         this.elements.status.innerHTML = '🔄 สถานะ: กำลังปิด...';
         
-        // After animation completes
+        // แสดง overlay กลับมา
+        this.elements.overlay.classList.remove('opened', 'opening');
+        this.elements.overlay.classList.add('closing');
+        
+        // เปลี่ยน SVG กลับเป็นแบบปิด (SVG จะเล่นอนิเมชั่นย้อนกลับ)
+        this.changeDoorSvg('closed');
+        
+        // รอให้ SVG เล่นอนิเมชั่นเสร็จ
         setTimeout(() => {
             this.elements.overlay.classList.remove('closing');
-            this.elements.overlay.classList.add('closed');
+            this.elements.overlay.classList.add('closed'); // opacity: 1
             this.elements.status.innerHTML = '🔒 สถานะ: ปิด';
-            
-            // เปลี่ยน SVG กลับเป็นแบบปิด
-            this.changeDoorSvg('closed');
-            
             this.isAnimating = false;
             this.updateUI();
 

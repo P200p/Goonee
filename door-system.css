@@ -3,7 +3,8 @@
 .iframe-door-container {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 100vh; /* เต็มความสูงหน้าจอ */
+    min-height: 800px; /* ความสูงขั้นต่ำ */
     overflow: hidden;
     border-radius: 10px;
     background: #000;
@@ -17,79 +18,67 @@
 }
 
 .door-overlay {
-    position: absolute;
+    position: fixed; /* เปลี่ยนเป็น fixed เพื่อเต็มจอ */
     top: 0;
     left: 0;
-    width: 100%;
-    height: 120%; /* เกินความสูง iframe เพื่อซ่อนลายน้ำ */
+    width: 100vw; /* เต็มความกว้างหน้าจอ */
+    height: 100vh; /* เต็มความสูงหน้าจอ */
     z-index: 1000;
     pointer-events: none;
-    transform: translateY(0%);
     opacity: 1;
-    transition: none;
+    transition: opacity 0.5s ease; /* ใช้ opacity แทน transform */
 }
 
 .door-svg {
-    width: 100%;
-    height: 100%;
+    width: 100vw; /* เต็มความกว้างหน้าจอ */
+    height: 100vh; /* เต็มความสูงหน้าจอ */
     object-fit: cover;
     filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
-    transition: opacity 0.3s ease;
+    transition: none; /* ปิด transition เพื่อให้ SVG จัดการอนิเมชั่นเอง */
 }
 
 .door-svg.loading {
     opacity: 0.7;
 }
 
-/* Animation states */
+/* Animation states - ใช้ SVG animation แทน CSS animation */
 .door-overlay.opening {
-    animation: doorOpen 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.door-overlay.closing {
-    animation: doorClose 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.door-overlay.closed {
-    transform: translateY(0%);
+    /* SVG จะจัดการอนิเมชั่นเอง */
     opacity: 1;
 }
 
+.door-overlay.closing {
+    /* SVG จะจัดการอนิเมชั่นเอง */
+    opacity: 1;
+}
+
+.door-overlay.closed {
+    opacity: 1; /* แสดง SVG ประตูปิด */
+    pointer-events: auto;
+}
+
 .door-overlay.opened {
-    transform: translateY(-100%);
-    opacity: 0;
+    opacity: 0; /* ซ่อน SVG เมื่อประตูเปิด (เฟรมสุดท้ายโปร่งแสง) */
     pointer-events: none;
 }
 
-/* Keyframes for door animations */
-@keyframes doorOpen {
-    0% {
-        transform: translateY(0%) scale(1);
-        opacity: 1;
-    }
-    20% {
-        transform: translateY(-5%) scale(1.01);
-        opacity: 0.95;
-    }
-    100% {
-        transform: translateY(-100%) scale(1);
-        opacity: 0;
-    }
+/* Fade animation สำหรับการเปลี่ยนสถานะ */
+.door-overlay.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
 }
 
-@keyframes doorClose {
-    0% {
-        transform: translateY(-100%) scale(1);
-        opacity: 0;
-    }
-    20% {
-        transform: translateY(-95%) scale(1.01);
-        opacity: 0.05;
-    }
-    100% {
-        transform: translateY(0%) scale(1);
-        opacity: 1;
-    }
+.door-overlay.fade-in {
+    animation: fadeIn 0.5s ease-in forwards;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* Control buttons */

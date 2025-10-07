@@ -1,202 +1,119 @@
-/* Goonee Door System CSS */
+/* Goonee Door System CSS - Rewrite */
 
+/* Container ครอบ iframe/SVG */
 .iframe-door-container {
-    position: relative;
-    width: 100%;
-    height: auto; /* ความสูงอัตโนมัติ */
-    min-height: 500px; /* ความสูงขั้นต่ำ */
-    aspect-ratio: 16/9; /* อัตราส่วนมาตรฐาน */
-    overflow: hidden;
-    border-radius: 10px;
-    background: #000;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1084 / 1042; /* สัดส่วนจริงของ SVG */
+  max-height: 95vh;          /* สูงเกือบเต็มจอ แต่ไม่เกิน */
+  overflow: hidden;          /* กันโจรมุด */
+  border-radius: 10px;
+  background: #000;
 }
 
+/* เนื้อหา iframe */
 .iframe-door-content {
-    width: 100%;
-    height: 100%; /* เต็มความสูงของ container */
-    border: none;
-    background: white;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
 }
 
+/* Overlay ของประตู */
 .door-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%; /* เท่ากับ container พอดี */
-    height: 100%; /* เท่ากับ container พอดี */
-    z-index: 1000;
-    pointer-events: none;
-    opacity: 1;
-    transition: opacity 0.5s ease;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.5s ease;
 }
 
+/* SVG ประตู */
 .door-svg {
-    width: 100%; /* เต็มความกว้างของ overlay */
-    height: auto; /* เต็มความสูงของ overlay */
-    object-fit: cover;
-    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
-    transition: none; /* ปิด transition เพื่อให้ SVG จัดการอนิเมชั่นเอง */
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* fit ตามสัดส่วนจริง */
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
 }
 
-.door-svg.loading {
-    opacity: 0.7;
-}
-
-/* Animation states - ใช้ SVG animation แทน CSS animation */
-.door-overlay.opening {
-    /* SVG จะจัดการอนิเมชั่นเอง */
-    opacity: 1;
-}
-
-.door-overlay.closing {
-    /* SVG จะจัดการอนิเมชั่นเอง */
-    opacity: 1;
-}
-
+/* สถานะ */
 .door-overlay.closed {
-    opacity: 1; /* แสดง SVG ประตูปิด */
-    pointer-events: auto;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.door-overlay.opening {
+  opacity: 1; /* ยังเห็นอยู่ระหว่างเปิด */
 }
 
 .door-overlay.opened {
-    opacity: 0; /* ซ่อน SVG เมื่อประตูเปิด (เฟรมสุดท้ายโปร่งแสง) */
-    pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  transition-delay: 5s; /* ดีเลย์ 5 วิ ก่อนค่อยหาย */
 }
 
-/* Fade animation สำหรับการเปลี่ยนสถานะ */
-.door-overlay.fade-out {
-    animation: fadeOut 0.5s ease-out forwards;
+.door-overlay.closing {
+  opacity: 1;
 }
 
-.door-overlay.fade-in {
-    animation: fadeIn 0.5s ease-in forwards;
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Control buttons */
+/* ปุ่มควบคุม */
 .door-controls {
-    display: flex;
-    gap: 10px;
-    margin: 10px 0;
-    justify-content: center;
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+  justify-content: center;
 }
 
 .door-button {
-    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    color: white;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    position: relative;
-    overflow: hidden;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .door-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
 }
 
-.door-button:hover::before {
-    left: 100%;
-}
-
-.door-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.door-button:active {
-    transform: translateY(0);
-}
+.door-button:hover::before { left: 100%; }
+.door-button:hover { transform: translateY(-2px); }
+.door-button:active { transform: translateY(0); }
 
 .door-button.open {
-    background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
-    box-shadow: 0 4px 15px rgba(86, 171, 47, 0.3);
+  background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
 }
-
 .door-button.close {
-    background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%);
-    box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
+  background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%);
 }
-
 .door-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none !important;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
+/* สถานะข้อความ */
 .door-status {
-    text-align: center;
-    margin: 10px 0;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 8px 16px;
-    background: rgba(0,0,0,0.1);
-    border-radius: 20px;
-    display: inline-block;
-}
-
-/* Loading indicator */
-.door-loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.door-spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255,255,255,0.3);
-    border-top: 3px solid #667eea;
-    border-radius: 50%;
-    animation: doorSpin 1s linear infinite;
-}
-
-@keyframes doorSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.door-loading-text {
-    color: #667eea;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .door-controls {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .door-button {
-        width: 150px;
-    }
+  text-align: center;
+  margin: 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 20px;
+  display: inline-block;
 }

@@ -6,6 +6,9 @@
   border: 1px solid var(--accent);
   color: var(--accentText);
   padding: 6px 10px;
+      position: fixed;
+    left: 12px;
+    top: 120px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
@@ -61,3 +64,4 @@
 @media (max-width:120px){
   .goonee-cnav-panel{width:50%;}
 }
+

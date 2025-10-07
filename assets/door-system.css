@@ -2,7 +2,7 @@
 
 /* Container ครอบ iframe/SVG */
 .iframe-door-container {
-  width: 100vw;
+  width: 100%;
   height: 95vh;     /* ฟาดสูงเกือบเต็มจอ */
   max-height: none; /* ไม่จำกัด */
   aspect-ratio: auto;

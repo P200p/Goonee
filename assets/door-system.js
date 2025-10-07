@@ -140,12 +140,13 @@ class GooneDoorSystem {
         return svgFile;
     }
 
-    changeDoorSvg(state) {
-        if (this.elements.svgObject) {
-            const newPath = this.getSvgPath(state);
-            this.elements.svgObject.data = newPath;
-        }
-    }
+changeDoorSvg(state) {
+  if (this.elements.svgObject) {
+    const newPath = this.getSvgPath(state) + '?v=' + Date.now();
+    this.elements.svgObject.data = newPath;
+  }
+}
+
 
     bindEvents() {
         // Button events

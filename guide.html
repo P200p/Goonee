@@ -1,862 +1,207 @@
 
-<!doctype html>
-<html lang=th>
+<!DOCTYPE html>
+<html lang="th">
 <head>
-  <meta charset=utf-8 />
-  <meta name=viewport content="width=device-width, initial-scale=1" />
-  <title>คู่มือ Goonee Console</title>
-  <link rel="icon" type="image/png" sizes="192x192" href="../icon/192x192.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="../icon/192x192.png" />
-  <link rel="stylesheet" href="home.css" />
-  <link rel="stylesheet" href="assets/guide-styles.css" />
-  <style>
-    body{background:url('BG.png') center/cover fixed #0b1020;color:#e0e0e0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;text-shadow:0 1px 2px rgba(0,0,0,.75)}
-    .container{max-width:900px;margin:0 auto;padding:20px}
-    .header-img{display:block;width:100%;max-width:900px;height:auto;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.35);margin:8px 0 16px}
-    .card{background:rgba(2,255,18,.08);border:1px solid rgba(8,20,253,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-radius:12px;padding:16px;margin:12px 0}
-    h1,h2,h3{color:#00e5ff; -webkit-text-stroke:0.6px rgba(0,0,0,.45)}
-    h2{margin:0 0 8px;color:#011055;-webkit-text-stroke:0.6px rgba(0,0,0,.6);text-shadow:0 2px 4px rgba(0,0,0,.55)}
-    pre,code{background:rgba(22,8,226,.18);border:1px solid #00ff26;border-radius:10px;padding:10px;display:block;white-space:pre-wrap;word-break:break-word;color:#d7fffd; font-family: 'Courier New', monospace;}
-    a.btn{display:inline-block;margin:6px 6px 6px 0;padding:10px 14px;background:#16a34a;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;text-shadow:0 1px 1px rgba(0,0,0,.45);max-height: 100px;overflow: auto;}
-    a.btn.alt{background:#08d1ff;color:#001b44}
-    .sub{opacity:.95;-webkit-text-stroke:0.4px rgba(0,0,0,.35); font-size: 1.1em; color: #ffd166;}
-    .note{opacity:.95;font-size:.95em;text-shadow:0 1px 2px rgba(0,0,0,.6)}
-    .kiwi-link { display: inline-flex; align-items: center; gap: 8px; background-color: #252525; color: #fff; border: 1px solid #444; }
-    .kiwi-link img { width: 20px; height: 20px; border-radius: 4px; }
-    .go-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.25);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);font-size:14px;z-index:10001;opacity:0;transition:opacity .18s ease}
-    /* ปรับ class ให้ตรงกับหน้านี้ (guide.html) */
-    body { background: radial-gradient(1200px 600px at 10% -10%, #112 0%, #0a0a0a 40%), linear-gradient(135deg, #0a0a0a 0%, #121225 50%, #0c0c1a 100%); font-family: 'Orbitron', monospace; color:#00ff41; min-height:100vh; overflow-x:hidden; }
-    pre.code{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:auto;max-height: 100px; }
-    .go-mcol { position:absolute; top:-100px; font-size:13px; color:#00ff41; opacity:.6; animation: go-fall linear infinite; }
-    @keyframes go-fall { 0%{ transform:translateY(-100px); opacity:1;} 100%{ transform:translateY(100vh); opacity:0;} }
-    .go-header { text-align:center; padding:22px 0 16px; border-bottom:2px solid #00ff41; margin-bottom:24px; background:rgba(0,0,0,.72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); position:relative; z-index:1; }
-    .go-title { font-size:1.9rem; font-weight:900; text-shadow:0 0 18px #00ff41; letter-spacing:1.8px; animation: go-glow 2s ease-in-out infinite alternate; margin:0 0 6px; }
-    @keyframes go-glow { from{ text-shadow:0 0 18px #00ff41;} to{ text-shadow:0 0 28px #00ff41, 0 0 38px #00ff41;} }
-    .go-sub { font-size:.95rem; color:#00ccff; opacity:.85; }
-
-    .container { display:grid; grid-template-columns: 1fr; gap:22px; padding: 0 16px 40px; max-width:900px; margin: 0 auto; position:relative; z-index:1; }
-    .card { perspective: 900px; }
-    .card { background: rgba(0,0,0,.9); border:2px solid #00ff41; border-radius:16px; padding:14px; position:relative; overflow:hidden; box-shadow: 0 0 26px rgba(0,255,65,.18); transition: transform .25s, box-shadow .25s, border-color .25s; }
-    .card:hover { transform: rotateX(2deg) rotateY(-2deg) translateY(-2px); border-color:#ffd700; box-shadow: 0 0 46px rgba(255,215,0,.32); }
-
-    .header-img { width:100%; aspect-ratio: 16 / 9; border-radius:12px; overflow:hidden; border:2px solid #00ff41; background:#090909; box-shadow: inset 0 0 25px #00ff4188; margin-bottom: 16px; }
-    .sub { font-size:1.1em; color:#ffd166; opacity:.95; }
-    .note { opacity:.95; font-size:.95em; text-shadow:0 1px 2px rgba(0,0,0,.6) }
-
-  pre,code { background:rgba(22,8,226,.18); border:1px solid #00ff26; border-radius:10px; padding:10px; display:block; white-space:pre-wrap; word-break:break-word; color:#d7fffd; font-family: 'Courier New', monospace; }
-  /* limit height of code blocks inside cards and allow scrolling for long scripts */
-  .card pre { max-height:160px; overflow:auto; }
-    a.btn { display:inline-block; margin:6px 6px 6px 0; padding:10px 14px; background:#16a34a; color:#fff; border-radius:10px; text-decoration:none; font-weight:600; text-shadow:0 1px 1px rgba(0,0,0,.45) }
-    a.btn.alt { background:#08d1ff; color:#001b44 }
-    .kiwi-link { display: inline-flex; align-items: center; gap: 8px; background-color: #252525; color: #fff; border: 1px solid #444; }
-    .kiwi-link img { width: 20px; height: 20px; border-radius: 4px; }
-
-    .go-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);font-size:14px;z-index:10001;opacity:0;transition:opacity .18s ease}
-
-    /* Enhanced mobile responsiveness */
-    @media (max-width: 768px) {
-      .go-title { font-size:1.5rem; }
-      .container { padding: 0 10px 32px; }
-      .header-img { aspect-ratio: 16 / 10; }
-      
-      .feature-grid { grid-template-columns: repeat(2, 1fr) !important; }
-      .tool-grid { grid-template-columns: 1fr !important; }
-      
-      .theme-control .btn {
-        padding: 8px 12px;
-        font-size: 0.9em;
-      }
-      
-      kbd {
-        font-size: 0.8em;
-        padding: 2px 4px;
-        background: rgba(255,255,255,0.1);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 3px;
-      }
-    }
-
-    /* Keyboard shortcut styling */
-    kbd {
-      font-family: monospace;
-      font-size: 0.9em;
-      padding: 3px 6px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 4px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    }
-
-    /* Enhanced card hover effects */
-    .card:hover {
-      transform: rotateX(2deg) rotateY(-2deg) translateY(-2px) scale(1.02);
-      border-color: var(--accent, #ffd700);
-      box-shadow: 0 0 46px rgba(255,215,0,.32);
-    }
-
-    /* Theme control panel special styling */
-    .theme-control {
-      background: linear-gradient(135deg, rgba(0,255,65,0.1), rgba(0,229,255,0.1)) !important;
-      border: 2px solid var(--accent, #00ff41) !important;
-      box-shadow: 0 0 30px rgba(0,255,65,0.2) !important;
-    }
-
-    .theme-control:hover {
-      box-shadow: 0 0 50px rgba(0,255,65,0.4) !important;
-    }
-  </style>
-  <body class="page-guide">
-  <div class=container>
-    <img class="header-img" src="Sharkkadaw.jpg" alt="Goonee Guide" />
-    <h1>คู่มือ: Goonee Console</h1>
-    <p class=sub>คู่มือการใช้งานเครื่องมือสำหรับนักพัฒนาเว็บ Goonee Console V2</p>
-
-    <!-- Theme Control Panel -->
-    <div class="card theme-control" id="theme-panel">
-        <h2>🎨 Theme Control Center</h2>
-        <p class="note">ปรับแต่งธีมและสไตล์ของหน้าเว็บตามใจชอบ</p>
-        <div class="button-group">
-            <button class="btn" id="btn-random-theme">🎲 สุ่มธีม</button>
-            <button class="btn" id="btn-save-theme">💾 บันทึกธีม</button>
-            <button class="btn" id="btn-hacker-mode">💀 Hacker Mode</button>
-            <button class="btn" id="btn-matrix-rain">🌊 Matrix Rain</button>
-            <button class="btn alt" id="btn-reset-theme">↺ รีเซ็ต</button>
-        </div>
-        <div id="theme-status"></div>
-    </div>
-
-    <div class="card" id="console2-main">
-        <h2>🦈 กูนี่คอนโซล V2 - Ultimate Hacker Edition</h2>
-        <p class="note">เครื่องมือแฮ็กเกอร์สุดล้ำ! พร้อมฟีเจอร์ XSS Testing, Cookie Hacking, DOM Spy, Network Sniffing และอีกมากมาย</p>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Basic Meta Tags -->
+    <title>รวมเครื่องมือแฮกเกอร์</title>
+    <meta name="description" content="">
+    <link rel="canonical" href="https://goorum.netlify.app/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://goorum.netlify.app/">
+    <meta property="og:title" content="รวมเครื่องมือแฮกเกอร์">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="https://goorum.netlify.app/gooimage/metarum.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:site_name" content="Goonee'">
+    <meta property="article:published_time" content="2025-10-08T22:40:38.813Z">
+    
+    <!-- Twitter Card -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://goorum.netlify.app/">
+    <meta property="twitter:title" content="รวมเครื่องมือแฮกเกอร์">
+    <meta property="twitter:description" content="">
+    <meta property="twitter:image" content="https://goorum.netlify.app/gooimage/metarum.png">
+    
+    <!-- LinkedIn -->
+    <meta property="linkedin:owner" content="">
+    
+    <!-- WhatsApp -->
+    <meta property="og:image:alt" content="รวมเครื่องมือแฮกเกอร์">
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Goonee'">
+    <meta name="keywords" content="">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://goorum.netlify.app/gooimage/metarum.png" as="image">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
         
-        <div class="feature-grid">
-            <div class="feature-item">
-                <div>⚡</div>
-                <strong>XSS Testing</strong>
-                <div>ทดสอบช่องโหว่ XSS</div>
-            </div>
-            <div class="feature-item">
-                <div>🍪</div>
-                <strong>Cookie Hacking</strong>
-                <div>ดึงและวิเคราะห์ cookies</div>
-            </div>
-            <div class="feature-item">
-                <div>🔍</div>
-                <strong>DOM Spy</strong>
-                <div>สแกนหาช่องโหว่ DOM</div>
-            </div>
-            <div class="feature-item">
-                <div>📡</div>
-                <strong>Network Sniffer</strong>
-                <div>ดักจับ network requests</div>
-            </div>
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .countdown {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 2rem 0;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            border-radius: 2px;
+            transition: width 0.1s ease-out;
+        }
+        
+        .redirect-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 2rem;
+        }
+        
+        .url {
+            word-break: break-all;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
         </div>
-
-        <h3>🚀 Quick Start</h3>
-        <p class="note">คัดลอกโค้ดนี้ไปสร้างบุ๊คมาร์ค หรือกดทดสอบเลย!</p>
-        <pre><code id="bm-console2">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/console2.js?t='+Date.now();document.body.appendChild(s);})();</code></pre>
-        <p>
-            <a class="btn" href="#" data-copy="#bm-console2">📋 คัดลอกโค้ด</a>
-            <a class="btn alt" href="#" id="btn-test-console2">🧪 ทดสอบบนหน้านี้</a>
-        </p>
-
-        <h3>⌨️ Keyboard Shortcuts</h3>
-        <div class="console-section">
-            <div class="console-shortcuts">
-                <span><kbd>Ctrl + `</kbd></span><span>เปิด/ปิด Console</span>
-                <span><kbd>Ctrl + Shift + H</kbd></span><span>Hacker Mode (ลบ CSS + Matrix)</span>
-                <span><kbd>Ctrl + Shift + P</kbd></span><span>แสดงรหัสผ่านทั้งหมด</span>
-                <span><kbd>Ctrl + Shift + X</kbd></span><span>ทดสอบ XSS</span>
-            </div>
+        
+        <h1>กำลังเตรียมเนื้อหาสำหรับคุณ</h1>
+        <p>กรุณารอสักครู่... เราจะพาคุณไปยังหน้าที่ต้องการ</p>
+        
+        <div class="countdown pulse" id="countdown">2</div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
         </div>
-
-        <h3>📱 สำหรับผู้ใช้ Android</h3>
-        <p class="note">เพื่อประสบการณ์แฮ็กเกอร์ที่สมบูรณ์แบบ แนะนำให้ใช้ Kiwi Browser</p>
-        <p>
-            <a class="btn kiwi-link" href="https://apkpure.com/kiwi-browser-fast-quiet/com.kiwibrowser.browser" target="_blank" rel="noopener">
-                <img src="https://image.winudf.com/v2/image1/Y29tLmtpd2licm93c2VyLmJyb3dzZXJfaWNvbl8xNTYxNTg4NjMxXzAxNg/icon.webp?w=140&fakeurl=1&type=.webp" alt="Kiwi Browser icon">
-                <span>ดาวน์โหลด Kiwi Browser</span>
-            </a>
-            <a class="btn kiwi-link" href="/tools/extension.crx" download="extension.crx" target="_blank" rel="noopener">
-                <img src="/icon/icon16.png" alt="Goonee Theme Extension icon">
-                <span>ดาวน์โหลด Goonee Theme Extension</span>
-            </a>
-        </p>
-    </div>
-
-    <div class="card">
-      <h2>🛠️ เครื่องมือเฉพาะทาง (Specialized Tools)</h2>
-      <p class="note">เครื่องมือแฮ็กเกอร์เฉพาะด้าน สำหรับงานที่ต้องการความเชี่ยวชาญ</p>
-      
-      <div class="tool-grid">
-        <div class="tool-card">
-          <h3>📊 System Monitor</h3>
-          <p>ติดตามประสิทธิภาพระบบ, การใช้งาน CPU, RAM และ Network</p>
-          <pre><code id="bm-monitor">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/monitor.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-          <p>
-            <a class="btn" href="#" data-copy="#bm-monitor">📋 คัดลอก</a>
-            <a class="btn alt" href="#" data-run="#bm-monitor">🧪 ทดสอบ</a>
-          </p>
+        
+        <div class="redirect-info">
+            <p><strong>จุดหมาย:</strong></p>
+            <div class="url">https://goorum.netlify.app/</div>
         </div>
-
-        <div class="tool-card">
-          <h3>🎨 Theme Changer</h3>
-          <p>เปลี่ยนธีมและสีสันของเว็บไซต์แบบเรียลไทม์</p>
-          <pre><code id="bm-theme">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/Theme.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-          <p>
-            <a class="btn" href="#" data-copy="#bm-theme">📋 คัดลอก</a>
-            <a class="btn alt" href="#" data-run="#bm-theme">🧪 ทดสอบ</a>
-          </p>
-        </div>
-      </div>
     </div>
 
-    <div class="card">
-      <h2>เครื่องมือจากโปรเจค (เพิ่มเติม)</h2>
-      <p class="note">รายการสคริปต์ที่อยู่ในโปรเจค — คัดลอก bookmarklet หรือทดสอบบนหน้านี้</p>
-
-      <h3>• Console (console.js)</h3>
-      <pre><code id="bm-console">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/console.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-console">คัดลอกโค้ด</a>
-        <a class="btn alt" href="#" data-run="#bm-console">ทดสอบ</a>
-      </p>
-
-      <h3>• Console2 (console2.js)</h3>
-      <pre><code id="bm-console2-local">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/console2.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-console2-local">คัดลอกโค้ด</a>
-        <a class="btn alt" href="#" data-run="#bm-console2-local">ทดสอบ</a>
-      </p>
-
-      <h3>• Loader (loader.js)</h3>
-      <pre><code id="bm-loader">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/loader.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-loader">คัดลอกโค้ด</a>
-        <a class="btn alt" href="#" data-run="#bm-loader">ทดสอบ</a>
-      </p>
-
-      <h3>• Main (main.js)</h3>
-      <pre><code id="bm-main">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/main.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-main">คัดลอกโค้ด</a>
-        <a class="btn alt" href="#" data-run="#bm-main">ทดสอบ</a>
-      </p>
-
-      <h3>• Service / util (sw.js)</h3>
-      <pre><code id="bm-sw">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sw.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-sw">คัดลอกโค้ด</a>
-        <a class="btn alt" href="#" data-run="#bm-sw">ทดสอบ</a>
-      </p>
-
-      <h3>• Tools (sharktool/tool.js)</h3>
-      <pre><code id="bm-toollib">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/tool.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-toollib">คัดลอกโค้ด</a>
-        <a class="btn alt" href="#" data-run="#bm-toollib">ทดสอบ</a>
-      </p>
-
-      <h3>• Monitor (sharktool/monitor.js)</h3>
-      <pre><code id="bm-monitor2">javascript:(function(){var s=document.createElement('script');s.src='https://goonee.netlify.app/sharktool/monitor.js?t='+Date.now();document.body.appendChild(s)})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-monitor2">คัดลอกโค้ด</a>
-        <a class="btn alt" href="#" data-run="#bm-monitor2">ทดสอบ</a>
-      </p>
-
-    </div>
-
-    <div class="card">
-      <h2>🧪 Developer Tools: Eruda Mobile Console</h2>
-      <p class="note">เครื่องมือ Developer Console สำหรับมือถือ - ดีบักและตรวจสอบเว็บไซต์ได้ทุกที่</p>
-      
-      <div class="devtools-section">
-        <h4>✨ ฟีเจอร์ Eruda:</h4>
-        <ul>
-          <li>Console สำหรับรัน JavaScript</li>
-          <li>Elements Inspector สำหรับดู DOM</li>
-          <li>Network Monitor ติดตาม requests</li>
-          <li>Resources Viewer ดูไฟล์และ storage</li>
-          <li>Sources Debugger สำหรับ debug โค้ด</li>
-        </ul>
-      </div>
-
-      <pre><code id="bm-eruda">javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda';document.body.appendChild(s);s.onload=function(){eruda.init();eruda.show();};})();</code></pre>
-      <p>
-        <a class="btn" href="#" data-copy="#bm-eruda">📋 คัดลอก Bookmarklet</a>
-        <a class="btn alt" href="#" id="btn-eruda">🧪 เปิด Eruda ทันที</a>
-      </p>
-    </div>
-
-    <div class="card">
-      <h2>Userscript: goonee console2 loader</h2>
-      <p class="note">สคริปต์สำหรับติดตั้งเป็น Userscript (Tampermonkey / Greasemonkey) — อัปโหลดแล้วบน OpenUserJS</p>
-      <pre><code id="bm-userscript">// ==UserScript==
-// @name         goonee console2 loader
-// @namespace    x: @omgnhoy
-// @description  ของเล่น Dev/เครื่องมือใช้สอย
-// @author       x: @omgnhoy
-// @license      MIT
-// @match        *://*/*
-// @version      1.0
-// @homepage     https://goonee.netlify.app
-// @grant        none
-// @require      https://goonee.netlify.app/console2.js
-// ==/UserScript==
-/* ใส่โค้ดส่วนปฏิบัติการไว้ด้านล่าง (ถ้าจำเป็น) */ 
-(function(){ 
-    let s = document.createElement('script'); 
-    // ถ้าอยากข้าม cache ให้เพิ่มพารามิเตอร์ timestamp
-    s.src = 'https://goonee.netlify.app/console2.js?t=' + Date.now();
-    document.body.appendChild(s);
-})();</code></pre>
-      <p>
-        <a class="btn alt" href="https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" rel="noopener">ติดตั้งส่วนขยาย Userscript ก่อน</a>
-        <a class="btn alt" href="https://openuserjs.org/scripts/GooneeShark/Goonee_Console2_Floating_Button" target="_blank" rel="noopener">หน้า OpenUserJS</a>
-      </p>
-      <p class="spacing-top">
-        <code id="bm-userscript-url">// ==UserScript==
-// @name        Goonee Console2 Floating Button
-// @namespace   http://tampermonkey.net/
-// @copyright 2025, GooneeShark (https://openuserjs.org/users/GooneeShark)
-// @version     1.0
-// @description เพิ่มปุ่ม ⚙️ ลอยแบบลากได้ เพื่อเปิด/ปิด Goonee Console2
-// @match       *://*/*
-// @grant       none
-// @updateURL https://openuserjs.org/meta/GooneeShark/Goonee_Console2_Floating_Button.meta.js
-// @downloadURL https://openuserjs.org/install/GooneeShark/Goonee_Console2_Floating_Button.user.js
-// @license MIT
-// ==/UserScript==
-
-(function() {
-  'use strict';
-
-  // URL ของสคริปต์ console2.js
-  const CONSOLE2_URL = 'https://goonee.netlify.app/console2.js';
-
-  // สร้างปุ่ม ⚙️ ลอย
-  const btn = document.createElement('button');
-  btn.textContent = '⚙️';
-  // กำหนดสไตล์ให้ลอยอยู่บนเนื้อหา
-  Object.assign(btn.style, {
-    position: 'fixed',
-    left: '10px',
-    top: '10px',
-    width: '40px',
-    height: '40px',
-    'font-size': '24px',
-    'border-radius': '50%',
-    border: 'none',
-    'background-color': '#007bff',
-    color: 'white',
-    cursor: 'pointer',
-    'z-index': 9999
-  });
-  document.body.appendChild(btn);
-
-  // ตัวแปรสำหรับจับการลาก
-  let dragging = false, startX, startY, origX, origY;
-
-  // เมื่อกดปุ่ม เริ่มจับตำแหน่งเมาส์เพื่อ拖移元素
-  btn.addEventListener('mousedown', function(e) {
-    dragging = false;
-    startX = e.clientX;
-    startY = e.clientY;
-    // เก็บตำแหน่งเริ่มต้นของปุ่ม (pixel จากขอบซ้าย/บน)
-    origX = btn.offsetLeft;
-    origY = btn.offsetTop;
-    // สร้างฟังก์ชันเคลื่อนที่ปุ่มตามเมาส์
-    function onMove(ev) {
-      dragging = true;
-      const dx = ev.clientX - startX;
-      const dy = ev.clientY - startY;
-      btn.style.left = (origX + dx) + 'px';
-      btn.style.top  = (origY + dy) + 'px';
-    }
-    // ผูกเหตุการณ์ mousemove และ mouseup เพื่อเลิกจับ
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', function() {
-      document.removeEventListener('mousemove', onMove);
-    }, { once: true });
-  });
-
-  // ฟังก์ชันโหลดสคริปต์ console2.js หากยังไม่โหลด
-  function ensureConsole2Loaded(callback) {
-    if (document.getElementById('goonee-console2-script')) {
-      callback();
-    } else {
-      const s = document.createElement('script');
-      s.src = CONSOLE2_URL + '?t=' + Date.now();
-      s.id  = 'goonee-console2-script';
-      s.onload = callback;
-      document.body.appendChild(s);
-    }
-  }
-
-  // ฟังก์ชันเรียก toggle ของ Goonee Console2 เมื่อโหลดเสร็จ
-  function toggleConsole2() {
-    if (window.Goonee && typeof window.Goonee.toggle === 'function') {
-      window.Goonee.toggle();
-    } else if (typeof toggleConsole2 === 'function') {
-      toggleConsole2();
-    } else {
-      console.warn('Goonee Console2 ไม่พร้อมใช้งาน');
-    }
-  }
-
-  // เมื่อคลิกที่ปุ่ม (หากไม่ได้ลาก) ให้โหลดสคริปต์และสลับการแสดง Console2
-  btn.addEventListener('click', function(e) {
-    if (dragging) return;  // หากขณะนั้นเป็นการลาก ไม่ทำงานคลิก
-    ensureConsole2Loaded(toggleConsole2);
-  });
-})();
-</code>
-        <a class="btn" href="#" data-copy="#bm-userscript-url">คัดลอกลิงก์ Userscript</a>
-      </p>
-    </div>
-
-    <p><a class='btn' href='https://goonee.netlify.app'>← กลับหน้า Home</a></p>
-  </div>
-
-  <script>
-    (function(){
-      /* small UI helpers */
-      function showToast(msg){
-        const el=document.createElement('div');
-        el.className='go-toast'; el.textContent=msg; document.body.appendChild(el);
-        requestAnimationFrame(()=> el.style.opacity='1');
-        setTimeout(()=> { el.style.opacity='0'; setTimeout(()=>el.remove(), 220); }, 1400);
-      }
-
-      async function copyText(t){
-        t = String(t||'').trim(); if(!t) return false;
-        try{ if (navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(t); return true; } }catch(e){}
-        try{ const ta = document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); return true; }catch(e){ return false; }
-      }
-
-      function runBookmarkletText(text){
-        if (!text) return;
-        try{
-          const code = String(text).trim(); if (!code) return;
-          const body = code.startsWith('javascript:') ? code.slice(11) : code;
-          // try to detect pattern where the bookmarklet creates a script element and sets s.src
-          const m = body.match(/s\.src\s*=\s*['"]([^'"]+)['"]/i);
-          if (m && m[1]){
-            let url = m[1];
-            // if original code appended Date.now(), add timestamp to avoid cache
-            if (/Date\.now\(\)/.test(body)){
-              if (/[?&]t=$/.test(url) || /=$/.test(url)) url = url + Date.now();
-              else if (url.indexOf('?')===-1) url = url + '?t=' + Date.now();
-              else url = url + '&t=' + Date.now();
-            }
-            const s = document.createElement('script'); s.src = url; s.async = true;
-            s.onload = function(){ showToast('สคริปต์โหลดแล้ว'); try{ if (typeof toggleConsole === 'function') toggleConsole(); else if (window.toggleConsole) window.toggleConsole(); }catch(e){} };
-            s.onerror = function(){ showToast('โหลดสคริปต์ไม่สำเร็จ'); };
-            document.body.appendChild(s);
-            return;
-          }
-          // fallback: execute original snippet
-          (new Function(body))();
-        }catch(err){ console.error('Bookmarklet run error', err); alert('รันโค้ดไม่สำเร็จ: ' + (err.message || err)); }
-      }
-
-      document.addEventListener('click', async function(e){
-        const copyBtn = e.target.closest('a[data-copy]');
-        if(copyBtn) {
-            e.preventDefault();
-            const sel = copyBtn.getAttribute('data-copy');
-            const el = sel && document.querySelector(sel);
-            if(el && await copyText(el.textContent)) showToast('คัดลอกแล้ว'); else showToast('คัดลอกไม่สำเร็จ');
-        }
-      });
-
-      const testBtn2 = document.querySelector('.page-guide #btn-test-console2');
-      if (testBtn2) testBtn2.addEventListener('click', function(e){ e.preventDefault(); const codeEl = document.getElementById('bm-console2'); if (codeEl) runBookmarkletText(codeEl.textContent); });
-
-      document.addEventListener('click', function(e){
-        const runBtn = e.target.closest('[data-run]'); if (!runBtn) return; e.preventDefault(); const sel = runBtn.getAttribute('data-run'); const el = sel && document.querySelector(sel); if (el) runBookmarkletText(el.textContent);
-      });
-
-      // 🔥 Advanced Theme System with Hacker Effects
-      (function(){
-        const themes = [
-          { name:'Matrix Green', bodyBg:'radial-gradient(1200px 600px at 10% -10%, #001100 0%, #000a00 40%), linear-gradient(135deg, #000000 0%, #001a00 50%, #000c00 100%)', accent:'#00ff41', title:'#00ff88', cardBg:'rgba(0,255,65,0.08)' },
-          { name:'Cyber Blue', bodyBg:'linear-gradient(135deg,#000a1a,#001122)', accent:'#00e1ff', title:'#8ad1ff', cardBg:'rgba(0,225,255,0.08)' },
-          { name:'Neon Pink', bodyBg:'linear-gradient(135deg,#1a0010,#2b0020)', accent:'#ff3d7f', title:'#ff8ab3', cardBg:'rgba(255,61,127,0.08)' },
-          { name:'Hacker Orange', bodyBg:'linear-gradient(135deg,#1a0a00,#2b1500)', accent:'#ff9900', title:'#ffcc66', cardBg:'rgba(255,153,0,0.08)' },
-          { name:'Deep Purple', bodyBg:'linear-gradient(135deg,#0a001a,#15002b)', accent:'#9d4edd', title:'#c77dff', cardBg:'rgba(157,78,221,0.08)' },
-          { name:'Toxic Green', bodyBg:'linear-gradient(135deg,#0f1a00,#1a3300)', accent:'#39ff14', title:'#7fff00', cardBg:'rgba(57,255,20,0.08)' },
-          { name:'Blood Red', bodyBg:'linear-gradient(135deg,#1a0000,#330000)', accent:'#ff0040', title:'#ff6b6b', cardBg:'rgba(255,0,64,0.08)' },
-          { name:'Electric Blue', bodyBg:'linear-gradient(135deg,#000f1a,#001f33)', accent:'#0080ff', title:'#40a0ff', cardBg:'rgba(0,128,255,0.08)' },
-          { name:'Alien Green', bodyBg:'linear-gradient(135deg,#001a0a,#003315)', accent:'#00ff80', title:'#66ffaa', cardBg:'rgba(0,255,128,0.08)' },
-          { name:'Void Black', bodyBg:'linear-gradient(135deg,#000000,#111111)', accent:'#ffffff', title:'#cccccc', cardBg:'rgba(255,255,255,0.05)' }
-        ];
-
-        let currentTheme = null;
-        let matrixInterval = null;
-        let hackerMode = false;
-
-        function applyTheme(theme) {
-          currentTheme = theme;
-          document.body.style.background = theme.bodyBg;
-          const root = document.documentElement;
-          root.style.setProperty('--accent', theme.accent);
-          root.style.setProperty('--title-color', theme.title);
-          
-          // Update card backgrounds
-          document.querySelectorAll('.page-guide .card').forEach(card => {
-            card.style.background = theme.cardBg;
-            card.style.borderColor = theme.accent;
-          });
-          
-          updateThemeStatus(`ธีมปัจจุบัน: ${theme.name}`);
-        }
-
-        function updateThemeStatus(msg) {
-          const status = document.getElementById('theme-status');
-          if (status) {
-            status.textContent = msg;
-            status.style.color = currentTheme ? currentTheme.accent : '#ffd166';
-          }
-        }
-
-        function randomTheme() {
-          const theme = themes[Math.floor(Math.random() * themes.length)];
-          applyTheme(theme);
-          showToast(`🎨 เปลี่ยนเป็นธีม: ${theme.name}`);
-        }
-
-        function saveTheme() {
-          if (!currentTheme) return;
-          try {
-            localStorage.setItem('goonee:savedTheme', JSON.stringify(currentTheme));
-            showToast('💾 บันทึกธีมแล้ว!');
-            updateThemeStatus(`ธีมที่บันทึก: ${currentTheme.name}`);
-          } catch(e) {
-            showToast('❌ บันทึกธีมไม่สำเร็จ');
-          }
-        }
-
-        function loadSavedTheme() {
-          try {
-            const saved = localStorage.getItem('goonee:savedTheme');
-            if (saved) {
-              const theme = JSON.parse(saved);
-              applyTheme(theme);
-              return true;
-            }
-          } catch(e) {}
-          return false;
-        }
-
-        function hackerModeToggle() {
-          hackerMode = !hackerMode;
-          
-          if (hackerMode) {
-            // Apply hacker styling
-            document.body.style.background = '#000000';
-            document.body.style.color = '#00ff00';
-            document.body.style.fontFamily = '"Courier New", monospace';
+    <script>
+        let timeLeft = 2;
+        const countdownElement = document.getElementById('countdown');
+        const progressBar = document.getElementById('progressBar');
+        const totalTime = 2;
+        
+        function updateCountdown() {
+            countdownElement.textContent = timeLeft;
             
-            document.querySelectorAll('.card').forEach(card => {
-              card.style.background = 'rgba(0,255,0,0.05)';
-              card.style.border = '1px solid #00ff00';
-              card.style.boxShadow = '0 0 20px rgba(0,255,0,0.3)';
-            });
+            // Update progress bar
+            const progress = ((totalTime - timeLeft) / totalTime) * 100;
+            progressBar.style.width = progress + '%';
             
-            // Add glitch effect to title
-            const title = document.querySelector('.page-guide .go-title');
-            if (title) {
-              title.style.animation = 'go-glitch 0.3s infinite';
+            if (timeLeft <= 0) {
+                countdownElement.textContent = '0';
+                progressBar.style.width = '100%';
+                
+                // Add a small delay for visual effect
+                setTimeout(() => {
+                    window.location.href = 'https://goorum.netlify.app/';
+                }, 100);
+                return;
             }
             
-            showToast('💀 HACKER MODE ACTIVATED');
-            updateThemeStatus('💀 HACKER MODE - System Compromised');
-          } else {
-            // Restore normal theme
-            if (currentTheme) {
-              applyTheme(currentTheme);
-            } else {
-              randomTheme();
-            }
-            
-            const title = document.querySelector('.page-guide .go-title');
-            if (title) {
-              title.style.animation = 'go-glow 2s ease-in-out infinite alternate';
-            }
-            
-            showToast('🔒 Normal Mode Restored');
-          }
-        }
-
-        function matrixRain() {
-          if (matrixInterval) {
-            clearInterval(matrixInterval);
-            matrixInterval = null;
-            const canvas = document.getElementById('matrix-canvas');
-            if (canvas) canvas.remove();
-            showToast('🌊 Matrix Rain ปิดแล้ว');
-            return;
-          }
-
-          const canvas = document.createElement('canvas');
-          canvas.id = 'matrix-canvas';
-          canvas.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            pointer-events: none;
-            opacity: 0.3;
-          `;
-          document.body.appendChild(canvas);
-
-          const ctx = canvas.getContext('2d');
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-
-          const chars = 'กขคงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%^&*(){}[]<>?/|\\~`';
-          const fontSize = 14;
-          const columns = Math.floor(canvas.width / fontSize);
-          const drops = Array(columns).fill(1);
-
-          matrixInterval = setInterval(() => {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = currentTheme ? currentTheme.accent : '#00ff41';
-            ctx.font = fontSize + 'px monospace';
-
-            for (let i = 0; i < drops.length; i++) {
-              const char = chars[Math.floor(Math.random() * chars.length)];
-              ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-
-              if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                drops[i] = 0;
-              }
-              drops[i]++;
-            }
-          }, 35);
-
-          showToast('🌊 Matrix Rain เปิดใช้งาน');
-        }
-
-        function resetTheme() {
-          hackerMode = false;
-          if (matrixInterval) {
-            clearInterval(matrixInterval);
-            matrixInterval = null;
-            const canvas = document.getElementById('matrix-canvas');
-            if (canvas) canvas.remove();
-          }
-          
-          // Apply default theme
-          const defaultTheme = themes[0];
-          applyTheme(defaultTheme);
-          
-          const title = document.querySelector('.go-title');
-          if (title) {
-            title.style.animation = 'go-glow 2s ease-in-out infinite alternate';
-          }
-          
-          showToast('↺ รีเซ็ตธีมเรียบร้อย');
-        }
-
-        // Event listeners
-        document.getElementById('btn-random-theme')?.addEventListener('click', randomTheme);
-        document.getElementById('btn-save-theme')?.addEventListener('click', saveTheme);
-        document.getElementById('btn-hacker-mode')?.addEventListener('click', hackerModeToggle);
-        document.getElementById('btn-matrix-rain')?.addEventListener('click', matrixRain);
-        document.getElementById('btn-reset-theme')?.addEventListener('click', resetTheme);
-
-        // Easter Eggs - Secret Key Combinations
-        let keySequence = [];
-        document.addEventListener('keydown', (e) => {
-          keySequence.push(e.key.toLowerCase());
-          if (keySequence.length > 10) keySequence.shift();
-          
-          const sequence = keySequence.join('');
-          
-          // Konami Code: ↑↑↓↓←→←→ba
-          if (sequence.includes('arrowuparrowuparrowdownarrowdownarrowleftarrowrightarrowleftarrowrightba')) {
-            showToast('🎮 KONAMI CODE ACTIVATED!');
-            hackerModeToggle();
-            matrixRain();
-            keySequence = [];
-          }
-          
-          // "hack" sequence
-          if (sequence.includes('hack')) {
-            showToast('💀 HACK SEQUENCE DETECTED!');
-            randomTheme();
-            keySequence = [];
-          }
-          
-          // "goonee" sequence
-          if (sequence.includes('goonee')) {
-            showToast('🦈 GOONEE EASTER EGG!');
-            const specialTheme = {
-              name: 'Goonee Special',
-              bodyBg: 'linear-gradient(45deg, #ff0000, #00ff00, #0000ff, #ffff00, #ff00ff, #00ffff)',
-              accent: '#ffffff',
-              title: '#000000',
-              cardBg: 'rgba(255,255,255,0.1)'
-            };
-            applyTheme(specialTheme);
-            keySequence = [];
-          }
-        });
-
-        // Initialize
-        if (!loadSavedTheme()) {
-          randomTheme();
-        }
-
-        // Add glitch animation CSS
-        const style = document.createElement('style');
-        style.textContent = `
-          @keyframes go-glitch {
-            0%, 100% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-          }
-        `;
-        document.head.appendChild(style);
-
-        // Expose functions globally for console access
-        window.gooneeTheme = {
-          random: randomTheme,
-          save: saveTheme,
-          hacker: hackerModeToggle,
-          matrix: matrixRain,
-          reset: resetTheme,
-          themes: themes
-        };
-
-      })();
-
-      // Enhanced Eruda loader with hacker effects
-      const erudaBtn = document.getElementById('btn-eruda');
-      if (erudaBtn) erudaBtn.addEventListener('click', function(e){
-        e.preventDefault();
-        
-        // Add loading effect
-        erudaBtn.textContent = '⏳ กำลังโหลด...';
-        erudaBtn.style.background = '#ffaa00';
-        
-        // if already loaded, toggle
-        if (window.eruda){ 
-          try{ 
-            window.eruda.init(); 
-            window.eruda.show(); 
-            showToast('🧪 Eruda Console เปิดแล้ว!'); 
-            erudaBtn.textContent = '🧪 เปิด Eruda ทันที';
-            erudaBtn.style.background = '';
-          }catch(e){ 
-            showToast('Eruda พร้อมใช้งาน'); 
-          } 
-          return; 
+            timeLeft--;
+            setTimeout(updateCountdown, 1000);
         }
         
-        const s=document.createElement('script'); 
-        s.src='https://cdn.jsdelivr.net/npm/eruda'; 
-        s.async=true;
+        // Start countdown
+        updateCountdown();
         
-        s.onload = function(){ 
-          try{ 
-            if (window.eruda){ 
-              window.eruda.init(); 
-              window.eruda.show(); 
-              showToast('🧪 Eruda Console พร้อมใช้งาน!'); 
-              
-              // Add some hacker flair
-              setTimeout(() => {
-                if (window.eruda && window.eruda._devTools) {
-                  console.log('%c🦈 GOONEE HACKER CONSOLE LOADED! 🦈', 'color: #00ff41; font-size: 20px; font-weight: bold; text-shadow: 0 0 10px #00ff41;');
-                  console.log('%cType gooneeTheme.random() to change theme!', 'color: #00e5ff; font-size: 14px;');
-                  console.log('%cType gooneeTheme.hacker() for hacker mode!', 'color: #ff6b6b; font-size: 14px;');
-                }
-              }, 1000);
-            } 
-          }catch(e){ 
-            showToast('โหลด Eruda เสร็จ'); 
-          }
-          
-          erudaBtn.textContent = '🧪 เปิด Eruda ทันที';
-          erudaBtn.style.background = '';
-        };
-        
-        s.onerror = function(){ 
-          showToast('❌ โหลด Eruda ไม่สำเร็จ'); 
-          erudaBtn.textContent = '🧪 เปิด Eruda ทันที';
-          erudaBtn.style.background = '';
-        };
-        
-        document.body.appendChild(s);
-      });
-
-      // 🔥 Additional Easter Eggs and Hacker Features
-      
-      // Secret click counter on logo
-      let logoClicks = 0;
-      const logo = document.querySelector('.header-img');
-      if (logo) {
-        logo.addEventListener('click', () => {
-          logoClicks++;
-          if (logoClicks === 5) {
-            showToast('🦈 Secret: กด Ctrl+Shift+G เพื่อเปิด God Mode!');
-          } else if (logoClicks === 10) {
-            showToast('💀 Ultra Secret: พิมพ์ "goonee" เพื่อดู Easter Egg!');
-            logoClicks = 0;
-          }
-        });
-      }
-
-      // God Mode shortcut
-      document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.shiftKey && e.key === 'G') {
-          e.preventDefault();
-          
-          // Activate all effects
-          if (window.gooneeTheme) {
-            window.gooneeTheme.hacker();
-            setTimeout(() => window.gooneeTheme.matrix(), 500);
-          }
-          
-          // Add special styling
-          document.body.style.cursor = 'crosshair';
-          document.title = '🦈 GOONEE GOD MODE ACTIVATED 🦈';
-          
-          showToast('⚡ GOD MODE ACTIVATED! ⚡');
-          
-          // Console message
-          console.log('%c⚡ GOONEE GOD MODE ACTIVATED! ⚡', 'color: #ff0000; font-size: 24px; font-weight: bold; text-shadow: 0 0 10px #ff0000;');
-          console.log('%cAll systems compromised. Welcome, hacker.', 'color: #00ff00; font-size: 16px;');
-        }
-      });
-
-      // Random hacker quotes
-      const hackerQuotes = [
-        "The best way to get the right answer on the Internet is not to ask a question, but to post the wrong answer.",
-        "There are only 10 types of people in the world: those who understand binary and those who don't.",
-        "Programming is like sex: one mistake and you have to support it for the rest of your life.",
-        "A computer lets you make more mistakes faster than any invention in human history.",
-        "The Internet: where men are men, women are men, and children are FBI agents."
-      ];
-
-      // Show random quote every 30 seconds
-      setInterval(() => {
-        if (Math.random() < 0.1) { // 10% chance
-          const quote = hackerQuotes[Math.floor(Math.random() * hackerQuotes.length)];
-          showToast(`💭 Hacker Wisdom: ${quote}`);
-        }
-      }, 30000);
-
-    })();
-  </script>
+        // Preload the destination page
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = 'https://goorum.netlify.app/';
+        document.head.appendChild(link);
+    </script>
 </body>
 </html>

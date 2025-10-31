@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* Service Worker for Hacker Console assets */
-const VERSION = 'v1.0.1';
+const VERSION = 'v1.0.2';
 const CACHE_NAME = `hc-cache-${VERSION}`;
 const CORE = [
   '/',            // for Netlify root fallback (optional)

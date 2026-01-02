@@ -17,7 +17,7 @@
 .goonee-cnav-root{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
 .goonee-cnav-toggle{position:fixed;z-index:9999;display:inline-flex;align-items:center;justify-content:center;border:none;background:var(--goonee-accent);color:#000;width:44px;height:44px;border-radius:8px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25)}
 .goonee-cnav-toggle.goonee-cnav-left{left:6px;top:96px}
-.goonee-cnav-toggle.goonee-cnav-right{right:6px;top:6px}
+.goonee-cnav-toggle.goonee-cnav-right{right:6px;top:88px}
 .goonee-cnav-panel{position:fixed;top:0;width:280px;background:linear-gradient(180deg,var(--goonee-bg),#222);color:var(--goonee-text);z-index:9998;padding:16px;box-shadow:2px 0 18px rgba(0,0,0,.4);transform:translateX(-100%);transition:transform .28s ease}
 .goonee-cnav-panel.goonee-open{width:200px;transform:translateX(0)}
 .goonee-cnav-panel.goonee-right{right:0;left:auto;transform:translateX(100%)}
@@ -61,5 +61,6 @@
 @media (max-width:120px){
   .goonee-cnav-panel{width:50%;}
 }
+
 
 

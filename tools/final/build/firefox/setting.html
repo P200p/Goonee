@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>การตั้งค่า Shark Tools</title>
+  <style>
+    body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial; background:#0f0f0f; color:#eee; padding:18px; }
+    h2 { color:#4dd0e1; }
+    .row { display:flex; gap:8px; align-items:center; margin:8px 0; }
+    label { min-width:120px; color:#ccc; }
+    input[type=text], textarea, select { background:#111; color:#eee; border:1px solid #333; padding:8px; border-radius:6px; width:100%; }
+    textarea { min-height:90px; }
+    .controls { margin-top:12px; display:flex; gap:8px; }
+    button { background:#2196f3; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+    button.secondary { background:#555; }
+    .preview { width:36px; height:36px; object-fit:cover; border-radius:6px; border:1px solid #333; background:#1a1a1a }
+    .items { margin-top:14px; border-top:1px solid #222; padding-top:12px; }
+    .item { display:flex; gap:8px; align-items:center; padding:6px 4px; border-bottom:1px dashed #222; }
+    .note { color:#9e9e9e; font-size:13px; margin-top:6px }
+    
+    /* Script Distribution Styles */
+    .script-distribution { 
+      margin-top:20px; 
+      border-top:1px solid #222; 
+      padding-top:16px; 
+    }
+    .script-distribution h3 { 
+      color:#4dd0e1; 
+      margin:0 0 8px 0; 
+    }
+    .script-gallery { 
+      display:grid; 
+      grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); 
+      gap:12px; 
+      margin-top:12px; 
+    }
+    .script-card { 
+      background:#1a1a1a; 
+      border:1px solid #333; 
+      border-radius:8px; 
+      padding:12px; 
+      transition:all 0.2s ease; 
+      cursor:pointer; 
+    }
+    .script-card:hover { 
+      border-color:#4dd0e1; 
+      background:#222; 
+      transform:translateY(-2px); 
+    }
+    .script-card.selected { 
+      border-color:#4dd0e1; 
+      background:#1e3a3f; 
+    }
+    .script-card-header { 
+      display:flex; 
+      align-items:center; 
+      gap:8px; 
+      margin-bottom:8px; 
+    }
+    .script-card-icon { 
+      width:32px; 
+      height:32px; 
+      object-fit:cover; 
+      border-radius:4px; 
+      background:#333; 
+    }
+    .script-card-title { 
+      font-weight:600; 
+      color:#eee; 
+      margin:0; 
+    }
+    .script-card-description { 
+      color:#ccc; 
+      font-size:13px; 
+      line-height:1.4; 
+      margin:0 0 8px 0; 
+    }
+    .use-script-btn { 
+      background:#4dd0e1; 
+      color:#000; 
+      border:none; 
+      padding:6px 12px; 
+      border-radius:4px; 
+      font-size:12px; 
+      cursor:pointer; 
+      transition:background 0.2s ease; 
+    }
+    .use-script-btn:hover { 
+      background:#26c6da; 
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .script-gallery { 
+        grid-template-columns:1fr; 
+      }
+      .script-card { 
+        padding:10px; 
+      }
+    }
+    @media (max-width: 480px) {
+      body { 
+        padding:12px; 
+      }
+      .script-card-header { 
+        flex-direction:column; 
+        align-items:flex-start; 
+        gap:6px; 
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>การตั้งค่า Shark Tools</h2>
+  <p class="note">เพิ่มปุ่มเพื่อให้ปรากฏในเมนูลอยหลัก สามารถใส่ไฟล์สคริปต์หรือพิมพ์โค้ดโดยตรง, อัปโหลดไอคอน หรือใช้ path ของ builtin</p>
+
+  <div class="row">
+    <label for="name">ชื่อปุ่ม</label>
+    <input id="name" type="text" placeholder="เช่น Run My Script" />
+  </div>
+
+  <div class="row">
+    <label for="scriptFile">ไฟล์สคริปต์</label>
+    <input id="scriptFile" type="file" accept=".js,application/javascript" />
+  </div>
+
+  <div class="row">
+    <label for="scriptText">หรือ วางสคริปต์</label>
+    <textarea id="scriptText" placeholder="วาง JavaScript ที่ต้องการให้รัน"></textarea>
+  </div>
+
+  <div class="row">
+    <label for="scriptBuiltinPath">หรือ builtin script URL</label>
+    <input id="scriptBuiltinPath" type="text" placeholder="เช่น image/myscript.js หรือ https://..." />
+  </div>
+
+  <div class="row">
+    <label for="scopeSelect">ขอบเขตการใช้งาน</label>
+    <select id="scopeSelect">
+      <option value="global">ทั่วทุกหน้า (global)</option>
+      <option value="host">เฉพาะโดเมนที่กำหนด (host)</option>
+    </select>
+    <input id="scopeHost" type="text" placeholder="example.com (เว้นว่างถ้าใช้ host ปัจจุบัน)" />
+  </div>
+
+  <div class="row">
+    <label for="iconSelect">เลือกไอคอน (ปกติ)</label>
+    <select id="iconSelect">
+      <option value="">-- เลือกไอคอน --</option>
+    </select>
+    <img id="iconPreview" class="preview" src="image/og.png" alt="preview" />
+  </div>
+
+  <div class="row">
+    <label for="iconHoverSelect">เลือกไอคอน (hover)</label>
+    <select id="iconHoverSelect">
+      <option value="">-- เลือกไอคอน hover --</option>
+    </select>
+    <img id="iconHoverPreview" class="preview" src="image/og.png" alt="hover" />
+  </div>
+
+  <div class="controls">
+    <button id="addBtn" type="button">เพิ่มปุ่ม</button>
+    <button id="exportBtn" class="secondary" type="button">Export</button>
+    <button id="importBtn" class="secondary" type="button">Import</button>
+    <input id="importFile" type="file" accept=".json" style="display:none" />
+  </div>
+
+  <div class="items">
+    <h3 style="margin:0 0 8px 0">รายการปุ่ม</h3>
+    <div id="items"></div>
+  </div>
+
+  <!-- Script Distribution Section -->
+  <div class="script-distribution">
+    <h3>สคริปต์ยอดฮิต</h3>
+    <p class="note">เลือกสคริปต์ยอดฮิตเพื่อใช้งานได้ทันที</p>
+    <div class="script-gallery" id="scriptGallery">
+      <!-- Script cards will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <script src="setting.js"></script>
+</body>
+</html>

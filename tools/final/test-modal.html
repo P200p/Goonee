@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทดสอบ Modal URL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 50px;
+            background: #f0f0f0;
+        }
+        .test-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .test-btn:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 ทดสอบ Modal URL</h1>
+    <p>คลิกปุ่มเพื่อทดสอบการแสดง Modal สำหรับแต่ละเบราว์เซอร์:</p>
+    
+    <button class="test-btn" onclick="testModal('chrome://extensions/', 'Chrome')">
+        🌐 ทดสอบ Chrome
+    </button>
+    
+    <button class="test-btn" onclick="testModal('edge://extensions/', 'Edge')">
+        🌊 ทดสอบ Edge
+    </button>
+    
+    <button class="test-btn" onclick="testModal('brave://extensions/', 'Brave')">
+        🦁 ทดสอบ Brave
+    </button>
+    
+    <button class="test-btn" onclick="testModal('chrome://extensions/', 'Kiwi Browser')">
+        🥝 ทดสอบ Kiwi
+    </button>
+    
+    <button class="test-btn" onclick="testModal('about:debugging#/runtime/this-firefox', 'Firefox')">
+        🦊 ทดสอบ Firefox
+    </button>
+
+    <script>
+        function testModal(url, browserName) {
+            showUrlModal(url, browserName);
+        }
+
+        function showUrlModal(url, browserName) {
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(5px);
+            `;
+            
+            // Create modal content
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                max-width: 500px;
+                width: 90%;
+                text-align: center;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                animation: modalSlideIn 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <h3 style="color: #333; margin-bottom: 20px;">🔗 เปิดหน้าส่วนขยาย ${browserName}</h3>
+                <p style="color: #666; margin-bottom: 20px;">คัดลอก URL นี้และวางในแถบที่อยู่ของเบราว์เซอร์:</p>
+                <div style="
+                    background: #f5f5f5;
+                    border: 2px dashed #ccc;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 20px 0;
+                    font-family: 'Courier New', monospace;
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #333;
+                    word-break: break-all;
+                    user-select: all;
+                " id="urlText">${url}</div>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button id="copyBtn" style="
+                        background: #4CAF50;
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        transition: all 0.3s ease;
+                    ">📋 คัดลอก URL</button>
+                    <button id="closeBtn" style="
+                        background: #666;
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        transition: all 0.3s ease;
+                    ">❌ ปิด</button>
+                </div>
+                <p style="color: #999; font-size: 12px; margin-top: 15px;">
+                    💡 เคล็ดลับ: กด Ctrl+L (หรือ Cmd+L บน Mac) เพื่อไปที่แถบที่อยู่แล้วกด Ctrl+V เพื่อวาง
+                </p>
+            `;
+            
+            // Add CSS animation
+            if (!document.getElementById('modal-animations')) {
+                const style = document.createElement('style');
+                style.id = 'modal-animations';
+                style.textContent = `
+                    @keyframes modalSlideIn {
+                        from { transform: scale(0.7) translateY(-50px); opacity: 0; }
+                        to { transform: scale(1) translateY(0); opacity: 1; }
+                    }
+                    @keyframes modalSlideOut {
+                        from { transform: scale(1) translateY(0); opacity: 1; }
+                        to { transform: scale(0.7) translateY(-50px); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Handle copy button
+            const copyBtn = modal.querySelector('#copyBtn');
+            const closeBtn = modal.querySelector('#closeBtn');
+            const urlText = modal.querySelector('#urlText');
+            
+            copyBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(url);
+                    copyBtn.innerHTML = '✅ คัดลอกแล้ว!';
+                    copyBtn.style.background = '#2196F3';
+                    
+                    // Auto select text
+                    const range = document.createRange();
+                    range.selectNodeContents(urlText);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '📋 คัดลอก URL';
+                        copyBtn.style.background = '#4CAF50';
+                    }, 2000);
+                } catch (err) {
+                    // Fallback for older browsers
+                    urlText.style.background = '#e3f2fd';
+                    urlText.style.border = '2px solid #2196F3';
+                    
+                    // Select text manually
+                    const range = document.createRange();
+                    range.selectNodeContents(urlText);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    
+                    copyBtn.innerHTML = '📝 เลือกแล้ว - กด Ctrl+C';
+                    copyBtn.style.background = '#FF9800';
+                }
+            });
+            
+            // Handle close button
+            closeBtn.addEventListener('click', () => {
+                modal.style.animation = 'modalSlideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(overlay);
+                }, 300);
+            });
+            
+            // Handle overlay click
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    closeBtn.click();
+                }
+            });
+            
+            // Handle escape key
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    closeBtn.click();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+            
+            // Auto-select URL text after a short delay
+            setTimeout(() => {
+                const range = document.createRange();
+                range.selectNodeContents(urlText);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }, 500);
+        }
+    </script>
+</body>
+</html>

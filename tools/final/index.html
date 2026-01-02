@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦈 Shark Tools Extension</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            color: white;
+            max-width: 600px;
+            padding: 40px;
+        }
+        
+        .logo {
+            font-size: 6em;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 250px;
+        }
+        
+        .btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-color: #4CAF50;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #45a049, #4CAF50);
+            color: white;
+            border-color: #45a049;
+        }
+        
+        .features {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            text-align: left;
+        }
+        
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .feature h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+        
+        .feature p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 4em;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🦈</div>
+        <h1>Shark Tools Extension</h1>
+        <p class="subtitle">เครื่องมือลอยน้ำสำหรับนักพัฒนาและผู้ใช้ขั้นสูง</p>
+        
+        <div class="buttons">
+            <a href="installation-guide.html" class="btn btn-primary">
+                📖 คู่มือติดตั้งแบบละเอียด
+            </a>
+            <a href="build/README.html" class="btn">
+                ⚡ คู่มือติดตั้งด่วน
+            </a>
+            <a href="build/" class="btn">
+                📦 ดาวน์โหลดไฟล์ติดตั้ง
+            </a>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>🎯 Floating Menu</h3>
+                <p>เมนูลอยที่ลากย้ายได้ พร้อมไอคอนย่อยแบบวงกลม</p>
+            </div>
+            <div class="feature">
+                <h3>🖼️ ไอคอนให้เลือก</h3>
+                <p>ไอคอน 25+ แบบ ไม่ต้องอัพโหลดไฟล์</p>
+            </div>
+            <div class="feature">
+                <h3>📝 JavaScript Console</h3>
+                <p>คอนโซลขั้นสูงพร้อมธีมและฟีเจอร์ครบครัน</p>
+            </div>
+            <div class="feature">
+                <h3>🌐 Cross-Browser</h3>
+                <p>รองรับ Chrome, Firefox, Edge, Kiwi Browser</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive effects
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.querySelector('.logo');
+            const x = (e.clientX / window.innerWidth) * 10;
+            const y = (e.clientY / window.innerHeight) * 10;
+            cursor.style.transform = `translate(${x}px, ${y}px)`;
+        });
+
+        // Browser detection notification
+        window.addEventListener('load', () => {
+            const userAgent = navigator.userAgent;
+            let browserName = 'Unknown';
+            
+            if (userAgent.includes('Chrome') && userAgent.includes('Kiwi')) {
+                browserName = 'Kiwi Browser 🥝';
+            } else if (userAgent.includes('Chrome') && userAgent.includes('Brave')) {
+                browserName = 'Brave Browser 🦁';
+            } else if (userAgent.includes('Chrome') && userAgent.includes('OPR')) {
+                browserName = 'Opera Browser 🎭';
+            } else if (userAgent.includes('Chrome') && userAgent.includes('Edg')) {
+                browserName = 'Microsoft Edge 🌊';
+            } else if (userAgent.includes('Chrome')) {
+                browserName = 'Google Chrome 🌐';
+            } else if (userAgent.includes('Firefox')) {
+                browserName = 'Mozilla Firefox 🦊';
+            }
+            
+            if (browserName !== 'Unknown') {
+                setTimeout(() => {
+                    const notification = document.createElement('div');
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: rgba(76, 175, 80, 0.9);
+                        color: white;
+                        padding: 15px 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                        z-index: 1000;
+                        font-weight: bold;
+                        backdrop-filter: blur(10px);
+                        animation: slideIn 0.5s ease;
+                        cursor: pointer;
+                    `;
+                    notification.innerHTML = `🎯 ตรวจพบ: ${browserName}<br><small style="opacity:0.8;">คลิกเพื่อดูคู่มือติดตั้ง</small>`;
+                    
+                    // Add click handler to go to installation guide
+                    notification.addEventListener('click', () => {
+                        window.location.href = 'installation-guide.html';
+                    });
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Add CSS animation
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes slideIn {
+                            from { transform: translateX(100%); opacity: 0; }
+                            to { transform: translateX(0); opacity: 1; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    setTimeout(() => {
+                        notification.style.animation = 'slideIn 0.5s ease reverse';
+                        setTimeout(() => notification.remove(), 500);
+                    }, 6000);
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>

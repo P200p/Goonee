@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Shark Tools Floating Menu",
+  "version": "1.0.0",
+  "description": "Floating draggable main icon with sub-menu for various tools (MiniBurp, Console2, etc.)",
+  "icons": {
+    "16": "image/icon16.png",
+    "48": "image/icon48.png",
+    "128": "image/icon128.png"
+  },
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Shark Tools",
+    "default_icon": {
+      "16": "image/icon16.png",
+      "48": "image/icon48.png",
+      "128": "image/icon128.png"
+    },
+    "default_popup": "setting.html"
+  },
+  "options_page": "setting.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["image/*.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

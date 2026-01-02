@@ -1,0 +1,61 @@
+🦈 Shark Tools Extension - Installation Guide
+==============================================
+
+📦 Available Packages:
+- shark-tools-chrome.zip     (Chrome/Chromium browsers)
+- shark-tools-firefox.xpi    (Firefox browser)
+- shark-tools-edge.zip       (Microsoft Edge browser)
+- shark-tools-universal.zip  (Any Chromium-based browser)
+
+📋 Installation Instructions:
+
+🌐 CHROME / CHROMIUM:
+1. Open Chrome and go to chrome://extensions/
+2. Enable "Developer mode" (toggle in top-right)
+3. Click "Load unpacked" and select the build/chrome folder
+   OR
+   Drag shark-tools-chrome.zip to the extensions page
+
+🦊 FIREFOX:
+1. Open Firefox and go to about:debugging
+2. Click "This Firefox" in the left sidebar
+3. Click "Load Temporary Add-on..."
+4. Select shark-tools-firefox.xpi file
+   
+   Note: For permanent installation, you need to:
+   - Sign the extension at https://addons.mozilla.org/developers/
+   - Or use Firefox Developer Edition with xpinstall.signatures.required = false
+
+🌊 MICROSOFT EDGE:
+1. Open Edge and go to edge://extensions/
+2. Enable "Developer mode" (toggle in left sidebar)
+3. Click "Load unpacked" and select the build/chrome folder
+   OR
+   Drag shark-tools-edge.zip to the extensions page
+
+🔧 DEVELOPMENT TESTING:
+- Use the unpacked folders (build/chrome or build/firefox) for development
+- Changes to source files require reloading the extension
+- Use browser developer tools to debug
+
+🚀 PRODUCTION DEPLOYMENT:
+- Chrome Web Store: Submit shark-tools-chrome.zip
+- Firefox Add-ons (AMO): Submit shark-tools-firefox.xpi  
+- Edge Add-ons: Submit shark-tools-edge.zip
+
+⚠️  IMPORTANT NOTES:
+- Firefox version uses Manifest V2 for compatibility
+- Chrome/Edge versions use Manifest V3 (latest standard)
+- All versions have identical functionality
+- Icons i1.png - i25.png are included for selection
+
+🛠️  TROUBLESHOOTING:
+- If extension doesn't load: Check browser console for errors
+- If floating icon doesn't appear: Refresh the webpage
+- If scripts don't run: Check extension permissions
+- For Firefox: Ensure temporary add-on is loaded correctly
+
+📞 SUPPORT:
+- Check browser extension developer tools
+- Review console logs for error messages
+- Ensure all required permissions are granted

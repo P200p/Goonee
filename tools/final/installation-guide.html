@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦈 Shark Tools Extension - คู่มือติดตั้ง</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .browser-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .browser-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+        
+        .browser-card:hover {
+            transform: translateY(-5px);
+            border-color: #4CAF50;
+        }
+        
+        .browser-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .browser-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .browser-desc {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        
+        .install-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        .install-btn:hover {
+            background: linear-gradient(45deg, #45a049, #4CAF50);
+            transform: scale(1.05);
+        }
+        
+        .extension-link {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .extension-link:hover {
+            background: linear-gradient(45deg, #1976D2, #2196F3);
+            transform: scale(1.05);
+        }
+        
+        .steps {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .step-number {
+            background: #4CAF50;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .feature {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .feature h4 {
+            color: #2e7d32;
+            margin-bottom: 5px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .warning h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .download-section {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .download-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background: white;
+            color: #FF6B6B;
+        }
+        
+        .mobile-note {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            margin: 15px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .browser-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦈 Shark Tools Extension</h1>
+            <p>เครื่องมือลอยน้ำสำหรับนักพัฒนาและผู้ใช้ขั้นสูง</p>
+        </div>
+
+        <div class="download-section">
+            <h2>📦 ดาวน์โหลดไฟล์ติดตั้ง</h2>
+            <p>เลือกไฟล์ที่เหมาะสมกับเบราว์เซอร์ของคุณ</p>
+            <a href="build/shark-tools-chrome.zip" class="download-btn" download>
+                📱 Chrome/Chromium (.zip)
+            </a>
+            <a href="build/shark-tools-firefox.xpi" class="download-btn" download>
+                🦊 Firefox (.xpi)
+            </a>
+            <a href="build/shark-tools-edge.zip" class="download-btn" download>
+                🌊 Microsoft Edge (.zip)
+            </a>
+            <a href="build/shark-tools-universal.zip" class="download-btn" download>
+                📦 Universal (.zip)
+            </a>
+        </div>
+
+        <div class="browser-grid">
+            <!-- Chrome -->
+            <div class="browser-card">
+                <div class="browser-icon">🌐</div>
+                <div class="browser-name">Google Chrome</div>
+                <div class="browser-desc">เบราว์เซอร์ยอดนิยม รองรับ Manifest V3</div>
+                <a href="#" onclick="openExtensionsPage('chrome')" class="extension-link">
+                    เปิดหน้าส่วนขยาย
+                </a>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>เปิด Chrome และไปที่ <code>chrome://extensions/</code></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>เปิด "Developer mode" (มุมขวาบน)</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>คลิก "Load unpacked" หรือลากไฟล์ ZIP มาวาง</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Firefox -->
+            <div class="browser-card">
+                <div class="browser-icon">🦊</div>
+                <div class="browser-name">Mozilla Firefox</div>
+                <div class="browser-desc">เบราว์เซอร์โอเพนซอร์ส รองรับ Manifest V2</div>
+                <a href="#" onclick="openExtensionsPage('firefox')" class="extension-link">
+                    เปิดหน้าส่วนขยาย
+                </a>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>เปิด Firefox และไปที่ <code>about:debugging</code></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>คลิก "This Firefox" ในแถบด้านซ้าย</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>คลิก "Load Temporary Add-on..." และเลือกไฟล์ .xpi</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edge -->
+            <div class="browser-card">
+                <div class="browser-icon">🌊</div>
+                <div class="browser-name">Microsoft Edge</div>
+                <div class="browser-desc">เบราว์เซอร์ของ Microsoft รองรับ Manifest V3</div>
+                <a href="#" onclick="openExtensionsPage('edge')" class="extension-link">
+                    เปิดหน้าส่วนขยาย
+                </a>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>เปิด Edge และไปที่ <code>edge://extensions/</code></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>เปิด "Developer mode" (แถบด้านซ้าย)</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>คลิก "Load unpacked" หรือลากไฟล์ ZIP มาวาง</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kiwi Browser -->
+            <div class="browser-card">
+                <div class="browser-icon">🥝</div>
+                <div class="browser-name">Kiwi Browser</div>
+                <div class="browser-desc">เบราว์เซอร์ Android ที่รองรับส่วนขยาย Chrome</div>
+                <a href="#" onclick="openExtensionsPage('kiwi')" class="extension-link">
+                    เปิดหน้าส่วนขยาย
+                </a>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>เปิด Kiwi Browser และไปที่ <code>chrome://extensions/</code></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>เปิด "Developer mode" (สวิตช์มุมขวาบน)</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>คลิก "Load unpacked" และเลือกโฟลเดอร์ที่แตกไฟล์</div>
+                    </div>
+                </div>
+                <div class="mobile-note">
+                    <strong>📱 สำหรับ Android:</strong> ต้องแตกไฟล์ ZIP ก่อน แล้วเลือกโฟลเดอร์ที่แตกแล้ว
+                </div>
+            </div>
+
+            <!-- Brave -->
+            <div class="browser-card">
+                <div class="browser-icon">🦁</div>
+                <div class="browser-name">Brave Browser</div>
+                <div class="browser-desc">เบราว์เซอร์เน้นความเป็นส่วนตัว รองรับส่วนขยาย Chrome</div>
+                <a href="#" onclick="openExtensionsPage('brave')" class="extension-link">
+                    เปิดหน้าส่วนขยาย
+                </a>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>เปิด Brave และไปที่ <code>brave://extensions/</code></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>เปิด "Developer mode" (มุมขวาบน)</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>คลิก "Load unpacked" หรือลากไฟล์ ZIP มาวาง</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Opera -->
+            <div class="browser-card">
+                <div class="browser-icon">🎭</div>
+                <div class="browser-name">Opera Browser</div>
+                <div class="browser-desc">เบราว์เซอร์พร้อมฟีเจอร์เพิ่มเติม รองรับส่วนขยาย Chrome</div>
+                <a href="#" onclick="openExtensionsPage('opera')" class="extension-link">
+                    เปิดหน้าส่วนขยาย
+                </a>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>เปิด Opera และไปที่ <code>opera://extensions/</code></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>เปิด "Developer mode" (มุมขวาบน)</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>คลิก "Load unpacked" หรือลากไฟล์ ZIP มาวาง</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>✨ ฟีเจอร์หลัก</h2>
+            <div class="features">
+                <div class="feature">
+                    <h4>🎯 Floating Menu</h4>
+                    <p>เมนูลอยที่สามารถลากย้ายได้ พร้อมไอคอนย่อยแบบวงกลม</p>
+                </div>
+                <div class="feature">
+                    <h4>🖼️ ไอคอนให้เลือก 25+ แบบ</h4>
+                    <p>ไอคอน i1.png - i25.png พร้อมไอคอนพิเศษอื่นๆ ไม่ต้องอัพโหลด</p>
+                </div>
+                <div class="feature">
+                    <h4>📝 JavaScript Console</h4>
+                    <p>คอนโซล JavaScript ขั้นสูงพร้อมธีมและฟีเจอร์ครบครัน</p>
+                </div>
+                <div class="feature">
+                    <h4>🔧 Custom Scripts</h4>
+                    <p>เพิ่มสคริปต์ JavaScript ของคุณเองได้ พร้อมการจัดการขอบเขต</p>
+                </div>
+                <div class="feature">
+                    <h4>🌐 Cross-Browser</h4>
+                    <p>รองรับเบราว์เซอร์หลากหลาย รวมถึง Kiwi Browser บน Android</p>
+                </div>
+                <div class="feature">
+                    <h4>⚡ Auto-Run</h4>
+                    <p>รันสคริปต์อัตโนมัติเมื่อโหลดหน้าเว็บ (ตามที่ตั้งค่า)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="warning">
+            <h4>⚠️ ข้อควรระวัง</h4>
+            <ul>
+                <li><strong>Firefox:</strong> ใช้ Manifest V2 เพื่อความเข้ากันได้ ส่วนขยายจะเป็นแบบชั่วคราว</li>
+                <li><strong>Kiwi Browser:</strong> ต้องแตกไฟล์ ZIP ก่อนติดตั้ง เนื่องจากข้อจำกัดของระบบไฟล์ Android</li>
+                <li><strong>การพัฒนา:</strong> หากแก้ไขโค้ด ต้องรีโหลดส่วนขยายใหม่</li>
+                <li><strong>สิทธิ์:</strong> ตรวจสอบให้แน่ใจว่าส่วนขยายได้รับสิทธิ์ที่จำเป็น</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>🚀 การใช้งาน</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>หลังติดตั้งแล้ว floating icon จะปรากฏที่มุมซ้ายบนของหน้าเว็บ</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>คลิกที่ไอคอนเพื่อเปิดเมนูย่อย (ถ้ามีสคริปต์ที่เพิ่มไว้)</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>สามารถลากไอคอนไปวางตำแหน่งที่ต้องการได้</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>คลิกที่ไอคอนส่วนขยายเพื่อเข้าสู่หน้าตั้งค่า</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div>เพิ่มสคริปต์ใหม่และเลือกไอคอนจากรายการที่มีให้</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🛠️ การแก้ไขปัญหา</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">❌</div>
+                    <div><strong>ส่วนขยายโหลดไม่ได้:</strong> ตรวจสอบ console ของเบราว์เซอร์หาข้อผิดพลาด</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">👻</div>
+                    <div><strong>ไอคอนไม่ปรากฏ:</strong> รีเฟรชหน้าเว็บหรือตรวจสอบสิทธิ์ส่วนขยาย</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">🚫</div>
+                    <div><strong>สคริปต์ไม่ทำงาน:</strong> ตรวจสอบ syntax และสิทธิ์การเข้าถึง</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">📱</div>
+                    <div><strong>Kiwi Browser:</strong> ตรวจสอบว่าแตกไฟล์ ZIP แล้วและเลือกโฟลเดอร์ที่ถูกต้อง</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🦈 Shark Tools Extension - เครื่องมือสำหรับนักพัฒนา</p>
+            <p>รองรับ Chrome, Firefox, Edge, Kiwi Browser, Brave, Opera และอื่นๆ</p>
+        </div>
+    </div>
+
+    <script>
+        function openExtensionsPage(browser) {
+            let url;
+            let browserName;
+            
+            switch(browser) {
+                case 'chrome':
+                    url = 'chrome://extensions/';
+                    browserName = 'Chrome';
+                    break;
+                case 'firefox':
+                    url = 'about:debugging#/runtime/this-firefox';
+                    browserName = 'Firefox';
+                    break;
+                case 'edge':
+                    url = 'edge://extensions/';
+                    browserName = 'Edge';
+                    break;
+                case 'kiwi':
+                    url = 'chrome://extensions/';
+                    browserName = 'Kiwi Browser';
+                    break;
+                case 'brave':
+                    url = 'brave://extensions/';
+                    browserName = 'Brave';
+                    break;
+                case 'opera':
+                    url = 'opera://extensions/';
+                    browserName = 'Opera';
+                    break;
+                default:
+                    url = 'chrome://extensions/';
+                    browserName = 'Browser';
+            }
+            
+            // Show modal with URL and copy to clipboard
+            showUrlModal(url, browserName);
+        }
+
+        function showUrlModal(url, browserName) {
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(5px);
+            `;
+            
+            // Create modal content
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                max-width: 500px;
+                width: 90%;
+                text-align: center;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                animation: modalSlideIn 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <h3 style="color: #333; margin-bottom: 20px;">🔗 เปิดหน้าส่วนขยาย ${browserName}</h3>
+                <p style="color: #666; margin-bottom: 20px;">คัดลอก URL นี้และวางในแถบที่อยู่ของเบราว์เซอร์:</p>
+                <div style="
+                    background: #f5f5f5;
+                    border: 2px dashed #ccc;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 20px 0;
+                    font-family: 'Courier New', monospace;
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #333;
+                    word-break: break-all;
+                    user-select: all;
+                " id="urlText">${url}</div>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button id="copyBtn" style="
+                        background: #4CAF50;
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        transition: all 0.3s ease;
+                    ">📋 คัดลอก URL</button>
+                    <button id="closeBtn" style="
+                        background: #666;
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        transition: all 0.3s ease;
+                    ">❌ ปิด</button>
+                </div>
+                <p style="color: #999; font-size: 12px; margin-top: 15px;">
+                    💡 เคล็ดลับ: กด Ctrl+L (หรือ Cmd+L บน Mac) เพื่อไปที่แถบที่อยู่แล้วกด Ctrl+V เพื่อวาง
+                </p>
+            `;
+            
+            // Add CSS animation
+            if (!document.getElementById('modal-animations')) {
+                const style = document.createElement('style');
+                style.id = 'modal-animations';
+                style.textContent = `
+                    @keyframes modalSlideIn {
+                        from { transform: scale(0.7) translateY(-50px); opacity: 0; }
+                        to { transform: scale(1) translateY(0); opacity: 1; }
+                    }
+                    @keyframes modalSlideOut {
+                        from { transform: scale(1) translateY(0); opacity: 1; }
+                        to { transform: scale(0.7) translateY(-50px); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Handle copy button
+            const copyBtn = modal.querySelector('#copyBtn');
+            const closeBtn = modal.querySelector('#closeBtn');
+            const urlText = modal.querySelector('#urlText');
+            
+            copyBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(url);
+                    copyBtn.innerHTML = '✅ คัดลอกแล้ว!';
+                    copyBtn.style.background = '#2196F3';
+                    
+                    // Auto select text
+                    const range = document.createRange();
+                    range.selectNodeContents(urlText);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '📋 คัดลอก URL';
+                        copyBtn.style.background = '#4CAF50';
+                    }, 2000);
+                } catch (err) {
+                    // Fallback for older browsers
+                    urlText.style.background = '#e3f2fd';
+                    urlText.style.border = '2px solid #2196F3';
+                    
+                    // Select text manually
+                    const range = document.createRange();
+                    range.selectNodeContents(urlText);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    
+                    copyBtn.innerHTML = '📝 เลือกแล้ว - กด Ctrl+C';
+                    copyBtn.style.background = '#FF9800';
+                }
+            });
+            
+            // Handle close button
+            closeBtn.addEventListener('click', () => {
+                modal.style.animation = 'modalSlideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(overlay);
+                }, 300);
+            });
+            
+            // Handle overlay click
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    closeBtn.click();
+                }
+            });
+            
+            // Handle escape key
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    closeBtn.click();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+            
+            // Auto-select URL text after a short delay
+            setTimeout(() => {
+                const range = document.createRange();
+                range.selectNodeContents(urlText);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }, 500);
+        }
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards
+        document.querySelectorAll('.card, .browser-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Show browser detection
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            let browserName = 'Unknown';
+            
+            if (userAgent.includes('Chrome') && userAgent.includes('Kiwi')) {
+                browserName = 'Kiwi Browser';
+            } else if (userAgent.includes('Chrome') && userAgent.includes('Brave')) {
+                browserName = 'Brave';
+            } else if (userAgent.includes('Chrome') && userAgent.includes('OPR')) {
+                browserName = 'Opera';
+            } else if (userAgent.includes('Chrome') && userAgent.includes('Edg')) {
+                browserName = 'Microsoft Edge';
+            } else if (userAgent.includes('Chrome')) {
+                browserName = 'Google Chrome';
+            } else if (userAgent.includes('Firefox')) {
+                browserName = 'Mozilla Firefox';
+            }
+            
+            if (browserName !== 'Unknown') {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #4CAF50;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    font-weight: bold;
+                `;
+                notification.innerHTML = `🎯 ตรวจพบ: ${browserName}`;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // Run browser detection when page loads
+        window.addEventListener('load', detectBrowser);
+    </script>
+</body>
+</html>
